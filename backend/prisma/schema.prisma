@@ -1,0 +1,232 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator dbml {
+  provider              = "prisma-dbml-generator"
+  includeRelationFields = false
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String    @id
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+  deletedByUserId String?
+
+  accounts                      Account[]
+  userPreferences               UserPreference[]
+  notificationRecipients        NotificationRecipient[]
+  notificationTask              NotificationTask[]
+  createdApplications           Application[]           @relation("applicationCreatedUser")
+  updatedApplications           Application[]           @relation("applicationUpdatedUser")
+  createdTemplates              Template[]              @relation("templatecreatedByUserIdUser")
+  updatedTemplates              Template[]              @relation("templateupdatedByUserIdUser")
+  createdNotificationCategories NotificationCategory[]  @relation("notificationCategoryCreatedUser")
+  updatedNotificationCategories NotificationCategory[]  @relation("notificationCategoryUpdatedUser")
+  deletedUsers                  User[]                  @relation("userDeletedByUser")
+  deletedByUser                 User?                   @relation("userDeletedByUser", fields: [deletedByUserId], references: [id])
+}
+
+model Account {
+  userId       String
+  channelType  ChannelType
+  channelToken String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id])
+  channel Channel @relation(fields: [channelType], references: [channelType])
+
+  @@id([userId, channelType])
+}
+
+model Channel {
+  channelType ChannelType @id
+  name        String      @unique
+  messageType MessageType
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  accounts          Account[]
+  notificationTasks NotificationTask[]
+  userPreferences   UserPreference[]
+}
+
+model Application {
+  id              Int      @id @default(autoincrement())
+  name            String
+  description     String
+  apiKey          String   @unique
+  isEnabled       Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  createdByUserId String
+  updatedAt       DateTime @updatedAt
+  updatedByUserId String
+
+  createdByUser          User                   @relation(fields: [createdByUserId], references: [id], name: "applicationCreatedUser")
+  updatedByUser          User                   @relation(fields: [updatedByUserId], references: [id], name: "applicationUpdatedUser")
+  notificationCategories NotificationCategory[]
+  notification           Notification[]
+}
+
+model NotificationCategory {
+  id              Int      @id @default(autoincrement())
+  applicationId   Int
+  name            String   @unique
+  createdAt       DateTime @default(now())
+  createdByUserId String
+  updatedAt       DateTime @updatedAt
+  updatedByUserId String
+
+  createdUser     User             @relation(fields: [createdByUserId], references: [id], name: "notificationCategoryCreatedUser")
+  updatedUser     User             @relation(fields: [updatedByUserId], references: [id], name: "notificationCategoryUpdatedUser")
+  application     Application      @relation(fields: [applicationId], references: [id])
+  userPreferences UserPreference[]
+  notifications   Notification[]
+}
+
+model Notification {
+  id                     Int      @id @default(autoincrement())
+  applicationId          Int
+  notificationCategoryId Int
+  templateId             Int
+  templateData           String
+  priority               Priority
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  application            Application             @relation(fields: [applicationId], references: [id])
+  notificationCategory   NotificationCategory    @relation(fields: [notificationCategoryId], references: [id])
+  template               Template                @relation(fields: [templateId], references: [id])
+  notificationTasks      NotificationTask[]
+  compiledMessages       CompiledMessage[]
+  notificationRecipients NotificationRecipient[]
+}
+
+model NotificationRecipient {
+  notificationId Int
+  userId         String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  notification Notification @relation(fields: [notificationId], references: [id])
+  user         User         @relation(fields: [userId], references: [id])
+
+  @@id([notificationId, userId])
+}
+
+model CompiledMessage {
+  notificationId  Int
+  templateId      Int
+  messageType     MessageType
+  compiledMessage String
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  notification      Notification       @relation(fields: [notificationId], references: [id])
+  compiledTemplate  CompiledTemplate   @relation(fields: [templateId, messageType], references: [templateId, messageType])
+  notificationTasks NotificationTask[]
+
+  @@id([notificationId, templateId, messageType])
+}
+
+model NotificationTask {
+  channelType     ChannelType
+  userId          String
+  notificationId  Int
+  templateId      Int
+  messageType     MessageType
+  priority        Priority
+  sentStatus      SentStatus  @default(PENDING)
+  sentTimestamp   DateTime?
+  failedTimestamp DateTime?
+  retryCount      Int         @default(0)
+  retryLimit      Int
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  channel         Channel         @relation(fields: [channelType], references: [channelType])
+  user            User            @relation(fields: [userId], references: [id])
+  notification    Notification    @relation(fields: [notificationId], references: [id])
+  template        Template        @relation(fields: [templateId], references: [id])
+  compiledMessage CompiledMessage @relation(fields: [notificationId, templateId, messageType], references: [notificationId, templateId, messageType])
+
+  @@id([channelType, userId, notificationId, templateId, messageType])
+}
+
+model Template {
+  id              Int      @id @default(autoincrement())
+  name            String
+  description     String
+  template        String
+  createdAt       DateTime @default(now())
+  createdByUserId String
+  updatedAt       DateTime @updatedAt
+  updatedByUserId String
+
+  compiledTemplates   CompiledTemplate[]
+  notification        Notification[]
+  notificationTask    NotificationTask[]
+  createdByUserIdUser User               @relation(fields: [createdByUserId], references: [id], name: "templatecreatedByUserIdUser")
+  updatedByUserIdUser User               @relation(fields: [updatedByUserId], references: [id], name: "templateupdatedByUserIdUser")
+}
+
+model CompiledTemplate {
+  templateId       Int
+  messageType      MessageType
+  compiledTemplate String
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  template         Template          @relation(fields: [templateId], references: [id])
+  compiledMessages CompiledMessage[]
+
+  @@id([templateId, messageType])
+}
+
+model UserPreference {
+  userId                 String
+  notificationCategoryId Int
+  channelType            ChannelType
+  isPreferred            Boolean
+  createdAt              DateTime    @default(now())
+  updatedAt              DateTime    @updatedAt
+
+  user                 User                 @relation(fields: [userId], references: [id])
+  notificationCategory NotificationCategory @relation(fields: [notificationCategoryId], references: [id])
+  channel              Channel              @relation(fields: [channelType], references: [channelType])
+
+  @@id([userId, channelType, notificationCategoryId])
+}
+
+enum MessageType {
+  HTML
+  MARKDOWN
+  TEXT
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum SentStatus {
+  PENDING
+  RETRY
+  SENT
+  FAILED
+}
+
+enum ChannelType {
+  EMAIL
+  SMS
+  WEB_PUSH
+  DISCORD
+}

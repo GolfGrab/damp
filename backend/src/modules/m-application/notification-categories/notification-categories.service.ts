@@ -1,0 +1,63 @@
+import { Injectable } from '@nestjs/common';
+import { CreateNotificationCategoryDto } from './dto/create-notification-category.dto';
+import { UpdateNotificationCategoryDto } from './dto/update-notification-category.dto';
+import { PrismaService } from 'nestjs-prisma';
+
+@Injectable()
+export class NotificationCategoriesService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  create(
+    applicationId: number,
+    createNotificationCategoryDto: CreateNotificationCategoryDto,
+  ) {
+    return this.prisma.notificationCategory.create({
+      data: {
+        ...createNotificationCategoryDto,
+        applicationId,
+        createdByUserId: 'user-id', // TODO: Use the current user ID,
+        updatedByUserId: 'user-id', // TODO: Use the current user ID
+      },
+    });
+  }
+
+  findAll() {
+    return this.prisma.notificationCategory.findMany();
+  }
+
+  findAllByApplicationId(applicationId: number) {
+    return this.prisma.notificationCategory.findMany({
+      where: {
+        applicationId,
+      },
+    });
+  }
+
+  findOne(id: number) {
+    return this.prisma.notificationCategory.findUniqueOrThrow({
+      where: {
+        id,
+      },
+    });
+  }
+
+  update(
+    id: number,
+    updateNotificationCategoryDto: UpdateNotificationCategoryDto,
+  ) {
+    return this.prisma.notificationCategory.update({
+      where: {
+        id,
+      },
+      data: updateNotificationCategoryDto,
+    });
+  }
+
+  remove(id: number) {
+    return this.prisma.notificationCategory.delete({
+      where: {
+        id,
+      },
+    });
+  }
+}
