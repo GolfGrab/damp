@@ -15,7 +15,7 @@ export class TemplatesService {
         updatedByUserId: 'user-id',
         ...createTemplateDto,
         compiledTemplates: {
-          // TODO: Separate this into a separate service with real logic
+          // TODO: KATID Separate this into a separate service with real logic
           createMany: {
             data: [
               {
@@ -57,7 +57,7 @@ export class TemplatesService {
       where: {
         id,
       },
-      data: updateTemplateDto,
+      data: updateTemplateDto, // TODO: KATID Add compiledTemplates
     });
   }
 

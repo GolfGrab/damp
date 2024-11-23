@@ -17,7 +17,7 @@ export class NotificationsService {
     });
 
     const compiledMessages = compiledTemplates.map((compiledTemplate) => {
-      // TODO: implement template compiler module
+      // TODO: Katid implement template compiler module
       return {
         templateId: compiledTemplate.templateId,
         messageType: compiledTemplate.messageType,
