@@ -11,8 +11,6 @@ export class TemplatesService {
   create(createTemplateDto: CreateTemplateDto) {
     return this.prisma.template.create({
       data: {
-        createdByUserId: 'user-id',
-        updatedByUserId: 'user-id',
         ...createTemplateDto,
         compiledTemplates: {
           // TODO: KATID Separate this into a separate service with real logic

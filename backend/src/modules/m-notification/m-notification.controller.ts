@@ -14,7 +14,9 @@ import { TemplatesService } from './templates/templates.service';
 import { CreateTemplateDto } from './templates/dto/create-template.dto';
 import { Template } from './templates/entities/template.entity';
 import { UpdateTemplateDto } from './templates/dto/update-template.dto';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Notification Module')
 @Controller('m-notification')
 export class MNotificationController {
   constructor(
@@ -60,11 +62,16 @@ export class MNotificationController {
    * Notifications
    **/
 
+  @ApiResponse({
+    status: 201,
+    description: 'The record has been successfully created.',
+    type: Notification,
+  })
   @Post('applications/:applicationId/notifications')
   createNotification(
     @Param('applicationId') applicationId: number,
     @Body() createNotificationDto: CreateNotificationDto,
-  ): Promise<Notification> {
+  ): Promise<Notification | null> {
     return this.notificationsService.create(
       applicationId,
       createNotificationDto,

@@ -15,8 +15,6 @@ export class NotificationCategoriesService {
       data: {
         ...createNotificationCategoryDto,
         applicationId,
-        createdByUserId: 'user-id', // TODO: Use the current user ID,
-        updatedByUserId: 'user-id', // TODO: Use the current user ID
       },
     });
   }

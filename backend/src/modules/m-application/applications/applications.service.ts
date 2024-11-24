@@ -12,8 +12,6 @@ export class ApplicationsService {
       data: {
         ...createApplicationDto,
         apiKey: crypto.getRandomValues(new Uint8Array(16)).join(''),
-        createdByUserId: 'user-id-1', // TODO: Use the current user ID
-        updatedByUserId: 'user-id-1', // TODO: Use the current user ID
       },
     });
   }

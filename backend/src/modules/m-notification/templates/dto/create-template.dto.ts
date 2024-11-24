@@ -19,4 +19,16 @@ export class CreateTemplateDto {
     type: String,
   })
   template: string;
+
+  @IsString()
+  @ApiProperty({
+    type: String,
+  })
+  createdByUserId: string; // TODO: Use the current user ID
+
+  @IsString()
+  @ApiProperty({
+    type: String,
+  })
+  updatedByUserId: string; // TODO: Use the current user ID
 }

@@ -1,0 +1,222 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table User {
+  id String [pk]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  deletedAt DateTime
+  deletedByUserId String
+}
+
+Table Account {
+  userId String [not null]
+  channelType ChannelType [not null]
+  channelToken String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (userId, channelType) [pk]
+  }
+}
+
+Table Channel {
+  channelType ChannelType [pk]
+  name String [unique, not null]
+  messageType MessageType [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table Application {
+  id Int [pk, increment]
+  name String [not null]
+  description String [not null]
+  apiKey String [unique, not null]
+  isEnabled Boolean [not null, default: true]
+  createdAt DateTime [default: `now()`, not null]
+  createdByUserId String [not null]
+  updatedAt DateTime [not null]
+  updatedByUserId String [not null]
+}
+
+Table NotificationCategory {
+  id Int [pk, increment]
+  applicationId Int [not null]
+  name String [unique, not null]
+  createdAt DateTime [default: `now()`, not null]
+  createdByUserId String [not null]
+  updatedAt DateTime [not null]
+  updatedByUserId String [not null]
+}
+
+Table Notification {
+  id Int [pk, increment]
+  applicationId Int [not null]
+  notificationCategoryId Int [not null]
+  templateId Int [not null]
+  templateData String [not null]
+  priority Priority [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table NotificationRecipient {
+  notificationId Int [not null]
+  userId String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (notificationId, userId) [pk]
+  }
+}
+
+Table CompiledMessage {
+  notificationId Int [not null]
+  templateId Int [not null]
+  messageType MessageType [not null]
+  compiledMessage String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (notificationId, templateId, messageType) [pk]
+  }
+}
+
+Table NotificationTask {
+  channelType ChannelType [not null]
+  userId String [not null]
+  notificationId Int [not null]
+  templateId Int [not null]
+  messageType MessageType [not null]
+  priority Priority [not null]
+  sentStatus SentStatus [not null, default: 'PENDING']
+  sentTimestamp DateTime
+  failedTimestamp DateTime
+  retryCount Int [not null, default: 0]
+  retryLimit Int [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (channelType, userId, notificationId, templateId, messageType) [pk]
+  }
+}
+
+Table Template {
+  id Int [pk, increment]
+  name String [not null]
+  description String [not null]
+  template String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  createdByUserId String [not null]
+  updatedAt DateTime [not null]
+  updatedByUserId String [not null]
+}
+
+Table CompiledTemplate {
+  templateId Int [not null]
+  messageType MessageType [not null]
+  compiledTemplate String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (templateId, messageType) [pk]
+  }
+}
+
+Table UserPreference {
+  userId String [not null]
+  notificationCategoryId Int [not null]
+  channelType ChannelType [not null]
+  isPreferred Boolean [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (userId, channelType, notificationCategoryId) [pk]
+  }
+}
+
+Enum MessageType {
+  HTML
+  MARKDOWN
+  TEXT
+}
+
+Enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+Enum SentStatus {
+  PENDING
+  RETRY
+  SENT
+  FAILED
+}
+
+Enum ChannelType {
+  EMAIL
+  SMS
+  WEB_PUSH
+  DISCORD
+}
+
+Ref: User.deletedByUserId > User.id
+
+Ref: Account.userId > User.id
+
+Ref: Account.channelType > Channel.channelType
+
+Ref: Application.createdByUserId > User.id
+
+Ref: Application.updatedByUserId > User.id
+
+Ref: NotificationCategory.createdByUserId > User.id
+
+Ref: NotificationCategory.updatedByUserId > User.id
+
+Ref: NotificationCategory.applicationId > Application.id
+
+Ref: Notification.applicationId > Application.id
+
+Ref: Notification.notificationCategoryId > NotificationCategory.id
+
+Ref: Notification.templateId > Template.id
+
+Ref: NotificationRecipient.notificationId > Notification.id
+
+Ref: NotificationRecipient.userId > User.id
+
+Ref: CompiledMessage.notificationId > Notification.id
+
+Ref: CompiledMessage.(templateId, messageType) > CompiledTemplate.(templateId, messageType)
+
+Ref: NotificationTask.channelType > Channel.channelType
+
+Ref: NotificationTask.userId > User.id
+
+Ref: NotificationTask.notificationId > Notification.id
+
+Ref: NotificationTask.templateId > Template.id
+
+Ref: NotificationTask.(notificationId, templateId, messageType) > CompiledMessage.(notificationId, templateId, messageType)
+
+Ref: Template.createdByUserId > User.id
+
+Ref: Template.updatedByUserId > User.id
+
+Ref: CompiledTemplate.templateId > Template.id
+
+Ref: UserPreference.userId > User.id
+
+Ref: UserPreference.notificationCategoryId > NotificationCategory.id
+
+Ref: UserPreference.channelType > Channel.channelType

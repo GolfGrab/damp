@@ -20,7 +20,9 @@ import { UpdateUserPreferenceDto } from './user-preferences/dto/update-user-pref
 import { User } from './users/entities/user.entity';
 import { Account } from './accounts/entities/account.entity';
 import { UserPreference } from './user-preferences/entities/user-preference.entity';
+import { ApiParam, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('User Module')
 @Controller('m-user')
 export class MUserController {
   constructor(
@@ -65,6 +67,10 @@ export class MUserController {
    * Accounts
    **/
 
+  @ApiParam({
+    name: 'channelType',
+    enum: prisma.$Enums.ChannelType,
+  })
   @Post('users/:userId/channel/:channelType/accounts')
   createAccount(
     @Param('userId') userId: string,
@@ -115,6 +121,10 @@ export class MUserController {
    * User Preferences
    **/
 
+  @ApiParam({
+    name: 'channelType',
+    enum: prisma.$Enums.ChannelType,
+  })
   @Post(
     'users/:userId/channel/:channelType/notification-categories/:notificationCategoryId/user-preferences',
   )
