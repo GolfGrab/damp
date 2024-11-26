@@ -1,19 +1,20 @@
+import "@/styles/globals.css";
+import { AppCacheProvider } from "@mui/material-nextjs/v15-pagesRouter";
 import { GeistSans } from "geist/font/sans";
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
 
-import "@/styles/globals.css";
-
-const MyApp: AppType<{ session: Session | null }> = ({
-  Component,
-  pageProps: { session, ...pageProps },
-}) => {
+const MyApp: AppType<{ session: Session | null }> = (props) => {
+  const { Component, pageProps: tmpPageProps } = props;
+  const { session, ...pageProps } = tmpPageProps;
   return (
     <SessionProvider session={session}>
-      <div className={GeistSans.className}>
-        <Component {...pageProps} />
-      </div>
+      <AppCacheProvider {...props}>
+        <div className={GeistSans.className}>
+          <Component {...pageProps} />
+        </div>
+      </AppCacheProvider>
     </SessionProvider>
   );
 };
