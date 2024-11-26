@@ -1,8 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { PrismaService } from 'nestjs-prisma';
 import { ClientProxy, RmqRecordBuilder } from '@nestjs/microservices';
 import { $Enums } from '@prisma/client';
+import { inspect } from 'util';
 
 const priorityMap = {
   [$Enums.Priority.LOW]: 1,
@@ -13,13 +14,19 @@ const priorityMap = {
 export class NotificationsService {
   constructor(
     private readonly prisma: PrismaService,
-    @Inject('ChannelSenderService') private channelSenderClient: ClientProxy,
+    @Inject('NotificationQueueClient') private notificationQueueClient: ClientProxy,
   ) {}
+
+  private readonly logger = new Logger(NotificationsService.name);
 
   async create(
     applicationId: number,
     createNotificationDto: CreateNotificationDto,
   ) {
+    this.logger.log('Creating notification: ' + inspect(createNotificationDto));
+    this.logger.log('applicationId ' + applicationId);
+
+    this.logger.log('get userPreferences');
     const userPreferences = (
       await this.prisma.notificationCategory.findUniqueOrThrow({
         where: {
@@ -39,9 +46,11 @@ export class NotificationsService {
     ).userPreferences;
 
     if (userPreferences.length === 0) {
+      this.logger.log('No user preferences to send notification');
       return null;
     }
 
+    this.logger.log('get compiledTemplates');
     const compiledTemplates = (
       await this.prisma.template.findUniqueOrThrow({
         where: {
@@ -53,6 +62,8 @@ export class NotificationsService {
       })
     ).compiledTemplates;
 
+    this.logger.log('compiledTemplates ' + inspect(compiledTemplates));
+    this.logger.log('create compiledMessages');
     const compiledMessages = compiledTemplates.map((compiledTemplate) => {
       // TODO: Katid implement template compiler module
       return {
@@ -65,6 +76,7 @@ export class NotificationsService {
       };
     });
 
+    this.logger.log('get channels');
     const channels = await this.prisma.channel.findMany({
       where: {
         accounts: {
@@ -90,6 +102,8 @@ export class NotificationsService {
       },
     });
 
+    this.logger.log('channels ' + inspect(channels));
+    this.logger.log('create notification tasks');
     const notifications = await this.prisma.notification.create({
       data: {
         applicationId,
@@ -137,6 +151,9 @@ export class NotificationsService {
       },
     });
 
+    this.logger.log('notifications ' + inspect(notifications));
+
+    this.logger.log('Emitting notification task events');
     for (const notificationTask of notifications.notificationTasks) {
       const record = new RmqRecordBuilder(JSON.stringify(notificationTask))
         .setOptions({
@@ -144,8 +161,10 @@ export class NotificationsService {
         })
         .build();
 
-      this.channelSenderClient.emit(notificationTask.channelType, record);
+      this.notificationQueueClient.emit(notificationTask.channelType, record);
     }
+
+    this.logger.log('Notification tasks emitted');
 
     return notifications;
   }

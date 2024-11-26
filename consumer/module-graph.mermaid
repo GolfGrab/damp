@@ -1,2 +1,8 @@
 flowchart TD
   AppModule-->MNotificationSendersModule
+  MNotificationSendersModule-->ClientsModule
+  ClientsModule-->ConfigModule
+  ConfigModule-->ConfigHostModule
+  ClientsModule-->ConfigHostModule
+  MNotificationSendersModule-->ConfigHostModule
+  AppModule-->ConfigHostModule

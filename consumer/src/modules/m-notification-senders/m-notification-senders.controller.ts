@@ -12,11 +12,11 @@ export class MNotificationSendersController {
   ) {}
 
   @MessagePattern($Enums.ChannelType.EMAIL)
-  emailConsumer(
+  async emailConsumer(
     @Payload()
     data: NotificationTaskMessageDto,
   ) {
     console.log('Received email task:', data);
-    return this.mNotificationSendersService.sendEmail(data);
+    await this.mNotificationSendersService.sendEmailNotification(data);
   }
 }

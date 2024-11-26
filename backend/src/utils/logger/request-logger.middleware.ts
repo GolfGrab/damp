@@ -6,24 +6,24 @@ export class RequestLoggerMiddleware implements NestMiddleware {
   private readonly logger = new Logger('RequestLogger');
 
   use(req: FastifyRequest['raw'], res: FastifyReply['raw'], next: () => void) {
+    const startTime = Date.now();
+    const getLogMessage = () =>
+      `[${req.method}] ${req.url} - ${res.statusCode} - [${
+        Date.now() - startTime
+      }ms] - ${res.statusMessage}}`;
+
     res.on('finish', () => {
       const statusCode = res.statusCode;
       if (statusCode >= 500) {
-        this.logger.error(
-          `[${req.method}] ${req.url} - ${statusCode} - ${res.statusMessage}}`,
-        );
+        this.logger.error(getLogMessage());
       }
 
       if (statusCode >= 400 && statusCode < 500) {
-        this.logger.warn(
-          `[${req.method}] ${req.url} - ${statusCode} - ${res.statusMessage}}`,
-        );
+        this.logger.warn(getLogMessage());
       }
 
       if (statusCode < 400) {
-        this.logger.log(
-          `[${req.method}] ${req.url} - ${statusCode} - ${res.statusMessage}`,
-        );
+        this.logger.log(getLogMessage());
       }
     });
 

@@ -11,7 +11,7 @@ import { Config } from '@/utils/config/config-dto';
     ClientsModule.registerAsync([
       {
         imports: [ConfigModule],
-        name: 'ChannelSenderService',
+        name: 'NotificationQueueClient',
         useFactory: (config: Config) => ({
           transport: Transport.RMQ,
           options: {
