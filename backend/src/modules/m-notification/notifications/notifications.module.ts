@@ -1,8 +1,8 @@
-import { Module } from '@nestjs/common';
-import { NotificationsService } from './notifications.service';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { ConfigModule } from '@nestjs/config';
 import { Config } from '@/utils/config/config-dto';
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { NotificationsService } from './notifications.service';
 
 @Module({
   providers: [NotificationsService],

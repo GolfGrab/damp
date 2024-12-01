@@ -1,9 +1,9 @@
-import { Module } from '@nestjs/common';
-import { MNotificationSendersService } from './m-notification-senders.service';
-import { MNotificationSendersController } from './m-notification-senders.controller';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { ConfigModule } from '@nestjs/config';
 import { Config } from '@/utils/config/config-dto';
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { MNotificationSendersController } from './m-notification-senders.controller';
+import { MNotificationSendersService } from './m-notification-senders.service';
 
 @Module({
   controllers: [MNotificationSendersController],
