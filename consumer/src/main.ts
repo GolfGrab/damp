@@ -28,16 +28,18 @@ async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AppModule,
     {
-      transport: Transport.RMQ,
-      options: {
-        urls: [config.QUEUE_URL],
-        queue: config.QUEUE_NAME,
-        queueOptions: {
-          durable: true,
-        },
+    transport: Transport.RMQ,
+    options: {
+      urls: [config.QUEUE_URL],
+      queue: config.QUEUE_NAME,
+      queueOptions: {
+        durable: true,
       },
+      prefetchCount: 1,
+      isGlobalPrefetchCount: true,
+      noAck: false,
     },
-  );
+  });
 
   app.useGlobalPipes(
     new ParseJsonPipe(),

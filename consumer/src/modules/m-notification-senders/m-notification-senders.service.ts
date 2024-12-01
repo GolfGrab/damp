@@ -1,9 +1,9 @@
-import { $Enums } from '@prisma/client';
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from 'nestjs-prisma';
-import { NotificationTaskMessageDto } from './dto/notification-task-message.dto';
 import { ClientProxy, RmqRecordBuilder } from '@nestjs/microservices';
+import { $Enums } from '@prisma/client';
+import { PrismaService } from 'nestjs-prisma';
 import { inspect } from 'util';
+import { NotificationTaskMessageDto } from './dto/notification-task-message.dto';
 
 const priorityMap = {
   [$Enums.Priority.LOW]: 1,
@@ -134,7 +134,7 @@ export class MNotificationSendersService {
       ({ recipientAddress, compiledMessage }) => {
         this.logger.log('sending email to: ' + recipientAddress);
         this.logger.log('message: ' + compiledMessage);
-        if (Math.random() < 0.2) {
+        if (Math.random() < 0.8) {
           // TODO: Replace with actual email sending logic
           return Promise.resolve();
         } else {

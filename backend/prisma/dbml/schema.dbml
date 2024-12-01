@@ -166,7 +166,7 @@ Enum ChannelType {
   EMAIL
   SMS
   WEB_PUSH
-  DISCORD
+  SLACK
 }
 
 Ref: User.deletedByUserId > User.id

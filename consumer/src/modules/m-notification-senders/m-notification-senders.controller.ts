@@ -1,6 +1,11 @@
 import { RateLimitInterceptor } from '@/utils/rate-limitter/rate-limit.interceptor';
 import { Controller, Logger, UseInterceptors } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import {
+  Ctx,
+  MessagePattern,
+  Payload,
+  RmqContext,
+} from '@nestjs/microservices';
 import { $Enums } from '@prisma/client';
 import { NotificationTaskMessageDto } from './dto/notification-task-message.dto';
 import { MNotificationSendersService } from './m-notification-senders.service';
@@ -16,30 +21,21 @@ export class MNotificationSendersController {
   @UseInterceptors(
     new RateLimitInterceptor($Enums.ChannelType.EMAIL, {
       quota: 1,
-      timeWindowMs: 5000,
+      timeWindowMs: 3000,
     }),
   )
   @MessagePattern($Enums.ChannelType.EMAIL)
   async emailConsumer(
-    @Payload()
-    data: NotificationTaskMessageDto,
+    @Payload() data: NotificationTaskMessageDto,
+    @Ctx() context: RmqContext,
   ) {
     this.logger.warn('Received email task:', data);
     await this.mNotificationSendersService.sendEmailNotification(data);
-  }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
 
-  // @UseInterceptors(
-  //   new RateLimitInterceptor($Enums.ChannelType.SMS, {
-  //     quota: 3,
-  //     timeWindowMs: 5000,
-  //   }),
-  // )
-  // @MessagePattern($Enums.ChannelType.SMS)
-  // async smsConsumer(
-  //   @Payload()
-  //   data: NotificationTaskMessageDto,
-  // ) {
-  //   console.log('Received sms task:', data);
-  //   await this.mNotificationSendersService.sendSmsNotification(data);
-  // }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    channel.ack(originalMsg);
+  }
 }
