@@ -1,3 +1,4 @@
+import { Config } from '@/utils/config/config-dto';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ClientProxy, RmqRecordBuilder } from '@nestjs/microservices';
 import { $Enums } from '@prisma/client';
@@ -15,6 +16,8 @@ const priorityMap = {
 export class NotificationsService {
   constructor(
     private readonly prisma: PrismaService,
+
+    private readonly config: Config,
 
     @Inject(`NotificationQueueClient${$Enums.ChannelType.EMAIL}`)
     private notificationQueueClientEMAIL: ClientProxy,
@@ -148,7 +151,9 @@ export class NotificationsService {
                         userId: account.userId,
                         channelType: account.channelType,
                         priority: createNotificationDto.priority,
-                        retryLimit: 0, // set retry limit in consumer
+                        retryLimit: Number(
+                          this.config[`${account.channelType}_RETRY_LIMIT`],
+                        ),
                         retryCount: 0,
                       })),
                     ),

@@ -4,7 +4,6 @@ import { ClientProxy, RmqRecordBuilder } from '@nestjs/microservices';
 import { $Enums } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 import * as nodemailer from 'nodemailer';
-import { inspect } from 'util';
 import { NotificationTaskMessageDto } from './dto/notification-task-message.dto';
 
 const priorityMap = {
@@ -15,6 +14,8 @@ const priorityMap = {
 
 @Injectable()
 export class MNotificationSendersService {
+  private readonly logger = new Logger(MNotificationSendersService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly config: Config,
@@ -22,23 +23,77 @@ export class MNotificationSendersService {
     private notificationQueueClient: ClientProxy,
   ) {}
 
-  private readonly logger = new Logger(MNotificationSendersService.name);
+  private readonly emailTransporter = nodemailer.createTransport({
+    host: this.config.EMAIL_HOST,
+    port: this.config.EMAIL_PORT,
+    ...(this.config.EMAIL_AUTH_USER && this.config.EMAIL_AUTH_PASS
+      ? {
+          auth: {
+            user: this.config.EMAIL_AUTH_USER,
+            pass: this.config.EMAIL_AUTH_PASS,
+          },
+        }
+      : {}),
+  });
 
-  async processTask(
+  async sendEmailNotification(
+    notificationTask: NotificationTaskMessageDto,
+  ): Promise<void> {
+    this.logger.log('Processing email task...');
+    await this.processTask(notificationTask, this.sendEmail);
+  }
+
+  private sendEmail = async ({
+    recipientAddress,
+    compiledMessage,
+    title,
+  }: MessageData): Promise<void> => {
+    this.logger.log(`Sending email to: ${recipientAddress}`);
+    this.logger.log(`Message: ${compiledMessage}`);
+
+    await this.emailTransporter.sendMail({
+      from: this.config.EMAIL_FROM,
+      to: recipientAddress,
+      subject: title,
+      text: compiledMessage,
+    });
+
+    this.logger.log('Email sent');
+  };
+
+  private async processTask(
     notificationTask: NotificationTaskMessageDto,
     sendNotification: (messageData: MessageData) => Promise<void>,
   ) {
-    const recipientAddress = (
-      await this.prisma.account.findUniqueOrThrow({
-        where: {
-          userId_channelType: {
-            userId: notificationTask.userId,
-            channelType: notificationTask.channelType,
-          },
-        },
-      })
-    ).channelToken;
+    const recipientAddress = await this.getRecipientAddress(notificationTask);
+    const { compiledMessage, title } =
+      await this.getMessageDetails(notificationTask);
 
+    try {
+      await sendNotification({ recipientAddress, compiledMessage, title });
+      await this.updateTaskStatus(notificationTask, 'SENT');
+    } catch (error) {
+      await this.handleTaskError(notificationTask, error);
+    }
+  }
+
+  private async getRecipientAddress(
+    notificationTask: NotificationTaskMessageDto,
+  ): Promise<string> {
+    const account = await this.prisma.account.findUniqueOrThrow({
+      where: {
+        userId_channelType: {
+          userId: notificationTask.userId,
+          channelType: notificationTask.channelType,
+        },
+      },
+    });
+    return account.channelToken;
+  }
+
+  private async getMessageDetails(
+    notificationTask: NotificationTaskMessageDto,
+  ): Promise<{ compiledMessage: string; title: string | undefined }> {
     const compiledMessage = (
       await this.prisma.compiledMessage.findUniqueOrThrow({
         where: {
@@ -63,115 +118,76 @@ export class MNotificationSendersService {
       })
     ).compiledMessage.split('\\n')[0];
 
-    try {
-      await sendNotification({ recipientAddress, compiledMessage, title });
-      await this.prisma.notificationTask.update({
-        where: {
-          channelType_userId_notificationId_templateId_messageType: {
-            channelType: notificationTask.channelType,
-            userId: notificationTask.userId,
-            notificationId: notificationTask.notificationId,
-            templateId: notificationTask.templateId,
-            messageType: notificationTask.messageType,
-          },
+    return { compiledMessage, title };
+  }
+
+  private async updateTaskStatus(
+    notificationTask: NotificationTaskMessageDto,
+    status: 'SENT' | 'FAILED',
+  ): Promise<void> {
+    await this.prisma.notificationTask.update({
+      where: {
+        channelType_userId_notificationId_templateId_messageType: {
+          channelType: notificationTask.channelType,
+          userId: notificationTask.userId,
+          notificationId: notificationTask.notificationId,
+          templateId: notificationTask.templateId,
+          messageType: notificationTask.messageType,
         },
-        data: {
-          sentStatus: 'SENT',
-          sentTimestamp: new Date(),
-        },
-      });
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        this.logger.error('Failed to send notification: ' + error.message);
+      },
+      data: {
+        sentStatus: status,
+        sentTimestamp: status === 'SENT' ? new Date() : undefined,
+        failedTimestamp: status === 'FAILED' ? new Date() : undefined,
+      },
+    });
+  }
 
-        if (notificationTask.retryCount >= notificationTask.retryLimit) {
-          this.logger.error(
-            'Retry limit exhausted for task: ' + inspect(notificationTask),
-          );
-          await this.prisma.notificationTask.update({
-            where: {
-              channelType_userId_notificationId_templateId_messageType: {
-                channelType: notificationTask.channelType,
-                userId: notificationTask.userId,
-                notificationId: notificationTask.notificationId,
-                templateId: notificationTask.templateId,
-                messageType: notificationTask.messageType,
-              },
-            },
-            data: {
-              retryCount: notificationTask.retryCount + 1,
-              retryLimit: notificationTask.retryLimit,
-              sentStatus: 'FAILED',
-              failedTimestamp: new Date(),
-            },
-          });
-          return;
-        }
+  private async handleTaskError(
+    notificationTask: NotificationTaskMessageDto,
+    error: unknown,
+  ): Promise<void> {
+    if (error instanceof Error) {
+      this.logger.error(`Failed to send notification: ${error.message}`);
 
-        const newNotificationTask = await this.prisma.notificationTask.update({
-          where: {
-            channelType_userId_notificationId_templateId_messageType: {
-              channelType: notificationTask.channelType,
-              userId: notificationTask.userId,
-              notificationId: notificationTask.notificationId,
-              templateId: notificationTask.templateId,
-              messageType: notificationTask.messageType,
-            },
-          },
-          data: {
-            retryCount: notificationTask.retryCount + 1,
-            retryLimit: notificationTask.retryLimit,
-          },
-        });
-
-        const record = new RmqRecordBuilder(JSON.stringify(newNotificationTask))
-          .setOptions({
-            priority: priorityMap[notificationTask.priority],
-          })
-          .build();
-
-        this.notificationQueueClient.emit(notificationTask.channelType, record);
+      if (notificationTask.retryCount >= notificationTask.retryLimit) {
+        this.logger.error(
+          `Retry limit exhausted for task: ${JSON.stringify(notificationTask)}`,
+        );
+        await this.updateTaskStatus(notificationTask, 'FAILED');
+        return;
       }
+
+      await this.retryTask(notificationTask);
     }
   }
 
-  emailTransporter = nodemailer.createTransport({
-    host: this.config.EMAIL_HOST,
-    port: this.config.EMAIL_PORT,
-    ...(this.config.EMAIL_AUTH_USER && this.config.EMAIL_AUTH_PASS
-      ? {
-          auth: {
-            user: this.config.EMAIL_AUTH_USER,
-            pass: this.config.EMAIL_AUTH_PASS,
-          },
-        }
-      : {}),
-  });
-
-  async sendEmailNotification(
+  private async retryTask(
     notificationTask: NotificationTaskMessageDto,
   ): Promise<void> {
-    this.logger.log('processing email task: ');
-    await this.processTask(
-      {
-        ...notificationTask,
-        retryLimit:
-          notificationTask.retryLimit === 0
-            ? this.config.EMAIL_RETRY_LIMIT
-            : notificationTask.retryLimit,
+    const updatedTask = await this.prisma.notificationTask.update({
+      where: {
+        channelType_userId_notificationId_templateId_messageType: {
+          channelType: notificationTask.channelType,
+          userId: notificationTask.userId,
+          notificationId: notificationTask.notificationId,
+          templateId: notificationTask.templateId,
+          messageType: notificationTask.messageType,
+        },
       },
-      async ({ recipientAddress, compiledMessage, title }) => {
-        this.logger.log('sending email to: ' + recipientAddress);
-        this.logger.log('message: ' + compiledMessage);
-        await this.emailTransporter.sendMail({
-          from: this.config.EMAIL_FROM,
-          to: recipientAddress,
-          subject: title,
-          text: compiledMessage,
-        });
-        this.logger.log('email sent');
+      data: {
+        retryCount: notificationTask.retryCount + 1,
+        retryLimit: notificationTask.retryLimit,
       },
-    );
+    });
+
+    const record = new RmqRecordBuilder(JSON.stringify(updatedTask))
+      .setOptions({
+        priority: priorityMap[notificationTask.priority],
+      })
+      .build();
+
+    this.notificationQueueClient.emit(notificationTask.channelType, record);
   }
 }
 

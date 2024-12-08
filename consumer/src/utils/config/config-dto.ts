@@ -3,7 +3,6 @@ import { Type } from 'class-transformer';
 import {
   IsEnum,
   IsInt,
-  IsNumber,
   IsOptional,
   IsString,
   IsUUID,
@@ -52,8 +51,4 @@ export class Config {
 
   @IsString()
   readonly EMAIL_FROM: string;
-
-  @Type(() => Number)
-  @IsNumber()
-  readonly EMAIL_RETRY_LIMIT: number;
 }
