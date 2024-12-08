@@ -1,3 +1,4 @@
+import { GetApplication, KeyAuth } from '@/auth/auth.decorator';
 import {
   Body,
   Controller,
@@ -6,15 +7,17 @@ import {
   Param,
   Patch,
   Post,
+  UnauthorizedException,
 } from '@nestjs/common';
-import { NotificationsService } from './notifications/notifications.service';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Application } from '@prisma/client';
 import { CreateNotificationDto } from './notifications/dto/create-notification.dto';
 import { Notification } from './notifications/entities/notification.entity';
-import { TemplatesService } from './templates/templates.service';
+import { NotificationsService } from './notifications/notifications.service';
 import { CreateTemplateDto } from './templates/dto/create-template.dto';
-import { Template } from './templates/entities/template.entity';
 import { UpdateTemplateDto } from './templates/dto/update-template.dto';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Template } from './templates/entities/template.entity';
+import { TemplatesService } from './templates/templates.service';
 
 @ApiTags('Notification Module')
 @Controller('m-notification')
@@ -62,6 +65,7 @@ export class MNotificationController {
    * Notifications
    **/
 
+  @KeyAuth()
   @ApiResponse({
     status: 201,
     description: 'The record has been successfully created.',
@@ -71,7 +75,11 @@ export class MNotificationController {
   createNotification(
     @Param('applicationId') applicationId: number,
     @Body() createNotificationDto: CreateNotificationDto,
+    @GetApplication() application: Application,
   ): Promise<Notification | null> {
+    if (application.id !== applicationId) {
+      throw new UnauthorizedException('Invalid application access');
+    }
     return this.notificationsService.create(
       applicationId,
       createNotificationDto,

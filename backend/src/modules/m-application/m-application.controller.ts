@@ -63,6 +63,11 @@ export class MApplicationController {
     return this.applicationsService.update(applicationId, updateApplicationDto);
   }
 
+  @Patch('applications/:applicationId/rotate-api-key')
+  rotateApiKey(@Param('applicationId') applicationId: number) {
+    return this.applicationsService.rotateApiKey(applicationId);
+  }
+
   @Delete('applications/:applicationId')
   removeApplication(@Param('applicationId') applicationId: number) {
     return this.applicationsService.remove(applicationId);
