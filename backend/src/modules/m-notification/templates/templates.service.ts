@@ -1,35 +1,42 @@
 import { Injectable } from '@nestjs/common';
+import { $Enums, MessageType } from '@prisma/client';
+import { PrismaService } from 'nestjs-prisma';
 import { CreateTemplateDto } from './dto/create-template.dto';
 import { UpdateTemplateDto } from './dto/update-template.dto';
-import { PrismaService } from 'nestjs-prisma';
-import { $Enums } from '@prisma/client';
+import { TemplatesParserService } from './template-parser.service';
+import { TemplatesRendererService } from './template-renderer.service';
 
 @Injectable()
 export class TemplatesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly templatesParserService: TemplatesParserService,
+    private readonly templatesRendererService: TemplatesRendererService,
+  ) {}
 
   create(createTemplateDto: CreateTemplateDto) {
+    const compiledTemplates =
+      this.templatesParserService.parseJSONToCompiledTemplates(
+        createTemplateDto.template,
+      );
     return this.prisma.template.create({
       data: {
         ...createTemplateDto,
+        template: JSON.stringify(createTemplateDto.template),
         compiledTemplates: {
-          // TODO: KATID Separate this into a separate service with real logic
           createMany: {
             data: [
               {
                 messageType: $Enums.MessageType.HTML,
-                compiledTemplate:
-                  'compiled-template HTML' + createTemplateDto.template,
+                compiledTemplate: compiledTemplates.HTML,
               },
               {
                 messageType: $Enums.MessageType.MARKDOWN,
-                compiledTemplate:
-                  'compiled-template MARKDOWN' + createTemplateDto.template,
+                compiledTemplate: compiledTemplates.MARKDOWN,
               },
               {
                 messageType: $Enums.MessageType.TEXT,
-                compiledTemplate:
-                  'compiled-template TEXT' + createTemplateDto.template,
+                compiledTemplate: compiledTemplates.TEXT,
               },
             ],
           },
@@ -51,11 +58,54 @@ export class TemplatesService {
   }
 
   update(id: number, updateTemplateDto: UpdateTemplateDto) {
+    const compiledTemplates = updateTemplateDto.template
+      ? this.templatesParserService.parseJSONToCompiledTemplates(
+          updateTemplateDto.template,
+        )
+      : undefined;
     return this.prisma.template.update({
       where: {
         id,
       },
-      data: updateTemplateDto, // TODO: KATID Add compiledTemplates
+      data: {
+        compiledTemplates: {
+          update: [
+            {
+              where: {
+                templateId_messageType: {
+                  messageType: $Enums.MessageType.HTML,
+                  templateId: id,
+                },
+              },
+              data: {
+                compiledTemplate: compiledTemplates?.HTML,
+              },
+            },
+            {
+              where: {
+                templateId_messageType: {
+                  messageType: $Enums.MessageType.MARKDOWN,
+                  templateId: id,
+                },
+              },
+              data: {
+                compiledTemplate: compiledTemplates?.MARKDOWN,
+              },
+            },
+            {
+              where: {
+                templateId_messageType: {
+                  messageType: $Enums.MessageType.TEXT,
+                  templateId: id,
+                },
+              },
+              data: {
+                compiledTemplate: compiledTemplates?.TEXT,
+              },
+            },
+          ],
+        },
+      },
     });
   }
 
@@ -65,5 +115,26 @@ export class TemplatesService {
         id,
       },
     });
+  }
+
+  async render(
+    id: number,
+    messageType: MessageType,
+    data: Record<string, any>,
+  ) {
+    const compiledTemplate =
+      await this.prisma.compiledTemplate.findUniqueOrThrow({
+        where: {
+          templateId_messageType: {
+            messageType,
+            templateId: id,
+          },
+        },
+      });
+
+    return this.templatesRendererService.render(
+      compiledTemplate.compiledTemplate,
+      data,
+    );
   }
 }

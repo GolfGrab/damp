@@ -9,6 +9,6 @@ import { TemplatesService } from './templates.service';
     TemplatesParserService,
     TemplatesRendererService,
   ],
-  exports: [TemplatesService, TemplatesParserService, TemplatesRendererService],
+  exports: [TemplatesService],
 })
 export class TemplatesModule {}

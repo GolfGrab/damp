@@ -142,4 +142,16 @@ export class TemplatesParserService {
       tightLists: true,
     });
   }
+
+  parseJSONToCompiledTemplates(json: JSONContent) {
+    try {
+      return {
+        HTML: this.parseJSONToHTML(json),
+        MARKDOWN: this.parseJSONToMarkdown(json),
+        TEXT: this.parseJSONToText(json),
+      };
+    } catch (e) {
+      throw new Error('Failed to parse JSON to compiled templates: ' + e);
+    }
+  }
 }
