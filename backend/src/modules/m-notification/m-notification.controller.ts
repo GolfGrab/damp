@@ -1,3 +1,4 @@
+import { GetApplication, KeyAuth } from '@/auth/auth.decorator';
 import {
   Body,
   Controller,
@@ -6,9 +7,10 @@ import {
   Param,
   Patch,
   Post,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { MessageType } from '@prisma/client';
+import { Application, MessageType } from '@prisma/client';
 import { CreateNotificationDto } from './notifications/dto/create-notification.dto';
 import { Notification } from './notifications/entities/notification.entity';
 import { NotificationsService } from './notifications/notifications.service';
@@ -77,6 +79,7 @@ export class MNotificationController {
    * Notifications
    **/
 
+  @KeyAuth()
   @ApiResponse({
     status: 201,
     description: 'The record has been successfully created.',
@@ -86,7 +89,11 @@ export class MNotificationController {
   createNotification(
     @Param('applicationId') applicationId: number,
     @Body() createNotificationDto: CreateNotificationDto,
+    @GetApplication() application: Application,
   ): Promise<Notification | null> {
+    if (application.id !== applicationId) {
+      throw new UnauthorizedException('Invalid application access');
+    }
     return this.notificationsService.create(
       applicationId,
       createNotificationDto,

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'nestjs-prisma';
 import { CreateApplicationDto } from './dto/create-application.dto';
 import { UpdateApplicationDto } from './dto/update-application.dto';
-import { PrismaService } from 'nestjs-prisma';
 
 @Injectable()
 export class ApplicationsService {
@@ -11,7 +11,7 @@ export class ApplicationsService {
     return this.prisma.application.create({
       data: {
         ...createApplicationDto,
-        apiKey: crypto.getRandomValues(new Uint8Array(16)).join(''),
+        apiKey: crypto.randomUUID(),
       },
     });
   }
@@ -42,6 +42,17 @@ export class ApplicationsService {
         id: applicationId,
       },
       data: updateApplicationDto,
+    });
+  }
+
+  rotateApiKey(applicationId: number) {
+    return this.prisma.application.update({
+      where: {
+        id: applicationId,
+      },
+      data: {
+        apiKey: crypto.randomUUID(),
+      },
     });
   }
 

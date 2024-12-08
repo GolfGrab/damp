@@ -1,19 +1,13 @@
 import { ParseJsonPipe } from '@/pipe/ParseJson.pipe';
 import { loggerOption } from '@/utils/logger/loggerOption';
-import { generateSwaggerDoc } from '@/utils/swagger';
 import { Logger, ValidationPipe } from '@nestjs/common';
-import { HttpAdapterHost, NestFactory } from '@nestjs/core';
-import {
-  FastifyAdapter,
-  NestFastifyApplication,
-} from '@nestjs/platform-fastify';
-import { WinstonModule } from 'nest-winston';
-import { PrismaClientExceptionFilter } from 'nestjs-prisma';
-import { AppModule } from './app.module';
-import { generateModuleGraph } from './utils/module-graph';
+import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-import { Config } from './utils/config/config-dto';
 import { TypedConfigModule, dotenvLoader } from 'nest-typed-config';
+import { WinstonModule } from 'nest-winston';
+import { AppModule } from './app.module';
+import { Config } from './utils/config/config-dto';
+import { generateModuleGraph } from './utils/module-graph';
 
 async function bootstrap() {
   const logger = WinstonModule.createLogger(loggerOption);
@@ -37,10 +31,13 @@ async function bootstrap() {
       transport: Transport.RMQ,
       options: {
         urls: [config.QUEUE_URL],
-        queue: config.QUEUE_NAME,
+        queue: `${config.QUEUE_PREFIX}-${config.CHANNEL_TYPE}`,
         queueOptions: {
           durable: true,
         },
+        prefetchCount: 1,
+        isGlobalPrefetchCount: true,
+        noAck: false,
       },
     },
   );
@@ -59,6 +56,8 @@ async function bootstrap() {
 
   await app.listen();
   Logger.log('🚀 Consumer is Running');
+  Logger.log(`📡 Channel: ${config.CHANNEL_TYPE}`);
+  Logger.log(`🔗 Queue: ${config.QUEUE_PREFIX}-${config.CHANNEL_TYPE}`);
 }
 
 void bootstrap();

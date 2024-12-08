@@ -1,9 +1,14 @@
-import { Controller, ValidationPipe } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
-import { MNotificationSendersService } from './m-notification-senders.service';
+import { RateLimitInterceptor } from '@/utils/rate-limitter/rate-limit.interceptor';
+import { Controller, Logger, UseInterceptors } from '@nestjs/common';
+import {
+  Ctx,
+  MessagePattern,
+  Payload,
+  RmqContext,
+} from '@nestjs/microservices';
 import { $Enums } from '@prisma/client';
 import { NotificationTaskMessageDto } from './dto/notification-task-message.dto';
-import { ParseJsonPipe } from '@/pipe/ParseJson.pipe';
+import { MNotificationSendersService } from './m-notification-senders.service';
 
 @Controller()
 export class MNotificationSendersController {
@@ -11,12 +16,26 @@ export class MNotificationSendersController {
     private readonly mNotificationSendersService: MNotificationSendersService,
   ) {}
 
+  private readonly logger = new Logger(MNotificationSendersController.name);
+
+  @UseInterceptors(
+    new RateLimitInterceptor($Enums.ChannelType.EMAIL, {
+      quota: 1,
+      timeWindowMs: 3000,
+    }),
+  )
   @MessagePattern($Enums.ChannelType.EMAIL)
   async emailConsumer(
-    @Payload()
-    data: NotificationTaskMessageDto,
+    @Payload() data: NotificationTaskMessageDto,
+    @Ctx() context: RmqContext,
   ) {
-    console.log('Received email task:', data);
+    this.logger.log('Consuming email notification task');
     await this.mNotificationSendersService.sendEmailNotification(data);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    channel.ack(originalMsg);
   }
 }

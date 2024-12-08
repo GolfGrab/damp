@@ -5,9 +5,10 @@ import { TypedConfigModule, dotenvLoader } from 'nest-typed-config';
 import { PrismaModule } from 'nestjs-prisma';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { MUserModule } from './modules/m-user/m-user.module';
+import { AuthModule } from './auth/auth.module';
 import { MApplicationModule } from './modules/m-application/m-application.module';
 import { MNotificationModule } from './modules/m-notification/m-notification.module';
+import { MUserModule } from './modules/m-user/m-user.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { MNotificationModule } from './modules/m-notification/m-notification.mod
       isGlobal: true,
       load: [dotenvLoader()],
     }),
+    AuthModule,
     MUserModule,
     MApplicationModule,
     MNotificationModule,

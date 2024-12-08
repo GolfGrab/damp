@@ -12,7 +12,19 @@ services:
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
       - rabbitmq_logs:/var/log/rabbitmq
-
+    entrypoint: >
+      sh -c "
+      echo '----------------------------------------------';
+      echo '|                                            |';
+      echo '|         Local RabbitMQ is running          |';
+      echo '|                                            |';
+      echo '|  Management UI: http://localhost:15672     |';
+      echo '|  AMQP Port     : localhost:5672            |';
+      echo '|  Username      : admin                     |';
+      echo '|  Password      : admin                     |';
+      echo '|                                            |';
+      echo '----------------------------------------------';
+      rabbitmq-server"
 volumes:
   rabbitmq_data:
   rabbitmq_logs:

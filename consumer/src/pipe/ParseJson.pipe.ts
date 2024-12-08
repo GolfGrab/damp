@@ -11,7 +11,7 @@ export class ParseJsonPipe
 {
   transform(value: unknown, metadata: ArgumentMetadata): Record<string, any> {
     if (typeof value !== 'string') {
-      throw new BadRequestException(`${metadata.data} should be a string`);
+      return value as Record<string, any>;
     }
     const propertyName = metadata.data;
     try {

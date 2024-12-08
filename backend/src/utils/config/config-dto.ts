@@ -1,4 +1,11 @@
-import { IsEnum, IsOptional, IsString, IsUUID, IsUrl } from 'class-validator';
+import {
+  IsEnum,
+  IsNumberString,
+  IsOptional,
+  IsString,
+  IsUUID,
+  IsUrl,
+} from 'class-validator';
 
 export class Config {
   @IsEnum(['development', 'production'])
@@ -20,5 +27,17 @@ export class Config {
   readonly QUEUE_URL: string;
 
   @IsString()
-  readonly QUEUE_NAME: string;
+  readonly QUEUE_PREFIX: string;
+
+  @IsNumberString()
+  readonly EMAIL_RETRY_LIMIT: string;
+
+  @IsNumberString()
+  readonly SMS_RETRY_LIMIT: string;
+
+  @IsNumberString()
+  readonly WEB_PUSH_RETRY_LIMIT: string;
+
+  @IsNumberString()
+  readonly SLACK_RETRY_LIMIT: string;
 }
