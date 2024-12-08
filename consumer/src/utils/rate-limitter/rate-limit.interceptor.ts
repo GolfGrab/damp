@@ -64,8 +64,9 @@ export class RateLimitInterceptor implements NestInterceptor {
     rateLimit.quota! -= 1;
 
     this.rateLimitMap?.set(name, rateLimit);
-    this.logger.error(`Consumed quota for ${name}`);
-    this.logger.error(`Quota remaining for ${name}: ${rateLimit.quota}`);
+    this.logger.log(
+      `Consumed quota for ${name}. Remaining: ${rateLimit.quota}`,
+    );
 
     return null;
   }

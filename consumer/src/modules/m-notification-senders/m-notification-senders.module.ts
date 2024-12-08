@@ -17,7 +17,7 @@ import { MNotificationSendersService } from './m-notification-senders.service';
           transport: Transport.RMQ,
           options: {
             urls: [config.QUEUE_URL],
-            queue: config.QUEUE_NAME,
+            queue: `${config.QUEUE_PREFIX}-${config.CHANNEL_TYPE}`,
             queueOptions: {
               durable: true,
             },

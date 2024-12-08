@@ -29,7 +29,7 @@ export class MNotificationSendersController {
     @Payload() data: NotificationTaskMessageDto,
     @Ctx() context: RmqContext,
   ) {
-    this.logger.warn('Received email task:', data);
+    this.logger.log('Consuming email notification task');
     await this.mNotificationSendersService.sendEmailNotification(data);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const channel = context.getChannelRef();

@@ -20,5 +20,5 @@ export class Config {
   readonly QUEUE_URL: string;
 
   @IsString()
-  readonly QUEUE_NAME: string;
+  readonly QUEUE_PREFIX: string;
 }

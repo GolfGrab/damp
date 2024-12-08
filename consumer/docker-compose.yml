@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  email_consumer:
+    image: node:18           # Use the base Node.js image or a custom image (without rebuild)
+    container_name: nest_app
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - QUEUE_NAME=emails
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:.       # Mount your code into the container
+    working_dir: . # Set working directory to where your code is mounted
+    entrypoint: /bin/sh -c "npm install && npm run build && npm run start:prod"

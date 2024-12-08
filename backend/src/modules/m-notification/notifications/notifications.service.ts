@@ -1,20 +1,32 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { CreateNotificationDto } from './dto/create-notification.dto';
-import { PrismaService } from 'nestjs-prisma';
 import { ClientProxy, RmqRecordBuilder } from '@nestjs/microservices';
 import { $Enums } from '@prisma/client';
+import { PrismaService } from 'nestjs-prisma';
 import { inspect } from 'util';
+import { CreateNotificationDto } from './dto/create-notification.dto';
 
 const priorityMap = {
   [$Enums.Priority.LOW]: 1,
   [$Enums.Priority.MEDIUM]: 2,
   [$Enums.Priority.HIGH]: 3,
 };
+
 @Injectable()
 export class NotificationsService {
   constructor(
     private readonly prisma: PrismaService,
-    @Inject('NotificationQueueClient') private notificationQueueClient: ClientProxy,
+
+    @Inject(`NotificationQueueClient${$Enums.ChannelType.EMAIL}`)
+    private notificationQueueClientEMAIL: ClientProxy,
+
+    @Inject(`NotificationQueueClient${$Enums.ChannelType.SMS}`)
+    private notificationQueueClientSMS: ClientProxy,
+
+    @Inject(`NotificationQueueClient${$Enums.ChannelType.WEB_PUSH}`)
+    private notificationQueueClientWEB_PUSH: ClientProxy,
+
+    @Inject(`NotificationQueueClient${$Enums.ChannelType.SLACK}`)
+    private notificationQueueClientSLACK: ClientProxy,
   ) {}
 
   private readonly logger = new Logger(NotificationsService.name);
@@ -136,7 +148,7 @@ export class NotificationsService {
                         userId: account.userId,
                         channelType: account.channelType,
                         priority: createNotificationDto.priority,
-                        retryLimit: 3, // TODO: Move to config
+                        retryLimit: 0, // set retry limit in consumer
                         retryCount: 0,
                       })),
                     ),
@@ -161,7 +173,11 @@ export class NotificationsService {
         })
         .build();
 
-      this.notificationQueueClient.emit(notificationTask.channelType, record);
+      // NOTE:This type error may occur if the client proxy for a channel type isn't injected.
+      this[`notificationQueueClient${notificationTask.channelType}`].emit(
+        notificationTask.channelType,
+        record,
+      );
     }
 
     this.logger.log('Notification tasks emitted');

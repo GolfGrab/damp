@@ -1,7 +1,9 @@
+import { Config } from '@/utils/config/config-dto';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ClientProxy, RmqRecordBuilder } from '@nestjs/microservices';
 import { $Enums } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
+import * as nodemailer from 'nodemailer';
 import { inspect } from 'util';
 import { NotificationTaskMessageDto } from './dto/notification-task-message.dto';
 
@@ -15,6 +17,7 @@ const priorityMap = {
 export class MNotificationSendersService {
   constructor(
     private readonly prisma: PrismaService,
+    private readonly config: Config,
     @Inject('NotificationQueueClient')
     private notificationQueueClient: ClientProxy,
   ) {}
@@ -25,14 +28,6 @@ export class MNotificationSendersService {
     notificationTask: NotificationTaskMessageDto,
     sendNotification: (messageData: MessageData) => Promise<void>,
   ) {
-    this.logger.log('Processing task: ' + inspect(notificationTask));
-
-    this.logger.log('userId ' + notificationTask.userId);
-    this.logger.log('channelType ' + notificationTask.channelType);
-    this.logger.log('notificationId ' + notificationTask.notificationId);
-    this.logger.log('templateId ' + notificationTask.templateId);
-    this.logger.log('messageType ' + notificationTask.messageType);
-
     const recipientAddress = (
       await this.prisma.account.findUniqueOrThrow({
         where: {
@@ -56,8 +51,20 @@ export class MNotificationSendersService {
       })
     ).compiledMessage;
 
+    const title = (
+      await this.prisma.compiledMessage.findUniqueOrThrow({
+        where: {
+          notificationId_templateId_messageType: {
+            notificationId: notificationTask.notificationId,
+            templateId: notificationTask.templateId,
+            messageType: 'TEXT',
+          },
+        },
+      })
+    ).compiledMessage.split('\\n')[0];
+
     try {
-      await sendNotification({ recipientAddress, compiledMessage });
+      await sendNotification({ recipientAddress, compiledMessage, title });
       await this.prisma.notificationTask.update({
         where: {
           channelType_userId_notificationId_templateId_messageType: {
@@ -92,6 +99,8 @@ export class MNotificationSendersService {
               },
             },
             data: {
+              retryCount: notificationTask.retryCount + 1,
+              retryLimit: notificationTask.retryLimit,
               sentStatus: 'FAILED',
               failedTimestamp: new Date(),
             },
@@ -111,6 +120,7 @@ export class MNotificationSendersService {
           },
           data: {
             retryCount: notificationTask.retryCount + 1,
+            retryLimit: notificationTask.retryLimit,
           },
         });
 
@@ -125,21 +135,41 @@ export class MNotificationSendersService {
     }
   }
 
+  emailTransporter = nodemailer.createTransport({
+    host: this.config.EMAIL_HOST,
+    port: this.config.EMAIL_PORT,
+    ...(this.config.EMAIL_AUTH_USER && this.config.EMAIL_AUTH_PASS
+      ? {
+          auth: {
+            user: this.config.EMAIL_AUTH_USER,
+            pass: this.config.EMAIL_AUTH_PASS,
+          },
+        }
+      : {}),
+  });
+
   async sendEmailNotification(
     notificationTask: NotificationTaskMessageDto,
   ): Promise<void> {
-    this.logger.log('processing email task: ' + inspect(notificationTask));
+    this.logger.log('processing email task: ');
     await this.processTask(
-      notificationTask,
-      ({ recipientAddress, compiledMessage }) => {
+      {
+        ...notificationTask,
+        retryLimit:
+          notificationTask.retryLimit === 0
+            ? this.config.EMAIL_RETRY_LIMIT
+            : notificationTask.retryLimit,
+      },
+      async ({ recipientAddress, compiledMessage, title }) => {
         this.logger.log('sending email to: ' + recipientAddress);
         this.logger.log('message: ' + compiledMessage);
-        if (Math.random() < 0.8) {
-          // TODO: Replace with actual email sending logic
-          return Promise.resolve();
-        } else {
-          return Promise.reject(new Error('Failed to send email'));
-        }
+        await this.emailTransporter.sendMail({
+          from: this.config.EMAIL_FROM,
+          to: recipientAddress,
+          subject: title,
+          text: compiledMessage,
+        });
+        this.logger.log('email sent');
       },
     );
   }
@@ -147,5 +177,6 @@ export class MNotificationSendersService {
 
 type MessageData = {
   recipientAddress: string;
+  title?: string;
   compiledMessage: string;
 };

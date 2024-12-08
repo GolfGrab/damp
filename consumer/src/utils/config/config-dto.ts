@@ -1,4 +1,14 @@
-import { IsEnum, IsOptional, IsString, IsUUID, IsUrl } from 'class-validator';
+import { $Enums } from '@prisma/client';
+import { Type } from 'class-transformer';
+import {
+  IsEnum,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  IsUrl,
+} from 'class-validator';
 
 export class Config {
   @IsEnum(['development', 'production'])
@@ -20,5 +30,30 @@ export class Config {
   readonly QUEUE_URL: string;
 
   @IsString()
-  readonly QUEUE_NAME: string;
+  readonly QUEUE_PREFIX: string;
+
+  @IsEnum($Enums.ChannelType)
+  readonly CHANNEL_TYPE: $Enums.ChannelType;
+
+  @IsString()
+  readonly EMAIL_HOST: string;
+
+  @Type(() => Number)
+  @IsInt()
+  readonly EMAIL_PORT: number;
+
+  @IsString()
+  @IsOptional()
+  readonly EMAIL_AUTH_USER: string | undefined;
+
+  @IsString()
+  @IsOptional()
+  readonly EMAIL_AUTH_PASS: string | undefined;
+
+  @IsString()
+  readonly EMAIL_FROM: string;
+
+  @Type(() => Number)
+  @IsNumber()
+  readonly EMAIL_RETRY_LIMIT: number;
 }
