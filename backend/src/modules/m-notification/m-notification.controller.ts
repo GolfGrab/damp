@@ -14,7 +14,9 @@ import { TemplatesService } from './templates/templates.service';
 import { CreateTemplateDto } from './templates/dto/create-template.dto';
 import { Template } from './templates/entities/template.entity';
 import { UpdateTemplateDto } from './templates/dto/update-template.dto';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { TemplatesParserService } from './templates/template-parser.service';
+import { JSONContent } from '@tiptap/core';
 
 @ApiTags('Notification Module')
 @Controller('m-notification')
@@ -22,6 +24,7 @@ export class MNotificationController {
   constructor(
     private readonly templatesService: TemplatesService,
     private readonly notificationsService: NotificationsService,
+    private readonly templatesParserService: TemplatesParserService,
   ) {}
 
   /**
@@ -56,6 +59,12 @@ export class MNotificationController {
   @Delete('templates/:templateId')
   removeTemplate(@Param('templateId') templateId: number) {
     return this.templatesService.remove(templateId);
+  }
+
+  @ApiBody({})
+  @Post('templates/HTML/preview')
+  previewHTMLTemplate(@Body() payload: JSONContent): string {
+    return this.templatesParserService.parseJSONToMarkdown(payload);
   }
 
   /**

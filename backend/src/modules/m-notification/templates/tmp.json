@@ -1,0 +1,36 @@
+{
+  "type": "orderedList",
+  "attrs": { "start": 1 },
+  "content": [
+    {
+      "type": "listItem",
+      "content": [
+        {
+          "type": "paragraph",
+          "attrs": { "textAlign": "left" },
+          "content": [{ "type": "text", "text": "test ordered" }]
+        }
+      ]
+    },
+    {
+      "type": "listItem",
+      "content": [
+        {
+          "type": "paragraph",
+          "attrs": { "textAlign": "left" },
+          "content": [{ "type": "text", "text": "test ordered2" }]
+        }
+      ]
+    },
+    {
+      "type": "listItem",
+      "content": [
+        {
+          "type": "paragraph",
+          "attrs": { "textAlign": "left" },
+          "content": [{ "type": "text", "text": "test ordered3" }]
+        }
+      ]
+    }
+  ]
+}
