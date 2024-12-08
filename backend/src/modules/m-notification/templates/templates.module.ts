@@ -1,9 +1,14 @@
 import { Module } from '@nestjs/common';
-import { TemplatesService } from './templates.service';
 import { TemplatesParserService } from './template-parser.service';
+import { TemplatesRendererService } from './template-renderer.service';
+import { TemplatesService } from './templates.service';
 
 @Module({
-  providers: [TemplatesService, TemplatesParserService],
-  exports: [TemplatesService, TemplatesParserService],
+  providers: [
+    TemplatesService,
+    TemplatesParserService,
+    TemplatesRendererService,
+  ],
+  exports: [TemplatesService, TemplatesParserService, TemplatesRendererService],
 })
 export class TemplatesModule {}

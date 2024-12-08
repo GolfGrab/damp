@@ -7,16 +7,17 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { NotificationsService } from './notifications/notifications.service';
+import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { JSONContent } from '@tiptap/core';
 import { CreateNotificationDto } from './notifications/dto/create-notification.dto';
 import { Notification } from './notifications/entities/notification.entity';
-import { TemplatesService } from './templates/templates.service';
+import { NotificationsService } from './notifications/notifications.service';
 import { CreateTemplateDto } from './templates/dto/create-template.dto';
-import { Template } from './templates/entities/template.entity';
 import { UpdateTemplateDto } from './templates/dto/update-template.dto';
-import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Template } from './templates/entities/template.entity';
 import { TemplatesParserService } from './templates/template-parser.service';
-import { JSONContent } from '@tiptap/core';
+import { TemplatesRendererService } from './templates/template-renderer.service';
+import { TemplatesService } from './templates/templates.service';
 
 @ApiTags('Notification Module')
 @Controller('m-notification')
@@ -25,6 +26,7 @@ export class MNotificationController {
     private readonly templatesService: TemplatesService,
     private readonly notificationsService: NotificationsService,
     private readonly templatesParserService: TemplatesParserService,
+    private readonly templatesRendererService: TemplatesRendererService,
   ) {}
 
   /**
@@ -63,8 +65,11 @@ export class MNotificationController {
 
   @ApiBody({})
   @Post('templates/HTML/preview')
-  previewHTMLTemplate(@Body() payload: JSONContent): string {
-    return this.templatesParserService.parseJSONToMarkdown(payload);
+  previewHTMLTemplate(@Body() payload: JSONContent) {
+    const template = this.templatesParserService.parseJSONToMarkdown(payload);
+    return this.templatesRendererService.render(template, {
+      name: 'John Doe',
+    });
   }
 
   /**
