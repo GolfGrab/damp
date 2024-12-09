@@ -5,6 +5,7 @@ import { CreateTemplateDto } from './dto/create-template.dto';
 import { UpdateTemplateDto } from './dto/update-template.dto';
 import { TemplatesParserService } from './template-parser.service';
 import { TemplatesRendererService } from './template-renderer.service';
+import { GetPreviewTemplateDto } from './dto/get-preview-template.dto';
 
 @Injectable()
 export class TemplatesService {
@@ -54,6 +55,9 @@ export class TemplatesService {
       where: {
         id,
       },
+      include:{
+        compiledTemplates: true
+      }
     });
   }
 
@@ -120,7 +124,7 @@ export class TemplatesService {
   async render(
     id: number,
     messageType: MessageType,
-    data: Record<string, any>,
+    getPreviewTemplateDto: GetPreviewTemplateDto,
   ) {
     const compiledTemplate =
       await this.prisma.compiledTemplate.findUniqueOrThrow({
@@ -134,7 +138,7 @@ export class TemplatesService {
 
     return this.templatesRendererService.render(
       compiledTemplate.compiledTemplate,
-      data,
+      getPreviewTemplateDto.data,
     );
   }
 }

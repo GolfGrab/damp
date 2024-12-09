@@ -9,7 +9,7 @@ import {
   Post,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Application, MessageType } from '@prisma/client';
 import { CreateNotificationDto } from './notifications/dto/create-notification.dto';
 import { Notification } from './notifications/entities/notification.entity';
@@ -62,6 +62,11 @@ export class MNotificationController {
     return this.templatesService.remove(templateId);
   }
 
+  @ApiParam({
+    name: 'messageType',
+    required: true,
+    enum: MessageType,
+  })
   @Post('templates/:templateId/messageType/:messageType/preview')
   previewTemplate(
     @Param('templateId') templateId: number,
