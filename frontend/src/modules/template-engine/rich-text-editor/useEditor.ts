@@ -35,7 +35,18 @@ export default function useEditor() {
 
     // common features
     Text,
-    Paragraph,
+    Paragraph.extend({
+      renderHTML({ HTMLAttributes }) {
+        return [
+          "p",
+          {
+            ...HTMLAttributes,
+            style: "margin-block: 1em;" + HTMLAttributes.style,
+          },
+          0,
+        ];
+      },
+    }),
     HeadingWithAnchor,
     Document,
     BulletList,
