@@ -133,7 +133,9 @@ export class TemplatesParserService {
   }
 
   parseJSONToText(json: JSONContent) {
-    return generateText(json, this.tiptapConfig);
+    return generateText(json, this.tiptapConfig, {
+      blockSeparator: '\n',
+    });
   }
 
   parseJSONToMarkdown(json: JSONContent) {

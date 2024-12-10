@@ -20,11 +20,32 @@ export default function Home() {
         <Button
           variant="contained"
           color="primary"
-          onClick={() => {
+          onClick={async () => {
             console.log(editor.getJSON());
+            await navigator.clipboard.writeText(
+              JSON.stringify(editor.getJSON())
+            );
           }}
         >
           getJson
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={async () => {
+            console.log(
+              editor.getText({
+                blockSeparator: "\n",
+              })
+            );
+            await navigator.clipboard.writeText(
+              editor.getText({
+                blockSeparator: "\n",
+              })
+            );
+          }}
+        >
+          get text
         </Button>
       </main>
     </>
