@@ -116,7 +116,7 @@ export class MNotificationSendersService {
           },
         },
       })
-    ).compiledMessage.split('\\n')[0];
+    ).compiledMessage.split('\n')[0];
 
     return { compiledMessage, title };
   }

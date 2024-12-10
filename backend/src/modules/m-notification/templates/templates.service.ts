@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { $Enums, MessageType } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 import { CreateTemplateDto } from './dto/create-template.dto';
+import { GetPreviewTemplateDto } from './dto/get-preview-template.dto';
 import { UpdateTemplateDto } from './dto/update-template.dto';
 import { TemplatesParserService } from './template-parser.service';
 import { TemplatesRendererService } from './template-renderer.service';
-import { GetPreviewTemplateDto } from './dto/get-preview-template.dto';
 
 @Injectable()
 export class TemplatesService {
@@ -55,9 +55,9 @@ export class TemplatesService {
       where: {
         id,
       },
-      include:{
-        compiledTemplates: true
-      }
+      include: {
+        compiledTemplates: true,
+      },
     });
   }
 
@@ -135,7 +135,6 @@ export class TemplatesService {
           },
         },
       });
-
     return this.templatesRendererService.render(
       compiledTemplate.compiledTemplate,
       getPreviewTemplateDto.data,
