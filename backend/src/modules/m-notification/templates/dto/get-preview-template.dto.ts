@@ -1,9 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsObject, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsObject } from 'class-validator';
 
 export class GetPreviewTemplateDto {
-  @ApiProperty()
-  @IsOptional()
+  @ApiProperty({
+    type: Object,
+  })
   @IsObject()
   @IsNotEmpty()
   data: Record<string, any>;

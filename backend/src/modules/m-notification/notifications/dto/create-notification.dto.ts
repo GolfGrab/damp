@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import * as prisma from '@prisma/client';
-import { IsEnum, IsNumber, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsObject,
+  IsString,
+} from 'class-validator';
 
 export class CreateNotificationDto {
   @IsNumber()
@@ -9,11 +15,12 @@ export class CreateNotificationDto {
   })
   templateId: number;
 
-  @IsString()
   @ApiProperty({
-    type: String,
+    type: Object,
   })
-  templateData: string;
+  @IsObject()
+  @IsNotEmpty()
+  templateData: Record<string, any>;
 
   @IsNumber()
   @ApiProperty({

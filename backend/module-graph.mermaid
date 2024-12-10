@@ -36,6 +36,10 @@ flowchart TD
   MApplicationModule-->ConfigHostModule
   AppModule-->MNotificationModule
   MNotificationModule-->NotificationsModule
+  NotificationsModule-->TemplatesModule
+  TemplatesModule-->AuthModule
+  TemplatesModule-->JwtModule
+  TemplatesModule-->ConfigHostModule
   NotificationsModule-->ClientsModule
   ClientsModule-->ConfigModule
   ConfigModule-->ConfigHostModule
@@ -48,9 +52,6 @@ flowchart TD
   NotificationsModule-->JwtModule
   NotificationsModule-->ConfigHostModule
   MNotificationModule-->TemplatesModule
-  TemplatesModule-->AuthModule
-  TemplatesModule-->JwtModule
-  TemplatesModule-->ConfigHostModule
   MNotificationModule-->AuthModule
   MNotificationModule-->JwtModule
   MNotificationModule-->ConfigHostModule

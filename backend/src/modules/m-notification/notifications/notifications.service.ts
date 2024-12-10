@@ -4,6 +4,7 @@ import { ClientProxy, RmqRecordBuilder } from '@nestjs/microservices';
 import { $Enums } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 import { inspect } from 'util';
+import { TemplatesService } from '../templates/templates.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 
 const priorityMap = {
@@ -30,6 +31,8 @@ export class NotificationsService {
 
     @Inject(`NotificationQueueClient${$Enums.ChannelType.SLACK}`)
     private notificationQueueClientSLACK: ClientProxy,
+
+    private readonly templatesService: TemplatesService,
   ) {}
 
   private readonly logger = new Logger(NotificationsService.name);
@@ -79,17 +82,19 @@ export class NotificationsService {
 
     this.logger.log('compiledTemplates ' + inspect(compiledTemplates));
     this.logger.log('create compiledMessages');
-    const compiledMessages = compiledTemplates.map((compiledTemplate) => {
-      // TODO: Katid implement template compiler module
-      return {
-        templateId: compiledTemplate.templateId,
-        messageType: compiledTemplate.messageType,
-        compiledMessage:
-          compiledTemplate.compiledTemplate +
-          'with TemplateData' +
-          JSON.stringify(createNotificationDto.templateData),
-      };
-    });
+    const compiledMessages = await Promise.all(
+      compiledTemplates.map(async (compiledTemplate) => {
+        return {
+          templateId: compiledTemplate.templateId,
+          messageType: compiledTemplate.messageType,
+          compiledMessage: await this.templatesService.render(
+            compiledTemplate.templateId,
+            compiledTemplate.messageType,
+            { data: createNotificationDto.templateData },
+          ),
+        };
+      }),
+    );
 
     this.logger.log('get channels');
     const channels = await this.prisma.channel.findMany({
@@ -125,7 +130,7 @@ export class NotificationsService {
         notificationCategoryId: createNotificationDto.notificationCategoryId,
         priority: createNotificationDto.priority,
         templateId: createNotificationDto.templateId,
-        templateData: createNotificationDto.templateData,
+        templateData: JSON.stringify(createNotificationDto.templateData),
         compiledMessages: {
           create: compiledMessages.map((compiledMessage) => {
             return {
@@ -139,7 +144,6 @@ export class NotificationsService {
                 },
               },
               notificationTasks: {
-                // TODO: Implement notification task service
                 createMany: {
                   data: channels
                     .filter(
