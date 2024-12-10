@@ -52,6 +52,7 @@
     "class-validator": "0.14.0",
     "csv-parse": "^5.5.5",
     "fastify": "^4.26.2",
+    "html-to-mrkdwn-ts": "^1.1.0",
     "js-base64": "^3.7.7",
     "liquidjs": "^10.19.0",
     "lodash": "^4.17.21",

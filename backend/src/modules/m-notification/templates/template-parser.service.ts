@@ -1,10 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {
-  AnyExtension,
-  generateText,
-  getSchema,
-  JSONContent,
-} from '@tiptap/core';
+import { AnyExtension, generateText, JSONContent } from '@tiptap/core';
 import { Blockquote } from '@tiptap/extension-blockquote';
 import { Bold } from '@tiptap/extension-bold';
 import { BulletList } from '@tiptap/extension-bullet-list';
@@ -26,20 +21,11 @@ import { Text } from '@tiptap/extension-text';
 import { TextAlign } from '@tiptap/extension-text-align';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { generateHTML } from '@tiptap/html';
-import {
-  defaultMarkdownSerializer,
-  MarkdownSerializer as ProseMirrorMarkdownSerializer,
-} from 'prosemirror-markdown';
-import { Mark, Schema } from 'prosemirror-model';
-import * as templateParserUtils from './template-parser.utils';
+import htmlToMrkdwn from 'html-to-mrkdwn-ts';
 
 @Injectable()
 export class TemplatesParserService {
   private readonly tiptapConfig: AnyExtension[];
-
-  private readonly tiptapSchema: Schema;
-
-  private readonly markdownSerializer: ProseMirrorMarkdownSerializer;
 
   constructor() {
     this.tiptapConfig = [
@@ -70,66 +56,11 @@ export class TemplatesParserService {
       Color,
       Highlight.configure({ multicolor: true }),
     ];
-
-    this.tiptapSchema = getSchema(this.tiptapConfig);
-
-    const serializerNodes = {
-      ...defaultMarkdownSerializer.nodes,
-      [HardBreak.name]: templateParserUtils.renderHardBreak,
-      [Code.name]: templateParserUtils.renderCode,
-      [CodeBlock.name]: templateParserUtils.renderCodeBlock,
-      [BulletList.name]: templateParserUtils.renderBulletList,
-      [ListItem.name]: templateParserUtils.renderListItem,
-      [OrderedList.name]: templateParserUtils.renderOrderedList,
-      // Unsupported nodes
-      [Heading.name]: templateParserUtils.renderDefaultBlock,
-    };
-    const serializerMarks = {
-      ...defaultMarkdownSerializer.marks,
-      [Strike.name]: {
-        open: '~',
-        close: '~',
-        mixable: true,
-        expelEnclosingWhitespace: true,
-      },
-      [Bold.name]: {
-        open: '*',
-        close: '*',
-        mixable: true,
-        expelEnclosingWhitespace: true,
-      },
-      [Italic.name]: {
-        open: '_',
-        close: '_',
-        mixable: true,
-        expelEnclosingWhitespace: true,
-      },
-      [Link.name]: {
-        open: () => '[',
-        close: (_state, mark: Mark) => `](${mark.attrs.href ?? ''})`,
-        mixable: true,
-        expelEnclosingWhitespace: true,
-      },
-      // Unsupported marks
-      [TextStyle.name]: {
-        open: '',
-        close: '',
-      },
-      [Highlight.name]: {
-        open: '',
-        close: '',
-        mixable: true,
-        expelEnclosingWhitespace: true,
-      },
-    };
-    this.markdownSerializer = new ProseMirrorMarkdownSerializer(
-      serializerNodes,
-      serializerMarks,
-    );
   }
 
   parseJSONToHTML(json: JSONContent) {
-    return generateHTML(json, this.tiptapConfig);
+    // Tiptap HTML will put <p></p> for empty paragraphs, we need to replace them with <br>
+    return generateHTML(json, this.tiptapConfig).replace(/<p><\/p>/g, '<br>');
   }
 
   parseJSONToText(json: JSONContent) {
@@ -139,10 +70,8 @@ export class TemplatesParserService {
   }
 
   parseJSONToMarkdown(json: JSONContent) {
-    const proseMirrorDocument = this.tiptapSchema.nodeFromJSON(json);
-    return this.markdownSerializer.serialize(proseMirrorDocument, {
-      tightLists: true,
-    });
+    const htmlString = this.parseJSONToHTML(json);
+    return htmlToMrkdwn(htmlString).text;
   }
 
   parseJSONToCompiledTemplates(json: JSONContent) {
