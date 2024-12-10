@@ -3,12 +3,14 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { $Enums } from '@prisma/client';
+import { TemplatesModule } from '../templates/templates.module';
 import { NotificationsService } from './notifications.service';
 
 @Module({
   providers: [NotificationsService],
   exports: [NotificationsService],
   imports: [
+    TemplatesModule,
     ...Object.values($Enums.ChannelType).map((channelType) =>
       ClientsModule.registerAsync([
         {

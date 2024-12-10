@@ -9,12 +9,13 @@ import {
   Post,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Application } from '@prisma/client';
+import { ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Application, MessageType } from '@prisma/client';
 import { CreateNotificationDto } from './notifications/dto/create-notification.dto';
 import { Notification } from './notifications/entities/notification.entity';
 import { NotificationsService } from './notifications/notifications.service';
 import { CreateTemplateDto } from './templates/dto/create-template.dto';
+import { GetPreviewTemplateDto } from './templates/dto/get-preview-template.dto';
 import { UpdateTemplateDto } from './templates/dto/update-template.dto';
 import { Template } from './templates/entities/template.entity';
 import { TemplatesService } from './templates/templates.service';
@@ -59,6 +60,24 @@ export class MNotificationController {
   @Delete('templates/:templateId')
   removeTemplate(@Param('templateId') templateId: number) {
     return this.templatesService.remove(templateId);
+  }
+
+  @ApiParam({
+    name: 'messageType',
+    required: true,
+    enum: MessageType,
+  })
+  @Post('templates/:templateId/messageType/:messageType/preview')
+  previewTemplate(
+    @Param('templateId') templateId: number,
+    @Param('messageType') messageType: MessageType,
+    @Body() getPreviewTemplateDto: GetPreviewTemplateDto,
+  ) {
+    return this.templatesService.render(
+      templateId,
+      messageType,
+      getPreviewTemplateDto,
+    );
   }
 
   /**

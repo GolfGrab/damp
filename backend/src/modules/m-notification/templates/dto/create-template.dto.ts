@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { JSONContent } from '@tiptap/core';
+import { IsObject, IsString } from 'class-validator';
 
 export class CreateTemplateDto {
   @IsString()
@@ -14,11 +15,11 @@ export class CreateTemplateDto {
   })
   description: string;
 
-  @IsString()
+  @IsObject()
   @ApiProperty({
-    type: String,
+    type: Object,
   })
-  template: string;
+  template: JSONContent;
 
   @IsString()
   @ApiProperty({
