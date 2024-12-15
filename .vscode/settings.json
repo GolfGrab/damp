@@ -11,6 +11,6 @@
   "[prisma]": {
     "editor.defaultFormatter": "Prisma.prisma"
   },
-  "cSpell.words": [],
+  "cSpell.words": ["LOGTO"],
   "typescript.tsdk": "node_modules\\typescript\\lib"
 }

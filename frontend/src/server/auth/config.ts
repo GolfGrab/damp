@@ -1,3 +1,4 @@
+import { env } from "@/env";
 import { type DefaultSession, type NextAuthConfig } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 
@@ -30,6 +31,32 @@ declare module "next-auth" {
 export const authConfig = {
   providers: [
     DiscordProvider,
+    {
+      id: "logto",
+      name: "Logto",
+      type: "oidc",
+      issuer: "https://iaq7vz.logto.app/oidc",
+      clientId: env.LOGTO_APP_ID,
+      clientSecret: env.LOGTO_APP_SECRET,
+      authorization: {
+        params: { scope: "openid offline_access profile email" },
+      },
+      profile(profile: {
+        sub: string;
+        name: string | null;
+        username: string | null;
+        email: string;
+        picture: string | null;
+      }) {
+        // You can customize the user profile mapping here
+        return {
+          id: profile.sub,
+          name: profile.name ?? profile.username,
+          email: profile.email,
+          image: profile.picture,
+        };
+      },
+    },
     /**
      * ...add more providers here.
      *

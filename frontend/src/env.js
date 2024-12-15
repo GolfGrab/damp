@@ -16,6 +16,8 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
+    LOGTO_APP_ID: z.string(),
+    LOGTO_APP_SECRET: z.string(),
   },
 
   /**
@@ -36,6 +38,8 @@ export const env = createEnv({
     AUTH_DISCORD_ID: process.env.AUTH_DISCORD_ID,
     AUTH_DISCORD_SECRET: process.env.AUTH_DISCORD_SECRET,
     NODE_ENV: process.env.NODE_ENV,
+    LOGTO_APP_ID: process.env.LOGTO_APP_ID,
+    LOGTO_APP_SECRET: process.env.LOGTO_APP_SECRET,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**

@@ -1,12 +1,22 @@
 import Head from "next/head";
 
+import { useClient } from "@/modules/common/hooks/useClient";
 import RichTextEditor from "@/modules/template-engine/rich-text-editor/RichTextEditor";
 import useEditor from "@/modules/template-engine/rich-text-editor/useEditor";
 import { Button } from "@mui/material";
+import { signIn, signOut, useSession } from "next-auth/react";
 import styles from "./index.module.css";
 
 export default function Home() {
+  const { data: session, status } = useSession();
+  const { isClientLoaded } = useClient();
   const editor = useEditor();
+
+  if (!isClientLoaded || status === "loading") return null;
+  if (status === "unauthenticated") {
+    void signIn("logto");
+    return null;
+  }
   if (!editor) return null;
   return (
     <>
@@ -16,6 +26,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
+        <p>{JSON.stringify(session)}</p>
         <RichTextEditor editor={editor} />
         <Button
           variant="contained"
@@ -46,6 +57,15 @@ export default function Home() {
           }}
         >
           get text
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            void signOut();
+          }}
+        >
+          sign out
         </Button>
       </main>
     </>
