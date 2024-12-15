@@ -20,8 +20,8 @@ export class MNotificationSendersController {
 
   @UseInterceptors(
     new RateLimitInterceptor($Enums.ChannelType.EMAIL, {
-      quota: 1,
-      timeWindowMs: 3000,
+      quota: 3,
+      timeWindowMs: 10000,
     }),
   )
   @MessagePattern($Enums.ChannelType.EMAIL)
@@ -31,6 +31,27 @@ export class MNotificationSendersController {
   ) {
     this.logger.log('Consuming email notification task');
     await this.mNotificationSendersService.sendEmailNotification(data);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    channel.ack(originalMsg);
+  }
+
+  @UseInterceptors(
+    new RateLimitInterceptor($Enums.ChannelType.SMS, {
+      quota: 3,
+      timeWindowMs: 10000,
+    }),
+  )
+  @MessagePattern($Enums.ChannelType.SMS)
+  async smsConsumer(
+    @Payload() data: NotificationTaskMessageDto,
+    @Ctx() context: RmqContext,
+  ) {
+    this.logger.log('Consuming sms notification task');
+    await this.mNotificationSendersService.sendSmsNotification(data);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const channel = context.getChannelRef();
     const originalMsg = context.getMessage();

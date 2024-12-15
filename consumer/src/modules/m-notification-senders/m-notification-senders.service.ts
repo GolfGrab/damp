@@ -4,6 +4,7 @@ import { ClientProxy, RmqRecordBuilder } from '@nestjs/microservices';
 import { $Enums } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 import * as nodemailer from 'nodemailer';
+import { Twilio } from 'twilio';
 import { NotificationTaskMessageDto } from './dto/notification-task-message.dto';
 
 const priorityMap = {
@@ -59,6 +60,34 @@ export class MNotificationSendersService {
     });
 
     this.logger.log('Email sent');
+  };
+
+  private readonly smsTwilioClientTransporter = new Twilio(
+    this.config.SMS_TWILIO_ACCOUNT_SID,
+    this.config.SMS_TWILIO_AUTH_TOKEN,
+  );
+
+  async sendSmsNotification(
+    notificationTask: NotificationTaskMessageDto,
+  ): Promise<void> {
+    this.logger.log('Processing sms task...');
+    await this.processTask(notificationTask, this.sendSms);
+  }
+
+  private sendSms = async ({
+    recipientAddress,
+    compiledMessage,
+  }: MessageData): Promise<void> => {
+    this.logger.log(`Sending sms to: ${recipientAddress}`);
+    this.logger.log(`Message: ${compiledMessage}`);
+
+    await this.smsTwilioClientTransporter.messages.create({
+      body: compiledMessage,
+      from: this.config.SMS_TWILIO_FROM_PHONE_NUMBER,
+      to: recipientAddress,
+    });
+
+    this.logger.log('Sms sent');
   };
 
   private async processTask(

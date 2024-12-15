@@ -51,4 +51,13 @@ export class Config {
 
   @IsString()
   readonly EMAIL_FROM: string;
+
+  @IsString()
+  readonly SMS_TWILIO_ACCOUNT_SID: string;
+
+  @IsString()
+  readonly SMS_TWILIO_AUTH_TOKEN: string;
+
+  @IsString()
+  readonly SMS_TWILIO_FROM_PHONE_NUMBER: string;
 }
