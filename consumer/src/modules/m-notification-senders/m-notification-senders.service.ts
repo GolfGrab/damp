@@ -55,7 +55,7 @@ export class MNotificationSendersService {
       from: this.config.EMAIL_FROM,
       to: recipientAddress,
       subject: title,
-      text: compiledMessage,
+      html: compiledMessage,
     });
 
     this.logger.log('Email sent');
