@@ -80,6 +80,10 @@ export class MUserController {
     return this.accountsService.create(userId, channelType, createAccountDto);
   }
 
+  @ApiParam({
+    name: 'channelType',
+    enum: prisma.$Enums.ChannelType,
+  })
   @Get('users/:userId/channel/:channelType/accounts')
   findOneAccount(
     @Param('userId') userId: string,
@@ -100,6 +104,10 @@ export class MUserController {
     return this.accountsService.findAllByUserId(userId);
   }
 
+  @ApiParam({
+    name: 'channelType',
+    enum: prisma.$Enums.ChannelType,
+  })
   @Patch('users/:userId/channel/:channelType/accounts')
   updateAccount(
     @Param('userId') userId: string,
@@ -109,6 +117,10 @@ export class MUserController {
     return this.accountsService.update(userId, channelType, updateAccountDto);
   }
 
+  @ApiParam({
+    name: 'channelType',
+    enum: prisma.$Enums.ChannelType,
+  })
   @Delete('users/:userId/channel/:channelType/accounts')
   removeAccount(
     @Param('userId') userId: string,
@@ -154,6 +166,10 @@ export class MUserController {
     return this.userPreferencesService.findAllByUserId(userId);
   }
 
+  @ApiParam({
+    name: 'channelType',
+    enum: prisma.$Enums.ChannelType,
+  })
   @Get(
     'users/:userId/channel/:channelType/notification-categories/:notificationCategoryId/user-preferences',
   )
@@ -169,6 +185,10 @@ export class MUserController {
     );
   }
 
+  @ApiParam({
+    name: 'channelType',
+    enum: prisma.$Enums.ChannelType,
+  })
   @Patch(
     'users/:userId/channel/:channelType/notification-categories/:notificationCategoryId/user-preferences',
   )
@@ -186,6 +206,10 @@ export class MUserController {
     );
   }
 
+  @ApiParam({
+    name: 'channelType',
+    enum: prisma.$Enums.ChannelType,
+  })
   @Delete(
     'users/:userId/channel/:channelType/notification-categories/:notificationCategoryId/user-preferences',
   )

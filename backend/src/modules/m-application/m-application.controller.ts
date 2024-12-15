@@ -15,7 +15,7 @@ import { UpdateApplicationDto } from './applications/dto/update-application.dto'
 import { UpdateNotificationCategoryDto } from './notification-categories/dto/update-notification-category.dto';
 import { Application } from './applications/entities/application.entity';
 import { NotificationCategory } from './notification-categories/entities/notification-category.entity';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiParam, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Application Module')
 @Controller('m-application')
