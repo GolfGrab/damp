@@ -7,20 +7,20 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { UsersService } from './users/users.service';
+import { ApiParam, ApiTags } from '@nestjs/swagger';
+import * as prisma from '@prisma/client';
 import { AccountsService } from './accounts/accounts.service';
+import { CreateAccountDto } from './accounts/dto/create-account.dto';
+import { UpdateAccountDto } from './accounts/dto/update-account.dto';
+import { Account } from './accounts/entities/account.entity';
+import { CreateUserPreferenceDto } from './user-preferences/dto/create-user-preference.dto';
+import { UpdateUserPreferenceDto } from './user-preferences/dto/update-user-preference.dto';
+import { UserPreference } from './user-preferences/entities/user-preference.entity';
+import { UserPreferencesService } from './user-preferences/user-preferences.service';
 import { CreateUserDto } from './users/dto/create-user.dto';
 import { UpdateUserDto } from './users/dto/update-user.dto';
-import { CreateAccountDto } from './accounts/dto/create-account.dto';
-import * as prisma from '@prisma/client';
-import { UpdateAccountDto } from './accounts/dto/update-account.dto';
-import { CreateUserPreferenceDto } from './user-preferences/dto/create-user-preference.dto';
-import { UserPreferencesService } from './user-preferences/user-preferences.service';
-import { UpdateUserPreferenceDto } from './user-preferences/dto/update-user-preference.dto';
 import { User } from './users/entities/user.entity';
-import { Account } from './accounts/entities/account.entity';
-import { UserPreference } from './user-preferences/entities/user-preference.entity';
-import { ApiParam, ApiTags } from '@nestjs/swagger';
+import { UsersService } from './users/users.service';
 
 @ApiTags('User Module')
 @Controller('m-user')

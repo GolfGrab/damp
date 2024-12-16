@@ -5,7 +5,7 @@ module.exports = {
     tsconfigRootDir: __dirname,
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint'],
+  plugins: ['@typescript-eslint', '@stylistic/js'],
   extends: [
     'plugin:@typescript-eslint/recommended-type-checked',
     'plugin:@typescript-eslint/stylistic-type-checked',
@@ -35,7 +35,7 @@ module.exports = {
       },
     ],
     '@typescript-eslint/no-unsafe-return': 'off',
-    '@typescript-eslint/lines-between-class-members': ['error'],
+    '@stylistic/js/lines-between-class-members': ['error'],
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-floating-promises': 'error',
 
