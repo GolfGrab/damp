@@ -14,7 +14,7 @@ export default function Home() {
 
   if (!isClientLoaded || status === "loading") return null;
   if (status === "unauthenticated") {
-    void signIn("logto");
+    void signIn("asgardeo");
     return null;
   }
   if (!editor) return null;

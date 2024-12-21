@@ -1,5 +1,5 @@
-import { env } from "@/env";
 import { type DefaultSession, type NextAuthConfig } from "next-auth";
+import Asgardeo from "next-auth/providers/asgardeo";
 import DiscordProvider from "next-auth/providers/discord";
 
 /**
@@ -31,32 +31,13 @@ declare module "next-auth" {
 export const authConfig = {
   providers: [
     DiscordProvider,
-    {
-      id: "logto",
-      name: "Logto",
-      type: "oidc",
-      issuer: "https://iaq7vz.logto.app/oidc",
-      clientId: env.LOGTO_APP_ID,
-      clientSecret: env.LOGTO_APP_SECRET,
-      authorization: {
-        params: { scope: "openid offline_access profile email" },
-      },
-      profile(profile: {
-        sub: string;
-        name: string | null;
-        username: string | null;
-        email: string;
-        picture: string | null;
-      }) {
-        // You can customize the user profile mapping here
+    Asgardeo({
+      profile(profile) {
         return {
-          id: profile.sub,
-          name: profile.name ?? profile.username,
-          email: profile.email,
-          image: profile.picture,
+          ...profile,
         };
       },
-    },
+    }),
     /**
      * ...add more providers here.
      *
@@ -68,12 +49,22 @@ export const authConfig = {
      */
   ],
   callbacks: {
-    session: ({ session, token }) => ({
+    jwt(params) {
+      return params.token;
+    },
+    
+    // jwt: async (token, user) => {
+    //   return token
+    // },
+    session: ({ session, token, user, }) => ({
       ...session,
       user: {
         ...session.user,
+        ...user,
         id: token.sub,
+        token: token,
       },
     }),
+    
   },
 } satisfies NextAuthConfig;
