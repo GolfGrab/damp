@@ -11,7 +11,11 @@ import { BrowserRouter, useNavigate } from "react-router";
 import { getOidcConfig } from "./auth/config";
 import AppRouter from "./routers/app-router";
 
-const theme = createTheme({});
+const theme = createTheme({
+  palette: {
+    mode: "dark",
+  },
+});
 
 export const App = () => {
   const navigator = useNavigate();

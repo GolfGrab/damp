@@ -9,6 +9,8 @@ import City from "../pages/concerts/City";
 import ConcertsHome from "../pages/concerts/ConcertsHome";
 import Trending from "../pages/concerts/Trending";
 import Home from "../pages/home/Home";
+import NotificationsHome from "../pages/notifications/NotificationsHome";
+import PreferenceSettings from "../pages/notifications/PreferenceSettings";
 import home from "./typesafe-routes";
 
 const AppRouter = () => {
@@ -28,6 +30,19 @@ const AppRouter = () => {
           <Route path={home.concerts.home.$path()} element={<ConcertsHome />} />
           <Route path={home.concerts.city.$path()} element={<City />} />
           <Route path={home.concerts.trending.$path()} element={<Trending />} />
+        </Route>
+      </Route>
+
+      <Route element={<SecuredRoute />}>
+        <Route path={home.notifications.$path()}>
+          <Route
+            path={home.notifications.home.$path()}
+            element={<NotificationsHome />}
+          />
+          <Route
+            path={home.notifications.preferenceSettings.$path()}
+            element={<PreferenceSettings />}
+          />
         </Route>
       </Route>
 

@@ -29,6 +29,15 @@ const home = route({
         trending: route({}),
       },
     }),
+    notifications: route({
+      path: "notifications",
+      children: {
+        home: route({}),
+        preferenceSettings: route({
+          path: "preference-settings",
+        }),
+      },
+    }),
   },
 });
 
