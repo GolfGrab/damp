@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useAuth } from "react-oidc-context";
-import "./Home.css";
 import reactLogo from "/react.svg";
 import viteLogo from "/vite.svg";
 
