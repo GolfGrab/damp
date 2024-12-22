@@ -1,3 +1,4 @@
+import { Button } from "@mui/material";
 import { useState } from "react";
 import { useAuth } from "react-oidc-context";
 import reactLogo from "/react.svg";
@@ -19,9 +20,12 @@ function Home() {
       </div>
       <h1>Vite + React</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
+        <Button
+          variant="contained"
+          onClick={() => setCount((count) => count + 1)}
+        >
           count is {count}
-        </button>
+        </Button>
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
@@ -32,10 +36,13 @@ function Home() {
       {auth.isAuthenticated ? (
         <div>
           Hello {JSON.stringify(auth.user?.profile)}{" "}
-          <button onClick={() => void auth.removeUser()}>Log out</button>
+          <Button variant="contained" onClick={() => void auth.removeUser()}>
+            Log out
+          </Button>
         </div>
       ) : (
-        <button
+        <Button
+          variant="contained"
           onClick={() =>
             void auth.signinRedirect({
               state: {
@@ -45,7 +52,7 @@ function Home() {
           }
         >
           Log in
-        </button>
+        </Button>
       )}
     </>
   );
