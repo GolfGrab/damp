@@ -14,6 +14,9 @@ const home = route({
         register: route({
           path: "register",
         }),
+        callback: route({
+          path: "auth/callback",
+        }),
       },
     }),
     concerts: route({

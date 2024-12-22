@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useAuth } from "react-oidc-context";
 import "./Home.css";
 import reactLogo from "/react.svg";
 import viteLogo from "/vite.svg";
 
 function Home() {
   const [count, setCount] = useState(0);
+  const auth = useAuth();
 
   return (
     <>
@@ -28,6 +30,24 @@ function Home() {
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
+      {auth.isAuthenticated ? (
+        <div>
+          Hello {JSON.stringify(auth.user?.profile)}{" "}
+          <button onClick={() => void auth.removeUser()}>Log out</button>
+        </div>
+      ) : (
+        <button
+          onClick={() =>
+            void auth.signinRedirect({
+              state: {
+                returnTo: window.location,
+              },
+            })
+          }
+        >
+          Log in
+        </button>
+      )}
     </>
   );
 }
