@@ -28,7 +28,7 @@ export class ApplicationsService {
     });
   }
 
-  findOne(applicationId: number) {
+  findOne(applicationId: string) {
     return this.prisma.application.findUniqueOrThrow({
       where: {
         id: applicationId,
@@ -36,7 +36,7 @@ export class ApplicationsService {
     });
   }
 
-  update(applicationId: number, updateApplicationDto: UpdateApplicationDto) {
+  update(applicationId: string, updateApplicationDto: UpdateApplicationDto) {
     return this.prisma.application.update({
       where: {
         id: applicationId,
@@ -45,7 +45,7 @@ export class ApplicationsService {
     });
   }
 
-  rotateApiKey(applicationId: number) {
+  rotateApiKey(applicationId: string) {
     return this.prisma.application.update({
       where: {
         id: applicationId,

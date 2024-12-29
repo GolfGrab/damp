@@ -1,3 +1,4 @@
+import { NotificationsService } from '@/modules/m-notification/notifications/notifications.service';
 import {
   ForbiddenException,
   Injectable,
@@ -9,13 +10,37 @@ import { UpsertAccountDto } from './dto/upsert-account.dto';
 
 @Injectable()
 export class AccountsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notificationService: NotificationsService,
+  ) {}
 
-  upsert(
+  async upsert(
     userId: string,
     channelType: prisma.$Enums.ChannelType,
     upsertAccountDto: UpsertAccountDto,
   ) {
+    const otpCode = this.generateOtp();
+    const expiredAt = new Date(
+      new Date().getTime() + 1000 * 60 * 5, // 5 minutes
+    );
+
+    // send otp code to user
+    await this.notificationService.create('System-application', {
+      recipientIds: [userId],
+      notificationCategoryId: `System_${channelType}_OTP`,
+      priority: prisma.Priority.HIGH,
+      templateId: `System_${channelType}_OTP`,
+      templateData: {
+        otpCode,
+      },
+    });
+
+    const prismaOtpCreateWithoutAccountInput = {
+      otpCode,
+      expiredAt,
+    };
+
     return this.prisma.account.upsert({
       where: {
         userId_channelType: {
@@ -28,28 +53,22 @@ export class AccountsService {
         channelType,
         channelToken: upsertAccountDto.channelToken,
         otp: {
-          create: this.prismaOtpCreateWithoutAccountInput(),
+          create: prismaOtpCreateWithoutAccountInput,
         },
         verifiedAt: null,
       },
       update: {
         channelToken: upsertAccountDto.channelToken,
         otp: {
-          create:this.prismaOtpCreateWithoutAccountInput(),
+          create: prismaOtpCreateWithoutAccountInput,
         },
         verifiedAt: null,
       },
     });
   }
 
-  prismaOtpCreateWithoutAccountInput(
-    otpCode: string = Math.floor(100000 + Math.random() * 900000).toString(),
-    expiredAt: Date = new Date(Date.now() + 5 * 60 * 1000),
-  ) {
-    return {
-      otpCode,
-      expiredAt,
-    };
+  generateOtp() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
   }
 
   async verify(

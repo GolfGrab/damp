@@ -86,7 +86,7 @@ export class MNotificationController {
   })
   @Post('applications/:applicationId/notifications')
   createNotification(
-    @Param('applicationId') applicationId: number,
+    @Param('applicationId') applicationId: string,
     @Body() createNotificationDto: CreateNotificationDto,
     @GetApplication() application: Application,
   ): Promise<Notification | null> {
@@ -106,7 +106,7 @@ export class MNotificationController {
 
   @Get('applications/:applicationId/notifications')
   findAllNotificationsByApplicationId(
-    @Param('applicationId') applicationId: number,
+    @Param('applicationId') applicationId: string,
   ): Promise<Notification[]> {
     return this.notificationsService.findAllByApplicationId(applicationId);
   }
@@ -120,7 +120,7 @@ export class MNotificationController {
 
   @Get('notification-categories/:notificationCategoryId/notifications')
   findAllNotificationsByNotificationCategoryId(
-    @Param('notificationCategoryId') notificationCategoryId: number,
+    @Param('notificationCategoryId') notificationCategoryId: string,
   ): Promise<Notification[]> {
     return this.notificationsService.findAllByNotificationCategoryId(
       notificationCategoryId,

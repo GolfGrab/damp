@@ -33,14 +33,11 @@ Table Otp {
 
 Table Channel {
   channelType ChannelType [pk]
-  name String [unique, not null]
   messageType MessageType [not null]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
 }
 
 Table Application {
-  id Int [pk, increment]
+  id String [pk]
   name String [not null]
   description String [not null]
   apiKey String [unique, not null]
@@ -52,8 +49,8 @@ Table Application {
 }
 
 Table NotificationCategory {
-  id Int [pk, increment]
-  applicationId Int [not null]
+  id String [pk]
+  applicationId String [not null]
   name String [unique, not null]
   createdAt DateTime [default: `now()`, not null]
   createdByUserId String [not null]
@@ -63,8 +60,8 @@ Table NotificationCategory {
 
 Table Notification {
   id Int [pk, increment]
-  applicationId Int [not null]
-  notificationCategoryId Int [not null]
+  applicationId String [not null]
+  notificationCategoryId String [not null]
   templateId String [not null]
   templateData String [not null]
   priority Priority [not null]
@@ -141,7 +138,7 @@ Table CompiledTemplate {
 
 Table UserPreference {
   userId String [not null]
-  notificationCategoryId Int [not null]
+  notificationCategoryId String [not null]
   channelType ChannelType [not null]
   isPreferred Boolean [not null]
   createdAt DateTime [default: `now()`, not null]

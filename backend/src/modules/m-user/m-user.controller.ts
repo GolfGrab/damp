@@ -137,7 +137,7 @@ export class MUserController {
   createUserPreference(
     @Param('userId') userId: string,
     @Param('channelType') channelType: prisma.$Enums.ChannelType,
-    @Param('notificationCategoryId') notificationCategoryId: number,
+    @Param('notificationCategoryId') notificationCategoryId: string,
     @Body() createUserPreferenceDto: CreateUserPreferenceDto,
   ): Promise<UserPreference> {
     return this.userPreferencesService.create(
@@ -170,7 +170,7 @@ export class MUserController {
   findOneUserPreference(
     @Param('userId') userId: string,
     @Param('channelType') channelType: prisma.$Enums.ChannelType,
-    @Param('notificationCategoryId') notificationCategoryId: number,
+    @Param('notificationCategoryId') notificationCategoryId: string,
   ): Promise<UserPreference> {
     return this.userPreferencesService.findOne(
       userId,
@@ -189,7 +189,7 @@ export class MUserController {
   updateUserPreference(
     @Param('userId') userId: string,
     @Param('channelType') channelType: prisma.$Enums.ChannelType,
-    @Param('notificationCategoryId') notificationCategoryId: number,
+    @Param('notificationCategoryId') notificationCategoryId: string,
     @Body() updateUserPreferenceDto: UpdateUserPreferenceDto,
   ): Promise<UserPreference> {
     return this.userPreferencesService.update(
@@ -197,25 +197,6 @@ export class MUserController {
       notificationCategoryId,
       channelType,
       updateUserPreferenceDto,
-    );
-  }
-
-  @ApiParam({
-    name: 'channelType',
-    enum: prisma.$Enums.ChannelType,
-  })
-  @Delete(
-    'users/:userId/channel/:channelType/notification-categories/:notificationCategoryId/user-preferences',
-  )
-  removeUserPreference(
-    @Param('userId') userId: string,
-    @Param('channelType') channelType: prisma.$Enums.ChannelType,
-    @Param('notificationCategoryId') notificationCategoryId: number,
-  ) {
-    return this.userPreferencesService.remove(
-      userId,
-      notificationCategoryId,
-      channelType,
     );
   }
 }

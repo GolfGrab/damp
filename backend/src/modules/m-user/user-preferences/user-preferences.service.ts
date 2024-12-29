@@ -10,7 +10,7 @@ export class UserPreferencesService {
 
   create(
     userId: string,
-    notificationCategoryId: number,
+    notificationCategoryId: string,
     channelType: prisma.$Enums.ChannelType,
     createUserPreferenceDto: CreateUserPreferenceDto,
   ) {
@@ -38,7 +38,7 @@ export class UserPreferencesService {
 
   findOne(
     userId: string,
-    notificationCategoryId: number,
+    notificationCategoryId: string,
     channelType: prisma.$Enums.ChannelType,
   ) {
     return this.prisma.userPreference.findUniqueOrThrow({
@@ -54,7 +54,7 @@ export class UserPreferencesService {
 
   update(
     userId: string,
-    notificationCategoryId: number,
+    notificationCategoryId: string,
     channelType: prisma.$Enums.ChannelType,
     updateUserPreferenceDto: UpdateUserPreferenceDto,
   ) {
@@ -67,22 +67,6 @@ export class UserPreferencesService {
         },
       },
       data: updateUserPreferenceDto,
-    });
-  }
-
-  remove(
-    userId: string,
-    notificationCategoryId: number,
-    channelType: prisma.$Enums.ChannelType,
-  ) {
-    return this.prisma.userPreference.delete({
-      where: {
-        userId_channelType_notificationCategoryId: {
-          userId,
-          channelType,
-          notificationCategoryId,
-        },
-      },
     });
   }
 }

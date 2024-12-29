@@ -42,21 +42,21 @@ export class MApplicationController {
 
   @Get('applications/:applicationId')
   findOneApplication(
-    @Param('applicationId') applicationId: number,
+    @Param('applicationId') applicationId: string,
   ): Promise<Application> {
     return this.applicationsService.findOne(applicationId);
   }
 
   @Patch('applications/:applicationId')
   updateApplication(
-    @Param('applicationId') applicationId: number,
+    @Param('applicationId') applicationId: string,
     @Body() updateApplicationDto: UpdateApplicationDto,
   ): Promise<Application> {
     return this.applicationsService.update(applicationId, updateApplicationDto);
   }
 
   @Patch('applications/:applicationId/rotate-api-key')
-  rotateApiKey(@Param('applicationId') applicationId: number) {
+  rotateApiKey(@Param('applicationId') applicationId: string) {
     return this.applicationsService.rotateApiKey(applicationId);
   }
 
@@ -66,7 +66,7 @@ export class MApplicationController {
 
   @Post('applications/:applicationId/notification-categories')
   createNotificationCategory(
-    @Param('applicationId') applicationId: number,
+    @Param('applicationId') applicationId: string,
     @Body() createNotificationCategoryDto: CreateNotificationCategoryDto,
   ): Promise<NotificationCategory> {
     return this.notificationCategoriesService.create(
@@ -82,7 +82,7 @@ export class MApplicationController {
 
   @Get('applications/:applicationId/notification-categories')
   findAllNotificationCategoriesByApplicationId(
-    @Param('applicationId') applicationId: number,
+    @Param('applicationId') applicationId: string,
   ): Promise<NotificationCategory[]> {
     return this.notificationCategoriesService.findAllByApplicationId(
       applicationId,
@@ -91,14 +91,14 @@ export class MApplicationController {
 
   @Get('notification-categories/:notificationCategoryId')
   findOneNotificationCategory(
-    @Param('notificationCategoryId') notificationCategoryId: number,
+    @Param('notificationCategoryId') notificationCategoryId: string,
   ): Promise<NotificationCategory> {
     return this.notificationCategoriesService.findOne(notificationCategoryId);
   }
 
   @Patch('notification-categories/:notificationCategoryId')
   updateNotificationCategory(
-    @Param('notificationCategoryId') notificationCategoryId: number,
+    @Param('notificationCategoryId') notificationCategoryId: string,
     @Body() updateNotificationCategoryDto: UpdateNotificationCategoryDto,
   ): Promise<NotificationCategory> {
     return this.notificationCategoriesService.update(

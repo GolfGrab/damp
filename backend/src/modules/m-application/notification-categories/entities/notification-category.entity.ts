@@ -3,14 +3,14 @@ import * as prisma from '@prisma/client';
 
 export class NotificationCategory implements prisma.NotificationCategory {
   @ApiProperty({
-    type: Number,
+    type: String,
   })
-  id: number;
+  id: string;
 
   @ApiProperty({
-    type: Number,
+    type: String,
   })
-  applicationId: number;
+  applicationId: string;
 
   @ApiProperty({
     type: String,

@@ -6,6 +6,12 @@ export class CreateNotificationCategoryDto {
   @ApiProperty({
     type: String,
   })
+  id: string;
+
+  @IsString()
+  @ApiProperty({
+    type: String,
+  })
   name: string;
 
   @IsString()

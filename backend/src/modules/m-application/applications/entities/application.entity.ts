@@ -3,9 +3,9 @@ import * as prisma from '@prisma/client';
 
 export class Application implements Omit<prisma.Application, 'apiKey'> {
   @ApiProperty({
-    type: Number,
+    type: String,
   })
-  id: number;
+  id: string;
 
   @ApiProperty({
     type: String,

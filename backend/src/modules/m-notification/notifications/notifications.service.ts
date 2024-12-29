@@ -38,7 +38,7 @@ export class NotificationsService {
   private readonly logger = new Logger(NotificationsService.name);
 
   async create(
-    applicationId: number,
+    applicationId: string,
     createNotificationDto: CreateNotificationDto,
   ) {
     this.logger.log('Creating notification: ' + inspect(createNotificationDto));
@@ -198,7 +198,7 @@ export class NotificationsService {
     return this.prisma.notification.findMany();
   }
 
-  findAllByApplicationId(applicationId: number) {
+  findAllByApplicationId(applicationId: string) {
     return this.prisma.notification.findMany({
       where: {
         applicationId,
@@ -214,7 +214,7 @@ export class NotificationsService {
     });
   }
 
-  findAllByNotificationCategoryId(notificationCategoryId: number) {
+  findAllByNotificationCategoryId(notificationCategoryId: string) {
     return this.prisma.notification.findMany({
       where: {
         notificationCategoryId,

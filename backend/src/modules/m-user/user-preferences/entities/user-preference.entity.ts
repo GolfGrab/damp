@@ -8,9 +8,9 @@ export class UserPreference implements prisma.UserPreference {
   userId: string;
 
   @ApiProperty({
-    type: Number,
+    type: String,
   })
-  notificationCategoryId: number;
+  notificationCategoryId: string;
 
   @ApiProperty({
     type: String,

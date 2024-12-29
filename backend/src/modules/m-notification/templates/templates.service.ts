@@ -15,6 +15,51 @@ export class TemplatesService {
     private readonly templatesRendererService: TemplatesRendererService,
   ) {}
 
+  upsert(createTemplateDto: CreateTemplateDto) {
+    const compiledTemplates =
+      this.templatesParserService.parseJSONToCompiledTemplates(
+        createTemplateDto.template,
+      );
+    return this.prisma.template.upsert({
+      where: {
+        id: createTemplateDto.id,
+      },
+      create: {
+        ...createTemplateDto,
+        template: JSON.stringify(createTemplateDto.template),
+        compiledTemplates: {
+          createMany: {
+            data: Object.values($Enums.MessageType).map((messageType) => ({
+              messageType,
+              compiledTemplate: compiledTemplates[messageType],
+            })),
+          },
+        },
+      },
+      update: {
+        ...createTemplateDto,
+        template: JSON.stringify(createTemplateDto.template),
+        compiledTemplates: {
+          upsert: Object.values($Enums.MessageType).map((messageType) => ({
+            where: {
+              templateId_messageType: {
+                messageType,
+                templateId: createTemplateDto.id,
+              },
+            },
+            create: {
+              messageType,
+              compiledTemplate: compiledTemplates[messageType],
+            },
+            update: {
+              compiledTemplate: compiledTemplates[messageType],
+            },
+          })),
+        },
+      },
+    });
+  }
+
   create(createTemplateDto: CreateTemplateDto) {
     const compiledTemplates =
       this.templatesParserService.parseJSONToCompiledTemplates(

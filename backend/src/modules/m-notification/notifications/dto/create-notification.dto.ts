@@ -24,9 +24,9 @@ export class CreateNotificationDto {
 
   @IsNumber()
   @ApiProperty({
-    type: Number,
+    type: String,
   })
-  notificationCategoryId: number;
+  notificationCategoryId: string;
 
   @IsEnum(prisma.$Enums.Priority)
   @ApiProperty({
