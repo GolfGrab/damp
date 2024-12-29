@@ -32,19 +32,38 @@ model User {
   updatedNotificationCategories NotificationCategory[]  @relation("notificationCategoryUpdatedUser")
   deletedUsers                  User[]                  @relation("userDeletedByUser")
   deletedByUser                 User?                   @relation("userDeletedByUser", fields: [deletedByUserId], references: [id])
+  otp                           Otp[]
 }
 
 model Account {
-  userId       String
-  channelType  ChannelType
-  channelToken String
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  userId          String
+  channelType     ChannelType
+  channelToken    String
+  verifiedAt      DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  deletedAt       DateTime?
+  deletedByUserId String?
 
   user    User    @relation(fields: [userId], references: [id])
   channel Channel @relation(fields: [channelType], references: [channelType])
+  otp     Otp[]
 
   @@id([userId, channelType])
+}
+
+model Otp {
+  id          Int         @id @default(autoincrement())
+  otpCode     String
+  createdAt   DateTime    @default(now())
+  expiredAt   DateTime
+  verifiedAt  DateTime?
+  userId      String
+  channelType ChannelType
+
+  user    User    @relation(fields: [userId], references: [id])
+  channel Channel @relation(fields: [channelType], references: [channelType])
+  account Account @relation(fields: [userId, channelType], references: [userId, channelType])
 }
 
 model Channel {
@@ -57,6 +76,7 @@ model Channel {
   accounts          Account[]
   notificationTasks NotificationTask[]
   userPreferences   UserPreference[]
+  otp               Otp[]
 }
 
 model Application {

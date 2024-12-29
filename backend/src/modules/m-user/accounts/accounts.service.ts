@@ -1,23 +1,100 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAccountDto } from './dto/create-account.dto';
-import { UpdateAccountDto } from './dto/update-account.dto';
-import { PrismaService } from 'nestjs-prisma';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import * as prisma from '@prisma/client';
+import { PrismaService } from 'nestjs-prisma';
+import { UpsertAccountDto } from './dto/upsert-account.dto';
 
 @Injectable()
 export class AccountsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(
+  upsert(
     userId: string,
     channelType: prisma.$Enums.ChannelType,
-    createAccountDto: CreateAccountDto,
+    upsertAccountDto: UpsertAccountDto,
   ) {
-    return this.prisma.account.create({
-      data: {
+    return this.prisma.account.upsert({
+      where: {
+        userId_channelType: {
+          userId,
+          channelType,
+        },
+      },
+      create: {
         userId,
         channelType,
-        ...createAccountDto,
+        channelToken: upsertAccountDto.channelToken,
+        otp: {
+          create: {
+            otpCode: Math.floor(100000 + Math.random() * 900000).toString(),
+            expiredAt: new Date(Date.now() + 5 * 60 * 1000),
+          },
+        },
+        verifiedAt: null,
+      },
+      update: {
+        channelToken: upsertAccountDto.channelToken,
+        otp: {
+          create: {
+            otpCode: Math.floor(100000 + Math.random() * 900000).toString(),
+            expiredAt: new Date(Date.now() + 5 * 60 * 1000),
+          },
+        },
+        verifiedAt: null,
+      },
+    });
+  }
+
+  async verify(
+    userId: string,
+    channelType: prisma.$Enums.ChannelType,
+    otpCode: string,
+  ) {
+    const mostRecentOtp = await this.prisma.otp.findFirst({
+      where: {
+        account: {
+          userId: userId,
+          channelType: channelType,
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    switch (true) {
+      case !mostRecentOtp:
+        throw new NotFoundException('OTP not found');
+      case mostRecentOtp?.verifiedAt !== null:
+        throw new ForbiddenException('OTP has been verified');
+      case mostRecentOtp && mostRecentOtp.expiredAt < new Date():
+        throw new ForbiddenException('OTP has expired');
+      case mostRecentOtp && mostRecentOtp.otpCode !== otpCode:
+        throw new ForbiddenException('OTP code is incorrect');
+    }
+
+    return this.prisma.account.update({
+      where: {
+        userId_channelType: {
+          userId,
+          channelType,
+        },
+      },
+      data: {
+        verifiedAt: new Date(),
+        otp: {
+          update: {
+            where: {
+              id: mostRecentOtp.id,
+            },
+            data: {
+              verifiedAt: new Date(),
+            },
+          },
+        },
       },
     });
   }
@@ -41,24 +118,6 @@ export class AccountsService {
           userId,
           channelType,
         },
-      },
-    });
-  }
-
-  update(
-    userId: string,
-    channelType: prisma.$Enums.ChannelType,
-    updateAccountDto: UpdateAccountDto,
-  ) {
-    return this.prisma.account.update({
-      where: {
-        userId_channelType: {
-          userId,
-          channelType,
-        },
-      },
-      data: {
-        ...updateAccountDto,
       },
     });
   }

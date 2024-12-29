@@ -14,12 +14,25 @@ Table Account {
   userId String [not null]
   channelType ChannelType [not null]
   channelToken String [not null]
+  verifiedAt DateTime
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
+  deletedAt DateTime
+  deletedByUserId String
 
   indexes {
     (userId, channelType) [pk]
   }
+}
+
+Table Otp {
+  id Int [pk, increment]
+  otpCode String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  expiredAt DateTime [not null]
+  verifiedAt DateTime
+  userId String [not null]
+  channelType ChannelType [not null]
 }
 
 Table Channel {
@@ -174,6 +187,12 @@ Ref: User.deletedByUserId > User.id
 Ref: Account.userId > User.id
 
 Ref: Account.channelType > Channel.channelType
+
+Ref: Otp.userId > User.id
+
+Ref: Otp.channelType > Channel.channelType
+
+Ref: Otp.(userId, channelType) > Account.(userId, channelType)
 
 Ref: Application.createdByUserId > User.id
 
