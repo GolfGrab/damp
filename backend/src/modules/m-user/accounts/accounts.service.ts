@@ -28,24 +28,28 @@ export class AccountsService {
         channelType,
         channelToken: upsertAccountDto.channelToken,
         otp: {
-          create: {
-            otpCode: Math.floor(100000 + Math.random() * 900000).toString(),
-            expiredAt: new Date(Date.now() + 5 * 60 * 1000),
-          },
+          create: this.prismaOtpCreateWithoutAccountInput(),
         },
         verifiedAt: null,
       },
       update: {
         channelToken: upsertAccountDto.channelToken,
         otp: {
-          create: {
-            otpCode: Math.floor(100000 + Math.random() * 900000).toString(),
-            expiredAt: new Date(Date.now() + 5 * 60 * 1000),
-          },
+          create:this.prismaOtpCreateWithoutAccountInput(),
         },
         verifiedAt: null,
       },
     });
+  }
+
+  prismaOtpCreateWithoutAccountInput(
+    otpCode: string = Math.floor(100000 + Math.random() * 900000).toString(),
+    expiredAt: Date = new Date(Date.now() + 5 * 60 * 1000),
+  ) {
+    return {
+      otpCode,
+      expiredAt,
+    };
   }
 
   async verify(
