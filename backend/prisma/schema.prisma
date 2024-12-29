@@ -14,11 +14,9 @@ datasource db {
 }
 
 model User {
-  id              String    @id
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  deletedAt       DateTime?
-  deletedByUserId String?
+  id        String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   accounts                      Account[]
   userPreferences               UserPreference[]
@@ -30,20 +28,16 @@ model User {
   updatedTemplates              Template[]              @relation("templateupdatedByUserIdUser")
   createdNotificationCategories NotificationCategory[]  @relation("notificationCategoryCreatedUser")
   updatedNotificationCategories NotificationCategory[]  @relation("notificationCategoryUpdatedUser")
-  deletedUsers                  User[]                  @relation("userDeletedByUser")
-  deletedByUser                 User?                   @relation("userDeletedByUser", fields: [deletedByUserId], references: [id], onUpdate: Cascade)
   otp                           Otp[]
 }
 
 model Account {
-  userId          String
-  channelType     ChannelType
-  channelToken    String
-  verifiedAt      DateTime?
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-  deletedAt       DateTime?
-  deletedByUserId String?
+  userId       String
+  channelType  ChannelType
+  channelToken String
+  verifiedAt   DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 
   user    User    @relation(fields: [userId], references: [id], onUpdate: Cascade)
   channel Channel @relation(fields: [channelType], references: [channelType])
@@ -116,7 +110,7 @@ model Notification {
   id                     Int      @id @default(autoincrement())
   applicationId          Int
   notificationCategoryId Int
-  templateId             Int
+  templateId             String
   templateData           String
   priority               Priority
   createdAt              DateTime @default(now())
@@ -144,7 +138,7 @@ model NotificationRecipient {
 
 model CompiledMessage {
   notificationId  Int
-  templateId      Int
+  templateId      String
   messageType     MessageType
   compiledMessage String
   createdAt       DateTime    @default(now())
@@ -161,7 +155,7 @@ model NotificationTask {
   channelType     ChannelType
   userId          String
   notificationId  Int
-  templateId      Int
+  templateId      String
   messageType     MessageType
   priority        Priority
   sentStatus      SentStatus  @default(PENDING)
@@ -182,7 +176,7 @@ model NotificationTask {
 }
 
 model Template {
-  id              Int      @id @default(autoincrement())
+  id              String   @id
   name            String
   description     String
   template        String
@@ -199,7 +193,7 @@ model Template {
 }
 
 model CompiledTemplate {
-  templateId       Int
+  templateId       String
   messageType      MessageType
   compiledTemplate String
   createdAt        DateTime    @default(now())

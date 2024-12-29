@@ -1,21 +1,13 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { ApplicationsService } from './applications/applications.service';
 import { CreateApplicationDto } from './applications/dto/create-application.dto';
-import { CreateNotificationCategoryDto } from './notification-categories/dto/create-notification-category.dto';
-import { NotificationCategoriesService } from './notification-categories/notification-categories.service';
 import { UpdateApplicationDto } from './applications/dto/update-application.dto';
-import { UpdateNotificationCategoryDto } from './notification-categories/dto/update-notification-category.dto';
 import { Application } from './applications/entities/application.entity';
+import { CreateNotificationCategoryDto } from './notification-categories/dto/create-notification-category.dto';
+import { UpdateNotificationCategoryDto } from './notification-categories/dto/update-notification-category.dto';
 import { NotificationCategory } from './notification-categories/entities/notification-category.entity';
-import { ApiParam, ApiTags } from '@nestjs/swagger';
+import { NotificationCategoriesService } from './notification-categories/notification-categories.service';
 
 @ApiTags('Application Module')
 @Controller('m-application')
@@ -68,11 +60,6 @@ export class MApplicationController {
     return this.applicationsService.rotateApiKey(applicationId);
   }
 
-  @Delete('applications/:applicationId')
-  removeApplication(@Param('applicationId') applicationId: number) {
-    return this.applicationsService.remove(applicationId);
-  }
-
   /**
    * Notification Categories
    **/
@@ -118,12 +105,5 @@ export class MApplicationController {
       notificationCategoryId,
       updateNotificationCategoryDto,
     );
-  }
-
-  @Delete('notification-categories/:notificationCategoryId')
-  removeNotificationCategory(
-    @Param('notificationCategoryId') notificationCategoryId: number,
-  ) {
-    return this.notificationCategoriesService.remove(notificationCategoryId);
   }
 }

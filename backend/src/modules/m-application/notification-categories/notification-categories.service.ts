@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'nestjs-prisma';
 import { CreateNotificationCategoryDto } from './dto/create-notification-category.dto';
 import { UpdateNotificationCategoryDto } from './dto/update-notification-category.dto';
-import { PrismaService } from 'nestjs-prisma';
 
 @Injectable()
 export class NotificationCategoriesService {
@@ -48,14 +48,6 @@ export class NotificationCategoriesService {
         id,
       },
       data: updateNotificationCategoryDto,
-    });
-  }
-
-  remove(id: number) {
-    return this.prisma.notificationCategory.delete({
-      where: {
-        id,
-      },
     });
   }
 }

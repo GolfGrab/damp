@@ -37,16 +37,4 @@ export class UsersService {
       },
     });
   }
-
-  remove(userId: string) {
-    return this.prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        deletedAt: new Date(),
-        deletedByUserId: 'user-id-1', // TODO: Use the current user ID
-      },
-    });
-  }
 }

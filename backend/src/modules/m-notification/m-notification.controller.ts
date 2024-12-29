@@ -2,7 +2,6 @@ import { GetApplication, KeyAuth } from '@/auth/auth.decorator';
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Param,
   Patch,
@@ -45,21 +44,16 @@ export class MNotificationController {
   }
 
   @Get('templates/:templateId')
-  findOneTemplate(@Param('templateId') templateId: number): Promise<Template> {
+  findOneTemplate(@Param('templateId') templateId: string): Promise<Template> {
     return this.templatesService.findOne(templateId);
   }
 
   @Patch('templates/:templateId')
   updateTemplate(
-    @Param('templateId') templateId: number,
+    @Param('templateId') templateId: string,
     @Body() updateTemplateDto: UpdateTemplateDto,
   ): Promise<Template> {
     return this.templatesService.update(templateId, updateTemplateDto);
-  }
-
-  @Delete('templates/:templateId')
-  removeTemplate(@Param('templateId') templateId: number) {
-    return this.templatesService.remove(templateId);
   }
 
   @ApiParam({
@@ -69,7 +63,7 @@ export class MNotificationController {
   })
   @Post('templates/:templateId/messageType/:messageType/preview')
   previewTemplate(
-    @Param('templateId') templateId: number,
+    @Param('templateId') templateId: string,
     @Param('messageType') messageType: MessageType,
     @Body() getPreviewTemplateDto: GetPreviewTemplateDto,
   ) {
@@ -119,7 +113,7 @@ export class MNotificationController {
 
   @Get('templates/:templateId/notifications')
   findAllNotificationsByTemplateId(
-    @Param('templateId') templateId: number,
+    @Param('templateId') templateId: string,
   ): Promise<Notification[]> {
     return this.notificationsService.findAllByTemplateId(templateId);
   }

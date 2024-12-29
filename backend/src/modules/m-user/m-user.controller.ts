@@ -10,8 +10,7 @@ import {
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 import * as prisma from '@prisma/client';
 import { AccountsService } from './accounts/accounts.service';
-import { CreateAccountDto } from './accounts/dto/create-account.dto';
-import { UpdateAccountDto } from './accounts/dto/update-account.dto';
+import { UpsertAccountDto } from './accounts/dto/upsert-account.dto';
 import { Account } from './accounts/entities/account.entity';
 import { CreateUserPreferenceDto } from './user-preferences/dto/create-user-preference.dto';
 import { UpdateUserPreferenceDto } from './user-preferences/dto/update-user-preference.dto';
@@ -58,11 +57,6 @@ export class MUserController {
     return this.usersService.update(userId, updateUserDto);
   }
 
-  @Delete('users/:userId')
-  removeUser(@Param('userId') userId: string) {
-    return this.usersService.remove(userId);
-  }
-
   /**
    * Accounts
    **/
@@ -75,9 +69,9 @@ export class MUserController {
   createAccount(
     @Param('userId') userId: string,
     @Param('channelType') channelType: prisma.$Enums.ChannelType,
-    @Body() createAccountDto: CreateAccountDto,
+    @Body() upsertAccountDto: UpsertAccountDto,
   ): Promise<Account> {
-    return this.accountsService.create(userId, channelType, createAccountDto);
+    return this.accountsService.upsert(userId, channelType, upsertAccountDto);
   }
 
   @ApiParam({
@@ -112,9 +106,9 @@ export class MUserController {
   updateAccount(
     @Param('userId') userId: string,
     @Param('channelType') channelType: prisma.$Enums.ChannelType,
-    @Body() updateAccountDto: UpdateAccountDto,
+    @Body() upsertAccountDto: UpsertAccountDto,
   ): Promise<Account> {
-    return this.accountsService.update(userId, channelType, updateAccountDto);
+    return this.accountsService.upsert(userId, channelType, upsertAccountDto);
   }
 
   @ApiParam({

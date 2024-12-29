@@ -6,8 +6,6 @@ Table User {
   id String [pk]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
-  deletedAt DateTime
-  deletedByUserId String
 }
 
 Table Account {
@@ -17,8 +15,6 @@ Table Account {
   verifiedAt DateTime
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
-  deletedAt DateTime
-  deletedByUserId String
 
   indexes {
     (userId, channelType) [pk]
@@ -69,7 +65,7 @@ Table Notification {
   id Int [pk, increment]
   applicationId Int [not null]
   notificationCategoryId Int [not null]
-  templateId Int [not null]
+  templateId String [not null]
   templateData String [not null]
   priority Priority [not null]
   createdAt DateTime [default: `now()`, not null]
@@ -89,7 +85,7 @@ Table NotificationRecipient {
 
 Table CompiledMessage {
   notificationId Int [not null]
-  templateId Int [not null]
+  templateId String [not null]
   messageType MessageType [not null]
   compiledMessage String [not null]
   createdAt DateTime [default: `now()`, not null]
@@ -104,7 +100,7 @@ Table NotificationTask {
   channelType ChannelType [not null]
   userId String [not null]
   notificationId Int [not null]
-  templateId Int [not null]
+  templateId String [not null]
   messageType MessageType [not null]
   priority Priority [not null]
   sentStatus SentStatus [not null, default: 'PENDING']
@@ -121,7 +117,7 @@ Table NotificationTask {
 }
 
 Table Template {
-  id Int [pk, increment]
+  id String [pk]
   name String [not null]
   description String [not null]
   template String [not null]
@@ -132,7 +128,7 @@ Table Template {
 }
 
 Table CompiledTemplate {
-  templateId Int [not null]
+  templateId String [not null]
   messageType MessageType [not null]
   compiledTemplate String [not null]
   createdAt DateTime [default: `now()`, not null]
@@ -181,8 +177,6 @@ Enum ChannelType {
   WEB_PUSH
   SLACK
 }
-
-Ref: User.deletedByUserId > User.id
 
 Ref: Account.userId > User.id
 

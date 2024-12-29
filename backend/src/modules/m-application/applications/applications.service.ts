@@ -55,12 +55,4 @@ export class ApplicationsService {
       },
     });
   }
-
-  remove(applicationId: number) {
-    return this.prisma.application.delete({
-      where: {
-        id: applicationId,
-      },
-    });
-  }
 }

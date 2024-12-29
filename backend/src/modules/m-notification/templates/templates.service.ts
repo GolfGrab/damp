@@ -50,7 +50,7 @@ export class TemplatesService {
     return this.prisma.template.findMany();
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.prisma.template.findUniqueOrThrow({
       where: {
         id,
@@ -61,7 +61,7 @@ export class TemplatesService {
     });
   }
 
-  update(id: number, updateTemplateDto: UpdateTemplateDto) {
+  update(id: string, updateTemplateDto: UpdateTemplateDto) {
     const compiledTemplates = updateTemplateDto.template
       ? this.templatesParserService.parseJSONToCompiledTemplates(
           updateTemplateDto.template,
@@ -113,16 +113,8 @@ export class TemplatesService {
     });
   }
 
-  remove(id: number) {
-    return this.prisma.template.delete({
-      where: {
-        id,
-      },
-    });
-  }
-
   async render(
-    id: number,
+    id: string,
     messageType: MessageType,
     getPreviewTemplateDto: GetPreviewTemplateDto,
   ) {

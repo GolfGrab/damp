@@ -9,11 +9,11 @@ import {
 } from 'class-validator';
 
 export class CreateNotificationDto {
-  @IsNumber()
+  @IsString()
   @ApiProperty({
-    type: Number,
+    type: String,
   })
-  templateId: number;
+  templateId: string;
 
   @ApiProperty({
     type: Object,

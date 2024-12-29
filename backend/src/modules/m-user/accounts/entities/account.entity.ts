@@ -21,6 +21,12 @@ export class Account implements prisma.Account {
     type: String,
     format: 'date-time',
   })
+  verifiedAt: Date | null;
+
+  @ApiProperty({
+    type: String,
+    format: 'date-time',
+  })
   createdAt: Date;
 
   @ApiProperty({

@@ -206,7 +206,7 @@ export class NotificationsService {
     });
   }
 
-  findAllByTemplateId(templateId: number) {
+  findAllByTemplateId(templateId: string) {
     return this.prisma.notification.findMany({
       where: {
         templateId,
