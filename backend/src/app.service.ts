@@ -1,17 +1,26 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import * as Prisma from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 import { TemplatesService } from './modules/m-notification/templates/templates.service';
 
 @Injectable()
-export class AppService {
+export class AppService implements OnModuleInit {
   constructor(
     private readonly prisma: PrismaService,
     private readonly templatesService: TemplatesService,
   ) {}
 
+  async onModuleInit() {
+    await this.setup();
+  }
+
+  private readonly logger = new Logger(AppService.name);
+
   async setup(): Promise<void> {
+    this.logger.log('Setting up system data');
+
     // upsert channel types
+    this.logger.log('Upserting channel types');
     const channelTypeMessageTypeMap = {
       [Prisma.ChannelType.EMAIL]: Prisma.MessageType.HTML,
       [Prisma.ChannelType.SMS]: Prisma.MessageType.TEXT,
@@ -39,6 +48,7 @@ export class AppService {
     );
 
     // upsert system user
+    this.logger.log('Upserting system user');
     await this.prisma.user.upsert({
       where: {
         id: 'System-user',
@@ -50,6 +60,7 @@ export class AppService {
     });
 
     // upsert system application
+    this.logger.log('Upserting system application');
     await this.prisma.application.upsert({
       where: {
         id: 'System-application',
@@ -66,6 +77,7 @@ export class AppService {
     });
 
     // upsert system notification category for OTP ( One category per channel type )
+    this.logger.log('Upserting system notification categories for OTP');
     await Promise.all(
       Object.keys(channelTypeMessageTypeMap).map(async (channelType) => {
         await this.prisma.notificationCategory.upsert({
@@ -87,11 +99,21 @@ export class AppService {
     );
 
     // upsert system templates for OTP ( One template per channel type )
+    this.logger.log('Upserting system templates for OTP');
     await Promise.all(
       Object.keys(channelTypeMessageTypeMap).map(async (channelType) => {
         const template = {
           type: 'doc',
           content: [
+            {
+              type: 'paragraph',
+              content: [
+                {
+                  type: 'text',
+                  text: `OTP Verification for ${channelType} channel`,
+                },
+              ],
+            },
             {
               type: 'paragraph',
               content: [

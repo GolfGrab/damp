@@ -8,6 +8,30 @@ import { PrismaService } from 'nestjs-prisma';
 export class UserPreferencesService {
   constructor(private readonly prisma: PrismaService) {}
 
+  upsert(
+    userId: string,
+    notificationCategoryId: string,
+    channelType: prisma.$Enums.ChannelType,
+    createUserPreferenceDto: CreateUserPreferenceDto,
+  ) {
+    return this.prisma.userPreference.upsert({
+      where: {
+        userId_channelType_notificationCategoryId: {
+          userId,
+          channelType,
+          notificationCategoryId,
+        },
+      },
+      create: {
+        userId,
+        notificationCategoryId,
+        channelType,
+        ...createUserPreferenceDto,
+      },
+      update: createUserPreferenceDto,
+    });
+  }
+
   create(
     userId: string,
     notificationCategoryId: string,

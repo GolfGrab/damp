@@ -1,28 +1,28 @@
-import { NotificationsService } from '@/modules/m-notification/notifications/notifications.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { mockDeep } from 'jest-mock-extended';
 import { PrismaService } from 'nestjs-prisma';
-import { AccountsService } from './accounts.service';
+import { AppService } from './app.service';
+import { TemplatesService } from './modules/m-notification/templates/templates.service';
 
-describe('AccountsService', () => {
-  let service: AccountsService;
+describe('AppService', () => {
+  let service: AppService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        AccountsService,
+        AppService,
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>(),
         },
         {
-          provide: NotificationsService,
-          useValue: mockDeep<NotificationsService>(),
+          provide: TemplatesService,
+          useValue: mockDeep<TemplatesService>(),
         },
       ],
     }).compile();
 
-    service = module.get<AccountsService>(AccountsService);
+    service = module.get<AppService>(AppService);
   });
 
   it('should be defined', () => {

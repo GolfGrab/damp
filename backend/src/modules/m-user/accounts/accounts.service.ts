@@ -6,6 +6,8 @@ import {
 } from '@nestjs/common';
 import * as prisma from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
+import { UserPreferencesService } from '../user-preferences/user-preferences.service';
+import { VerifyUserDto } from '../users/dto/verify-user.dto';
 import { UpsertAccountDto } from './dto/upsert-account.dto';
 
 @Injectable()
@@ -13,6 +15,7 @@ export class AccountsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notificationService: NotificationsService,
+    private readonly userPreferencesService: UserPreferencesService,
   ) {}
 
   async upsert(
@@ -23,6 +26,16 @@ export class AccountsService {
     const otpCode = this.generateOtp();
     const expiredAt = new Date(
       new Date().getTime() + 1000 * 60 * 5, // 5 minutes
+    );
+
+    // set user preferences for OTP
+    await this.userPreferencesService.upsert(
+      userId,
+      `System_${channelType}_OTP`,
+      channelType,
+      {
+        isPreferred: true,
+      },
     );
 
     // send otp code to user
@@ -74,7 +87,7 @@ export class AccountsService {
   async verify(
     userId: string,
     channelType: prisma.$Enums.ChannelType,
-    otpCode: string,
+    verifyUserDto: VerifyUserDto,
   ) {
     const mostRecentOtp = await this.prisma.otp.findFirst({
       where: {
@@ -95,7 +108,7 @@ export class AccountsService {
         throw new ForbiddenException('OTP has been verified');
       case mostRecentOtp && mostRecentOtp.expiredAt < new Date():
         throw new ForbiddenException('OTP has expired');
-      case mostRecentOtp && mostRecentOtp.otpCode !== otpCode:
+      case mostRecentOtp && mostRecentOtp.otpCode !== verifyUserDto.otpCode:
         throw new ForbiddenException('OTP code is incorrect');
     }
 

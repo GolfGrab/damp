@@ -17,8 +17,8 @@ export class NotificationTaskMessageDto implements NotificationTask {
   @IsNumber()
   notificationId: number;
 
-  @IsNumber()
-  templateId: number;
+  @IsString()
+  templateId: string;
 
   @IsEnum($Enums.MessageType)
   messageType: $Enums.MessageType;

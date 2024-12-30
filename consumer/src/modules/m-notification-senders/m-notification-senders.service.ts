@@ -94,11 +94,10 @@ export class MNotificationSendersService {
     notificationTask: NotificationTaskMessageDto,
     sendNotification: (messageData: MessageData) => Promise<void>,
   ) {
-    const recipientAddress = await this.getRecipientAddress(notificationTask);
-    const { compiledMessage, title } =
-      await this.getMessageDetails(notificationTask);
-
     try {
+      const recipientAddress = await this.getRecipientAddress(notificationTask);
+      const { compiledMessage, title } =
+        await this.getMessageDetails(notificationTask);
       await sendNotification({ recipientAddress, compiledMessage, title });
       await this.updateTaskStatus(notificationTask, 'SENT');
     } catch (error) {

@@ -20,6 +20,7 @@ import { CreateUserDto } from './users/dto/create-user.dto';
 import { UpdateUserDto } from './users/dto/update-user.dto';
 import { User } from './users/entities/user.entity';
 import { UsersService } from './users/users.service';
+import { VerifyUserDto } from './users/dto/verify-user.dto';
 
 @ApiTags('User Module')
 @Controller('m-user')
@@ -121,6 +122,25 @@ export class MUserController {
     @Param('channelType') channelType: prisma.$Enums.ChannelType,
   ) {
     return this.accountsService.remove(userId, channelType);
+  }
+
+  // async verify(
+  //   userId: string,
+  //   channelType: prisma.$Enums.ChannelType,
+  //   otpCode: string,
+  // ) {
+
+  @ApiParam({
+    name: 'channelType',
+    enum: prisma.$Enums.ChannelType,
+  })
+  @Post('users/:userId/channel/:channelType/accounts/verify')
+  verifyAccount(
+    @Param('userId') userId: string,
+    @Param('channelType') channelType: prisma.$Enums.ChannelType,
+    @Body() verifyUserDto: VerifyUserDto,
+  ) {
+    return this.accountsService.verify(userId, channelType, verifyUserDto);
   }
 
   /**

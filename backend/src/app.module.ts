@@ -9,11 +9,21 @@ import { AuthModule } from './auth/auth.module';
 import { MApplicationModule } from './modules/m-application/m-application.module';
 import { MNotificationModule } from './modules/m-notification/m-notification.module';
 import { MUserModule } from './modules/m-user/m-user.module';
+import { TemplatesModule } from './modules/m-notification/templates/templates.module';
 
 @Module({
   imports: [
     PrismaModule.forRoot({
       isGlobal: true,
+      prismaServiceOptions: {
+        prismaOptions: {
+          omit: {
+            application: {
+              apiKey: true,
+            },
+          },
+        },
+      },
     }),
     TypedConfigModule.forRoot({
       schema: Config,
@@ -24,6 +34,7 @@ import { MUserModule } from './modules/m-user/m-user.module';
     MUserModule,
     MApplicationModule,
     MNotificationModule,
+    TemplatesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

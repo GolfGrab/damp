@@ -68,6 +68,48 @@ export class NotificationsService {
       return null;
     }
 
+    this.logger.log('userPreferences ' + inspect(userPreferences));
+
+    this.logger.log('get channels');
+    const channels = await this.prisma.channel.findMany({
+      where: {
+        accounts: {
+          some: {
+            userId: {
+              in: userPreferences.map(
+                (userPreference) => userPreference.userId,
+              ),
+            },
+          },
+        },
+      },
+      include: {
+        accounts: {
+          where: {
+            OR: [
+              // allow sending notification to unverified accounts for OTP
+              Object.values($Enums.ChannelType)
+                .map((channelType) => `System_${channelType}_OTP`)
+                .includes(createNotificationDto.notificationCategoryId)
+                ? {
+                    verifiedAt: null,
+                  }
+                : {
+                    verifiedAt: {
+                      not: null,
+                    },
+                  },
+            ],
+            userId: {
+              in: userPreferences.map(
+                (userPreference) => userPreference.userId,
+              ),
+            },
+          },
+        },
+      },
+    });
+
     this.logger.log('get compiledTemplates');
     const compiledTemplates = (
       await this.prisma.template.findUniqueOrThrow({
@@ -96,33 +138,6 @@ export class NotificationsService {
       }),
     );
 
-    this.logger.log('get channels');
-    const channels = await this.prisma.channel.findMany({
-      where: {
-        accounts: {
-          some: {
-            userId: {
-              in: userPreferences.map(
-                (userPreference) => userPreference.userId,
-              ),
-            },
-          },
-        },
-      },
-      include: {
-        accounts: {
-          where: {
-            userId: {
-              in: userPreferences.map(
-                (userPreference) => userPreference.userId,
-              ),
-            },
-          },
-        },
-      },
-    });
-
-    this.logger.log('channels ' + inspect(channels));
     this.logger.log('create notification tasks');
     const notifications = await this.prisma.notification.create({
       data: {
@@ -174,7 +189,10 @@ export class NotificationsService {
 
     this.logger.log('notifications ' + inspect(notifications));
 
-    this.logger.log('Emitting notification task events');
+    this.logger.log(
+      'Emitting notification task events count: ' +
+        notifications.notificationTasks.length,
+    );
     for (const notificationTask of notifications.notificationTasks) {
       const record = new RmqRecordBuilder(JSON.stringify(notificationTask))
         .setOptions({
