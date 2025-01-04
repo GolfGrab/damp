@@ -6,7 +6,7 @@ import { Client } from 'openid-client';
 @Injectable()
 export class AuthService {
   constructor(
-    // private client: Client,
+    private client: Client,
     private prisma: PrismaService,
   ) {}
 
@@ -37,15 +37,26 @@ export class AuthService {
     return application;
   }
 
-  // async verifyTokenRemote(token: string) {
-  //   const result = await this.client.introspect(token);
-  //   if (!result.active) {
-  //     throw new UnauthorizedException();
-  //   }
-  // }
+  async verifyTokenRemoteAndGetUser(token: string) {
+    const result = await this.client.introspect(token, 'access_token');
+    if (!result.active) {
+      throw new UnauthorizedException();
+    }
+    const user = await this.client.userinfo(token).then((userinfo) => {
+      if (!userinfo.email) {
+        throw new UnauthorizedException();
+      }
+      return this.prisma.user.upsert({
+        where: {
+          id: userinfo.email,
+        },
+        create: {
+          id: userinfo.email,
+        },
+        update: {},
+      });
+    });
 
-  // async getUser(token: string) {
-  //   const result = await this.client.userinfo(token);
-  //   return result;
-  // }
+    return user;
+  }
 }
