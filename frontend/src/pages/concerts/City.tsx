@@ -1,8 +1,7 @@
-import { useTypedParams } from "react-router-typesafe-routes";
-import home from "../../routers/typesafe-routes";
+import { useParams } from "react-router-dom";
 
 const City = () => {
-  const { city } = useTypedParams(home.concerts.city);
+  const { city } = useParams();
   return <div>City : {city}</div>;
 };
 

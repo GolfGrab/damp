@@ -3,16 +3,13 @@ import { AppWithAuth } from "../App";
 import SecuredRoute from "../auth/SecuredRoute";
 import DashBoardLayout from "../layout/DashBoardLayout";
 import About from "../pages/about/About";
-import Login from "../pages/auth/Login";
 import Callback from "../pages/auth/LoginCallback";
-import Register from "../pages/auth/Register";
 import City from "../pages/concerts/City";
 import ConcertsHome from "../pages/concerts/ConcertsHome";
 import Trending from "../pages/concerts/Trending";
 import Home from "../pages/home/Home";
 import NotificationsHome from "../pages/notifications/NotificationsHome";
 import PreferenceSettings from "../pages/notifications/PreferenceSettings";
-import home from "./typesafe-routes";
 
 const appRouter = createBrowserRouter([
   {
@@ -23,27 +20,19 @@ const appRouter = createBrowserRouter([
         children: [
           {
             Component: Home,
-            path: home.$path(),
+            path: "/",
           },
           {
             Component: About,
-            path: home.about.$path(),
+            path: "/about",
           },
         ],
       },
       {
         children: [
           {
-            Component: Login,
-            path: home.auth.login.$path(),
-          },
-          {
-            Component: Register,
-            path: home.auth.register.$path(),
-          },
-          {
             Component: Callback,
-            path: home.auth.callback.$path(),
+            path: "auth/callback",
           },
         ],
       },
@@ -52,15 +41,15 @@ const appRouter = createBrowserRouter([
         children: [
           {
             Component: ConcertsHome,
-            path: home.concerts.home.$path(),
+            path: "/concerts",
           },
           {
             Component: City,
-            path: home.concerts.city.$path(),
+            path: "/concerts/:city",
           },
           {
             Component: Trending,
-            path: home.concerts.trending.$path(),
+            path: "/concerts/trending",
           },
         ],
       },
@@ -70,11 +59,11 @@ const appRouter = createBrowserRouter([
           {
             Component: NotificationsHome,
 
-            path: home.notifications.home.$path(),
+            path: "notifications",
           },
           {
             Component: PreferenceSettings,
-            path: home.notifications.preferenceSettings.$path(),
+            path: "notifications/preference-settings",
           },
         ],
       },

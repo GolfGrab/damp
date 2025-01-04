@@ -1,12 +1,14 @@
-import { Button } from "@mui/material";
+import { Button, List, ListItem } from "@mui/material";
 import { useState } from "react";
 import { useAuth } from "react-oidc-context";
+import { useNavigate } from "react-router-dom";
 import reactLogo from "/react.svg";
 import viteLogo from "/vite.svg";
 
 function Home() {
   const [count, setCount] = useState(0);
   const auth = useAuth();
+  const navigate = useNavigate();
 
   return (
     <>
@@ -54,6 +56,37 @@ function Home() {
           Log in
         </Button>
       )}
+      <List>
+        <ListItem>
+          <Button variant="contained" onClick={() => void navigate("/about")}>
+            About
+          </Button>
+        </ListItem>
+        <ListItem>
+          <Button
+            variant="contained"
+            onClick={() => void navigate("/concerts")}
+          >
+            Concerts
+          </Button>
+        </ListItem>
+        <ListItem>
+          <Button
+            variant="contained"
+            onClick={() => void navigate("/concerts/New York")}
+          >
+            Concerts in New York
+          </Button>
+        </ListItem>
+        <ListItem>
+          <Button
+            variant="contained"
+            onClick={() => void navigate("/concerts/trending")}
+          >
+            Trending Concerts
+          </Button>
+        </ListItem>
+      </List>
     </>
   );
 }
