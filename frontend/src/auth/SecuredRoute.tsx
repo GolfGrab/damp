@@ -16,8 +16,6 @@ const SecuredRoute = () => {
       !auth.isLoading &&
       !hasTriedSignin
     ) {
-      // save the current path to redirect back to it after sign-in
-      localStorage.setItem("recentPath", window.location.pathname);
       auth.signinRedirect({
         state: {
           returnTo: window.location,

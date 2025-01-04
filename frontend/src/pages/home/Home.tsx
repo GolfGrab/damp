@@ -48,7 +48,10 @@ function Home() {
           <div>
             access token: {auth.user?.access_token} <br />
           </div>
-          <Button variant="contained" onClick={() => void auth.removeUser()}>
+          <Button
+            variant="contained"
+            onClick={() => void auth.signoutRedirect()}
+          >
             Log out
           </Button>
         </div>
