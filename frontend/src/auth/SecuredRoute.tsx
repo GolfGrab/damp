@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { hasAuthParams, useAuth } from "react-oidc-context";
 import { Outlet } from "react-router-dom";
+import { axiosInstance } from "../api";
 
 const SecuredRoute = () => {
   const auth = useAuth();
@@ -40,6 +41,9 @@ const SecuredRoute = () => {
   if (auth.error) {
     return <div>Oops... {auth.error.message}</div>;
   }
+
+  axiosInstance.defaults.headers.common["Authorization"] =
+    `Bearer ${auth.user?.access_token}`;
 
   return <Outlet />;
 };

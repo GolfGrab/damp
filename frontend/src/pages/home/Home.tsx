@@ -12,16 +12,10 @@ function Home() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (auth.isAuthenticated) {
-      apiClient.AuthApi.authControllerMe({
-        headers: {
-          Authorization: `Bearer ${auth.user?.access_token}`,
-        },
-      }).then((res) => {
-        console.log(res);
-      });
-    }
-  }, [auth.isAuthenticated, auth.user?.access_token]);
+    apiClient.AuthApi.authControllerMe().then((res) => {
+      console.log(res);
+    });
+  }, []);
 
   return (
     <>

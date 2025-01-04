@@ -16,29 +16,22 @@ const appRouter = createBrowserRouter([
     Component: AppWithAuth,
     children: [
       {
-        Component: DashBoardLayout,
-        children: [
-          {
-            Component: Home,
-            path: "/",
-          },
-          {
-            Component: About,
-            path: "/about",
-          },
-        ],
-      },
-      {
-        children: [
-          {
-            Component: Callback,
-            path: "auth/callback",
-          },
-        ],
-      },
-      {
         Component: SecuredRoute,
         children: [
+          {
+            Component: DashBoardLayout,
+            children: [
+              {
+                Component: Home,
+                path: "/",
+              },
+              {
+                Component: About,
+                path: "/about",
+              },
+            ],
+          },
+
           {
             Component: ConcertsHome,
             path: "/concerts",
@@ -51,11 +44,6 @@ const appRouter = createBrowserRouter([
             Component: Trending,
             path: "/concerts/trending",
           },
-        ],
-      },
-      {
-        Component: SecuredRoute,
-        children: [
           {
             Component: NotificationsHome,
 
@@ -67,7 +55,14 @@ const appRouter = createBrowserRouter([
           },
         ],
       },
-
+      {
+        children: [
+          {
+            Component: Callback,
+            path: "auth/callback",
+          },
+        ],
+      },
       {
         Component: () => (
           <div
