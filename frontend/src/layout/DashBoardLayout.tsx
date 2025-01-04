@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 
 const DashBoardLayout = () => {
   return (
-    <DashboardLayout defaultSidebarCollapsed hideNavigation>
+    <DashboardLayout defaultSidebarCollapsed>
       <PageContainer>
         <Outlet />
       </PageContainer>

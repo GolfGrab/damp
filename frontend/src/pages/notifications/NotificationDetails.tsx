@@ -1,6 +1,7 @@
 import { Email, Sms } from "@mui/icons-material";
 import { Avatar, Chip, Stack, SvgIcon, Typography } from "@mui/material";
 import { useParams } from "react-router-dom";
+import NotificationCenterGenericLayout from "../../layout/NotificationCenterGenericLayout";
 import SlackLogo from "./components/SlackLogo.svg";
 
 const NotificationDetails = () => {
@@ -14,7 +15,7 @@ const NotificationDetails = () => {
     image: "https://source.unsplash.com/random/300x300",
   };
   return (
-    <>
+    <NotificationCenterGenericLayout title="Notification Details">
       <Stack direction={"row"} gap={2}>
         <Avatar
           alt={applicationDetails.applicationName + " icon"}
@@ -33,7 +34,7 @@ const NotificationDetails = () => {
           </Stack>
         </Stack>
       </Stack>
-    </>
+    </NotificationCenterGenericLayout>
   );
 };
 

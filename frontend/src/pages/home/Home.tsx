@@ -71,16 +71,11 @@ function Home() {
       )}
       <List>
         <ListItem>
-          <Button variant="contained" onClick={() => void navigate("/about")}>
-            About
-          </Button>
-        </ListItem>
-        <ListItem>
           <Button
             variant="contained"
-            onClick={() => void navigate("/concerts")}
+            onClick={() => void navigate("/notifications")}
           >
-            Concerts
+            notifications
           </Button>
         </ListItem>
         <ListItem>
@@ -89,14 +84,6 @@ function Home() {
             onClick={() => void navigate("/concerts/New York")}
           >
             Concerts in New York
-          </Button>
-        </ListItem>
-        <ListItem>
-          <Button
-            variant="contained"
-            onClick={() => void navigate("/concerts/trending")}
-          >
-            Trending Concerts
           </Button>
         </ListItem>
       </List>

@@ -41,8 +41,8 @@ export const App = () => {
           auth.isAuthenticated && auth.user
             ? {
                 user: {
-                  name: auth.user.profile.name,
-                  email: auth.user.profile.email,
+                  name: auth.user.profile.email,
+                  email: undefined,
                   id: auth.user.profile.sub,
                   image: auth.user.profile.picture,
                 },
