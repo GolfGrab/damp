@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import { AppWithAuth } from "../App";
 import SecuredRoute from "../auth/SecuredRoute";
 import DashBoardLayout from "../layout/DashBoardLayout";
+import NotificationCenterHomeLayout from "../layout/NotificationCenterHomeLayout";
 import About from "../pages/about/About";
 import Callback from "../pages/auth/LoginCallback";
 import City from "../pages/concerts/City";
@@ -57,9 +58,13 @@ const appRouter = createBrowserRouter([
         Component: SecuredRoute,
         children: [
           {
-            Component: NotificationsHome,
-
-            path: "notifications",
+            Component: NotificationCenterHomeLayout,
+            children: [
+              {
+                Component: NotificationsHome,
+                path: "notifications",
+              },
+            ],
           },
           {
             Component: PreferenceSettings,
