@@ -1,8 +1,13 @@
 import { Account, DashboardLayout, PageContainer } from "@toolpad/core";
-import { Outlet } from "react-router-dom";
 import NotificationAccountMenu from "./components/NotificationAccountMenu";
 
-const NotificationCenterHomeLayout = () => {
+type NotificationCenterHomeLayoutProps = {
+  children: React.ReactNode;
+};
+
+const NotificationCenterHomeLayout = ({
+  children,
+}: NotificationCenterHomeLayoutProps) => {
   return (
     <DashboardLayout
       defaultSidebarCollapsed
@@ -21,9 +26,7 @@ const NotificationCenterHomeLayout = () => {
         ),
       }}
     >
-      <PageContainer maxWidth="xs">
-        <Outlet />
-      </PageContainer>
+      <PageContainer maxWidth="xs">{children}</PageContainer>
     </DashboardLayout>
   );
 };

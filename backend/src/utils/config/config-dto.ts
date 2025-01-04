@@ -14,6 +14,9 @@ export class Config {
   readonly OAUTH_CLIENT_SECRET: string;
 
   @IsString()
+  readonly OAUTH_ALLOWED_CLIENT_ID: string;
+
+  @IsString()
   readonly QUEUE_URL: string;
 
   @IsString()

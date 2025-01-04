@@ -24,7 +24,7 @@ import { AuthService } from './auth.service';
           client_id: config.OAUTH_CLIENT_ID,
           client_secret: config.OAUTH_CLIENT_SECRET,
         });
-        return new AuthService(client, prisma);
+        return new AuthService(client, prisma, config);
       },
     },
   ],

@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Config } from '@/utils/config/config-dto';
+import {
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { FastifyRequest } from 'fastify';
 import { PrismaService } from 'nestjs-prisma';
 import { Client } from 'openid-client';
@@ -8,6 +13,7 @@ export class AuthService {
   constructor(
     private client: Client,
     private prisma: PrismaService,
+    private config: Config,
   ) {}
 
   extractTokenFromHeader(request: FastifyRequest): string {
@@ -38,13 +44,16 @@ export class AuthService {
   }
 
   async verifyTokenRemoteAndGetUser(token: string) {
-    const result = await this.client.introspect(token, 'access_token');
+    const result = await this.client.introspect(token);
     if (!result.active) {
       throw new UnauthorizedException();
     }
+    if (result.client_id !== this.config.OAUTH_ALLOWED_CLIENT_ID) {
+      throw new UnauthorizedException("Client ID doesn't match");
+    }
     const user = await this.client.userinfo(token).then((userinfo) => {
       if (!userinfo.email) {
-        throw new UnauthorizedException();
+        throw new InternalServerErrorException("Userinfo doesn't have email");
       }
       return this.prisma.user.upsert({
         where: {

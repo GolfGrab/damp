@@ -24,7 +24,7 @@ const NAVIGATION: Navigation = [
 ];
 
 const BRANDING: Branding = {
-  homeUrl: import.meta.env.BASE_URL,
+  title: "Noti Infrastructure",
 };
 
 export const App = () => {

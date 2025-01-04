@@ -2,12 +2,12 @@ import { createBrowserRouter } from "react-router-dom";
 import { AppWithAuth } from "../App";
 import SecuredRoute from "../auth/SecuredRoute";
 import DashBoardLayout from "../layout/DashBoardLayout";
-import NotificationCenterHomeLayout from "../layout/NotificationCenterHomeLayout";
 import Callback from "../pages/auth/LoginCallback";
 import Home from "../pages/home/Home";
+import AccountSettings from "../pages/notifications/AccountSettings";
 import NotificationDetails from "../pages/notifications/NotificationDetails";
 import NotificationsHome from "../pages/notifications/NotificationsHome";
-import PreferenceSettings from "../pages/notifications/PreferenceSettings";
+import UserPreferences from "../pages/notifications/UserPreferences";
 
 const appRouter = createBrowserRouter([
   {
@@ -26,21 +26,25 @@ const appRouter = createBrowserRouter([
             ],
           },
           {
-            Component: NotificationCenterHomeLayout,
+            path: "notifications",
             children: [
               {
                 Component: NotificationsHome,
-                path: "notifications",
+                index: true,
+              },
+              {
+                Component: UserPreferences,
+                path: "user-preferences",
+              },
+              {
+                Component: AccountSettings,
+                path: "accounts",
+              },
+              {
+                Component: NotificationDetails,
+                path: ":notificationId",
               },
             ],
-          },
-          {
-            Component: NotificationDetails,
-            path: "notifications/:notificationId",
-          },
-          {
-            Component: PreferenceSettings,
-            path: "notifications/preference-settings",
           },
         ],
       },

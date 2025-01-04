@@ -17,12 +17,12 @@ const navigationItems = [
   {
     title: "Account Settings",
     icon: <ManageAccounts />,
-    to: "/accounts",
+    to: "/notifications/accounts",
   },
   {
     title: "Preference Settings",
     icon: <Tune />,
-    to: "/user-preferences",
+    to: "/notifications/user-preferences",
   },
 ] as const;
 
