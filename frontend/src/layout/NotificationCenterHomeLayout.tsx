@@ -1,4 +1,3 @@
-import { Typography } from "@mui/material";
 import { DashboardLayout, PageContainer } from "@toolpad/core";
 import { Outlet } from "react-router-dom";
 
@@ -7,10 +6,12 @@ const NotificationCenterHomeLayout = () => {
     <DashboardLayout
       defaultSidebarCollapsed
       hideNavigation
-      slots={{
-        appTitle: () => (
-          <Typography variant="h6">Notification Center</Typography>
-        ),
+      slotProps={{
+        appTitle: {
+          branding: {
+            title: "Notification Center",
+          },
+        },
       }}
     >
       <PageContainer maxWidth="xs">
