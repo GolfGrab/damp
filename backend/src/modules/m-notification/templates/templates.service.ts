@@ -15,6 +15,51 @@ export class TemplatesService {
     private readonly templatesRendererService: TemplatesRendererService,
   ) {}
 
+  upsert(createTemplateDto: CreateTemplateDto) {
+    const compiledTemplates =
+      this.templatesParserService.parseJSONToCompiledTemplates(
+        createTemplateDto.template,
+      );
+    return this.prisma.template.upsert({
+      where: {
+        id: createTemplateDto.id,
+      },
+      create: {
+        ...createTemplateDto,
+        template: JSON.stringify(createTemplateDto.template),
+        compiledTemplates: {
+          createMany: {
+            data: Object.values($Enums.MessageType).map((messageType) => ({
+              messageType,
+              compiledTemplate: compiledTemplates[messageType],
+            })),
+          },
+        },
+      },
+      update: {
+        ...createTemplateDto,
+        template: JSON.stringify(createTemplateDto.template),
+        compiledTemplates: {
+          upsert: Object.values($Enums.MessageType).map((messageType) => ({
+            where: {
+              templateId_messageType: {
+                messageType,
+                templateId: createTemplateDto.id,
+              },
+            },
+            create: {
+              messageType,
+              compiledTemplate: compiledTemplates[messageType],
+            },
+            update: {
+              compiledTemplate: compiledTemplates[messageType],
+            },
+          })),
+        },
+      },
+    });
+  }
+
   create(createTemplateDto: CreateTemplateDto) {
     const compiledTemplates =
       this.templatesParserService.parseJSONToCompiledTemplates(
@@ -50,7 +95,7 @@ export class TemplatesService {
     return this.prisma.template.findMany();
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.prisma.template.findUniqueOrThrow({
       where: {
         id,
@@ -61,7 +106,7 @@ export class TemplatesService {
     });
   }
 
-  update(id: number, updateTemplateDto: UpdateTemplateDto) {
+  update(id: string, updateTemplateDto: UpdateTemplateDto) {
     const compiledTemplates = updateTemplateDto.template
       ? this.templatesParserService.parseJSONToCompiledTemplates(
           updateTemplateDto.template,
@@ -113,16 +158,8 @@ export class TemplatesService {
     });
   }
 
-  remove(id: number) {
-    return this.prisma.template.delete({
-      where: {
-        id,
-      },
-    });
-  }
-
   async render(
-    id: number,
+    id: string,
     messageType: MessageType,
     getPreviewTemplateDto: GetPreviewTemplateDto,
   ) {

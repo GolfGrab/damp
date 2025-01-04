@@ -8,19 +8,19 @@ export class Notification implements prisma.Notification {
   id: number;
 
   @ApiProperty({
-    type: Number,
+    type: String,
   })
-  applicationId: number;
+  applicationId: string;
 
   @ApiProperty({
-    type: Number,
+    type: String,
   })
-  notificationCategoryId: number;
+  notificationCategoryId: string;
 
   @ApiProperty({
-    type: Number,
+    type: String,
   })
-  templateId: number;
+  templateId: string;
 
   @ApiProperty({
     type: String,

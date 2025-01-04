@@ -3,9 +3,9 @@ import * as prisma from '@prisma/client';
 
 export class Template implements prisma.Template {
   @ApiProperty({
-    type: Number,
+    type: String,
   })
-  id: number;
+  id: string;
 
   @ApiProperty({
     type: String,

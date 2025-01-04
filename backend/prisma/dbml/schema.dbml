@@ -6,14 +6,13 @@ Table User {
   id String [pk]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
-  deletedAt DateTime
-  deletedByUserId String
 }
 
 Table Account {
   userId String [not null]
   channelType ChannelType [not null]
   channelToken String [not null]
+  verifiedAt DateTime
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
 
@@ -22,16 +21,23 @@ Table Account {
   }
 }
 
+Table Otp {
+  id Int [pk, increment]
+  otpCode String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  expiredAt DateTime [not null]
+  verifiedAt DateTime
+  userId String [not null]
+  channelType ChannelType [not null]
+}
+
 Table Channel {
   channelType ChannelType [pk]
-  name String [unique, not null]
   messageType MessageType [not null]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
 }
 
 Table Application {
-  id Int [pk, increment]
+  id String [pk]
   name String [not null]
   description String [not null]
   apiKey String [unique, not null]
@@ -43,8 +49,8 @@ Table Application {
 }
 
 Table NotificationCategory {
-  id Int [pk, increment]
-  applicationId Int [not null]
+  id String [pk]
+  applicationId String [not null]
   name String [unique, not null]
   createdAt DateTime [default: `now()`, not null]
   createdByUserId String [not null]
@@ -54,9 +60,9 @@ Table NotificationCategory {
 
 Table Notification {
   id Int [pk, increment]
-  applicationId Int [not null]
-  notificationCategoryId Int [not null]
-  templateId Int [not null]
+  applicationId String [not null]
+  notificationCategoryId String [not null]
+  templateId String [not null]
   templateData String [not null]
   priority Priority [not null]
   createdAt DateTime [default: `now()`, not null]
@@ -76,7 +82,7 @@ Table NotificationRecipient {
 
 Table CompiledMessage {
   notificationId Int [not null]
-  templateId Int [not null]
+  templateId String [not null]
   messageType MessageType [not null]
   compiledMessage String [not null]
   createdAt DateTime [default: `now()`, not null]
@@ -91,7 +97,7 @@ Table NotificationTask {
   channelType ChannelType [not null]
   userId String [not null]
   notificationId Int [not null]
-  templateId Int [not null]
+  templateId String [not null]
   messageType MessageType [not null]
   priority Priority [not null]
   sentStatus SentStatus [not null, default: 'PENDING']
@@ -108,7 +114,7 @@ Table NotificationTask {
 }
 
 Table Template {
-  id Int [pk, increment]
+  id String [pk]
   name String [not null]
   description String [not null]
   template String [not null]
@@ -119,7 +125,7 @@ Table Template {
 }
 
 Table CompiledTemplate {
-  templateId Int [not null]
+  templateId String [not null]
   messageType MessageType [not null]
   compiledTemplate String [not null]
   createdAt DateTime [default: `now()`, not null]
@@ -132,7 +138,7 @@ Table CompiledTemplate {
 
 Table UserPreference {
   userId String [not null]
-  notificationCategoryId Int [not null]
+  notificationCategoryId String [not null]
   channelType ChannelType [not null]
   isPreferred Boolean [not null]
   createdAt DateTime [default: `now()`, not null]
@@ -169,11 +175,15 @@ Enum ChannelType {
   SLACK
 }
 
-Ref: User.deletedByUserId > User.id
-
 Ref: Account.userId > User.id
 
 Ref: Account.channelType > Channel.channelType
+
+Ref: Otp.userId > User.id
+
+Ref: Otp.channelType > Channel.channelType
+
+Ref: Otp.(userId, channelType) > Account.(userId, channelType)
 
 Ref: Application.createdByUserId > User.id
 

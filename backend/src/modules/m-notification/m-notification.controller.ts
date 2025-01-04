@@ -2,7 +2,6 @@ import { GetApplication, KeyAuth } from '@/auth/auth.decorator';
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Param,
   Patch,
@@ -45,21 +44,16 @@ export class MNotificationController {
   }
 
   @Get('templates/:templateId')
-  findOneTemplate(@Param('templateId') templateId: number): Promise<Template> {
+  findOneTemplate(@Param('templateId') templateId: string): Promise<Template> {
     return this.templatesService.findOne(templateId);
   }
 
   @Patch('templates/:templateId')
   updateTemplate(
-    @Param('templateId') templateId: number,
+    @Param('templateId') templateId: string,
     @Body() updateTemplateDto: UpdateTemplateDto,
   ): Promise<Template> {
     return this.templatesService.update(templateId, updateTemplateDto);
-  }
-
-  @Delete('templates/:templateId')
-  removeTemplate(@Param('templateId') templateId: number) {
-    return this.templatesService.remove(templateId);
   }
 
   @ApiParam({
@@ -69,7 +63,7 @@ export class MNotificationController {
   })
   @Post('templates/:templateId/messageType/:messageType/preview')
   previewTemplate(
-    @Param('templateId') templateId: number,
+    @Param('templateId') templateId: string,
     @Param('messageType') messageType: MessageType,
     @Body() getPreviewTemplateDto: GetPreviewTemplateDto,
   ) {
@@ -92,7 +86,7 @@ export class MNotificationController {
   })
   @Post('applications/:applicationId/notifications')
   createNotification(
-    @Param('applicationId') applicationId: number,
+    @Param('applicationId') applicationId: string,
     @Body() createNotificationDto: CreateNotificationDto,
     @GetApplication() application: Application,
   ): Promise<Notification | null> {
@@ -112,21 +106,21 @@ export class MNotificationController {
 
   @Get('applications/:applicationId/notifications')
   findAllNotificationsByApplicationId(
-    @Param('applicationId') applicationId: number,
+    @Param('applicationId') applicationId: string,
   ): Promise<Notification[]> {
     return this.notificationsService.findAllByApplicationId(applicationId);
   }
 
   @Get('templates/:templateId/notifications')
   findAllNotificationsByTemplateId(
-    @Param('templateId') templateId: number,
+    @Param('templateId') templateId: string,
   ): Promise<Notification[]> {
     return this.notificationsService.findAllByTemplateId(templateId);
   }
 
   @Get('notification-categories/:notificationCategoryId/notifications')
   findAllNotificationsByNotificationCategoryId(
-    @Param('notificationCategoryId') notificationCategoryId: number,
+    @Param('notificationCategoryId') notificationCategoryId: string,
   ): Promise<Notification[]> {
     return this.notificationsService.findAllByNotificationCategoryId(
       notificationCategoryId,

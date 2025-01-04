@@ -8,9 +8,33 @@ import { PrismaService } from 'nestjs-prisma';
 export class UserPreferencesService {
   constructor(private readonly prisma: PrismaService) {}
 
+  upsert(
+    userId: string,
+    notificationCategoryId: string,
+    channelType: prisma.$Enums.ChannelType,
+    createUserPreferenceDto: CreateUserPreferenceDto,
+  ) {
+    return this.prisma.userPreference.upsert({
+      where: {
+        userId_channelType_notificationCategoryId: {
+          userId,
+          channelType,
+          notificationCategoryId,
+        },
+      },
+      create: {
+        userId,
+        notificationCategoryId,
+        channelType,
+        ...createUserPreferenceDto,
+      },
+      update: createUserPreferenceDto,
+    });
+  }
+
   create(
     userId: string,
-    notificationCategoryId: number,
+    notificationCategoryId: string,
     channelType: prisma.$Enums.ChannelType,
     createUserPreferenceDto: CreateUserPreferenceDto,
   ) {
@@ -38,7 +62,7 @@ export class UserPreferencesService {
 
   findOne(
     userId: string,
-    notificationCategoryId: number,
+    notificationCategoryId: string,
     channelType: prisma.$Enums.ChannelType,
   ) {
     return this.prisma.userPreference.findUniqueOrThrow({
@@ -54,7 +78,7 @@ export class UserPreferencesService {
 
   update(
     userId: string,
-    notificationCategoryId: number,
+    notificationCategoryId: string,
     channelType: prisma.$Enums.ChannelType,
     updateUserPreferenceDto: UpdateUserPreferenceDto,
   ) {
@@ -67,22 +91,6 @@ export class UserPreferencesService {
         },
       },
       data: updateUserPreferenceDto,
-    });
-  }
-
-  remove(
-    userId: string,
-    notificationCategoryId: number,
-    channelType: prisma.$Enums.ChannelType,
-  ) {
-    return this.prisma.userPreference.delete({
-      where: {
-        userId_channelType_notificationCategoryId: {
-          userId,
-          channelType,
-          notificationCategoryId,
-        },
-      },
     });
   }
 }

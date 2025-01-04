@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["omitApi"]
 }
 
 generator dbml {
@@ -14,11 +15,9 @@ datasource db {
 }
 
 model User {
-  id              String    @id
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  deletedAt       DateTime?
-  deletedByUserId String?
+  id        String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   accounts                      Account[]
   userPreferences               UserPreference[]
@@ -30,37 +29,50 @@ model User {
   updatedTemplates              Template[]              @relation("templateupdatedByUserIdUser")
   createdNotificationCategories NotificationCategory[]  @relation("notificationCategoryCreatedUser")
   updatedNotificationCategories NotificationCategory[]  @relation("notificationCategoryUpdatedUser")
-  deletedUsers                  User[]                  @relation("userDeletedByUser")
-  deletedByUser                 User?                   @relation("userDeletedByUser", fields: [deletedByUserId], references: [id])
+  otp                           Otp[]
 }
 
 model Account {
   userId       String
   channelType  ChannelType
   channelToken String
+  verifiedAt   DateTime?
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
-  user    User    @relation(fields: [userId], references: [id])
+  user    User    @relation(fields: [userId], references: [id], onUpdate: Cascade)
   channel Channel @relation(fields: [channelType], references: [channelType])
+  otp     Otp[]
 
   @@id([userId, channelType])
 }
 
+model Otp {
+  id          Int         @id @default(autoincrement())
+  otpCode     String
+  createdAt   DateTime    @default(now())
+  expiredAt   DateTime
+  verifiedAt  DateTime?
+  userId      String
+  channelType ChannelType
+
+  user    User    @relation(fields: [userId], references: [id], onUpdate: Cascade)
+  channel Channel @relation(fields: [channelType], references: [channelType])
+  account Account @relation(fields: [userId, channelType], references: [userId, channelType])
+}
+
 model Channel {
   channelType ChannelType @id
-  name        String      @unique
   messageType MessageType
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
 
   accounts          Account[]
   notificationTasks NotificationTask[]
   userPreferences   UserPreference[]
+  otp               Otp[]
 }
 
 model Application {
-  id              Int      @id @default(autoincrement())
+  id              String   @id
   name            String
   description     String
   apiKey          String   @unique
@@ -70,23 +82,23 @@ model Application {
   updatedAt       DateTime @updatedAt
   updatedByUserId String
 
-  createdByUser          User                   @relation(fields: [createdByUserId], references: [id], name: "applicationCreatedUser")
-  updatedByUser          User                   @relation(fields: [updatedByUserId], references: [id], name: "applicationUpdatedUser")
+  createdByUser          User                   @relation(fields: [createdByUserId], references: [id], name: "applicationCreatedUser", onUpdate: Cascade)
+  updatedByUser          User                   @relation(fields: [updatedByUserId], references: [id], name: "applicationUpdatedUser", onUpdate: Cascade)
   notificationCategories NotificationCategory[]
   notification           Notification[]
 }
 
 model NotificationCategory {
-  id              Int      @id @default(autoincrement())
-  applicationId   Int
+  id              String   @id
+  applicationId   String
   name            String   @unique
   createdAt       DateTime @default(now())
   createdByUserId String
   updatedAt       DateTime @updatedAt
   updatedByUserId String
 
-  createdUser     User             @relation(fields: [createdByUserId], references: [id], name: "notificationCategoryCreatedUser")
-  updatedUser     User             @relation(fields: [updatedByUserId], references: [id], name: "notificationCategoryUpdatedUser")
+  createdUser     User             @relation(fields: [createdByUserId], references: [id], name: "notificationCategoryCreatedUser", onUpdate: Cascade)
+  updatedUser     User             @relation(fields: [updatedByUserId], references: [id], name: "notificationCategoryUpdatedUser", onUpdate: Cascade)
   application     Application      @relation(fields: [applicationId], references: [id])
   userPreferences UserPreference[]
   notifications   Notification[]
@@ -94,9 +106,9 @@ model NotificationCategory {
 
 model Notification {
   id                     Int      @id @default(autoincrement())
-  applicationId          Int
-  notificationCategoryId Int
-  templateId             Int
+  applicationId          String
+  notificationCategoryId String
+  templateId             String
   templateData           String
   priority               Priority
   createdAt              DateTime @default(now())
@@ -117,14 +129,14 @@ model NotificationRecipient {
   updatedAt      DateTime @updatedAt
 
   notification Notification @relation(fields: [notificationId], references: [id])
-  user         User         @relation(fields: [userId], references: [id])
+  user         User         @relation(fields: [userId], references: [id], onUpdate: Cascade)
 
   @@id([notificationId, userId])
 }
 
 model CompiledMessage {
   notificationId  Int
-  templateId      Int
+  templateId      String
   messageType     MessageType
   compiledMessage String
   createdAt       DateTime    @default(now())
@@ -141,7 +153,7 @@ model NotificationTask {
   channelType     ChannelType
   userId          String
   notificationId  Int
-  templateId      Int
+  templateId      String
   messageType     MessageType
   priority        Priority
   sentStatus      SentStatus  @default(PENDING)
@@ -153,7 +165,7 @@ model NotificationTask {
   updatedAt       DateTime    @updatedAt
 
   channel         Channel         @relation(fields: [channelType], references: [channelType])
-  user            User            @relation(fields: [userId], references: [id])
+  user            User            @relation(fields: [userId], references: [id], onUpdate: Cascade)
   notification    Notification    @relation(fields: [notificationId], references: [id])
   template        Template        @relation(fields: [templateId], references: [id])
   compiledMessage CompiledMessage @relation(fields: [notificationId, templateId, messageType], references: [notificationId, templateId, messageType])
@@ -162,7 +174,7 @@ model NotificationTask {
 }
 
 model Template {
-  id              Int      @id @default(autoincrement())
+  id              String   @id
   name            String
   description     String
   template        String
@@ -174,12 +186,12 @@ model Template {
   compiledTemplates   CompiledTemplate[]
   notification        Notification[]
   notificationTask    NotificationTask[]
-  createdByUserIdUser User               @relation(fields: [createdByUserId], references: [id], name: "templatecreatedByUserIdUser")
-  updatedByUserIdUser User               @relation(fields: [updatedByUserId], references: [id], name: "templateupdatedByUserIdUser")
+  createdByUserIdUser User               @relation(fields: [createdByUserId], references: [id], name: "templatecreatedByUserIdUser", onUpdate: Cascade)
+  updatedByUserIdUser User               @relation(fields: [updatedByUserId], references: [id], name: "templateupdatedByUserIdUser", onUpdate: Cascade)
 }
 
 model CompiledTemplate {
-  templateId       Int
+  templateId       String
   messageType      MessageType
   compiledTemplate String
   createdAt        DateTime    @default(now())
@@ -193,13 +205,13 @@ model CompiledTemplate {
 
 model UserPreference {
   userId                 String
-  notificationCategoryId Int
+  notificationCategoryId String
   channelType            ChannelType
   isPreferred            Boolean
   createdAt              DateTime    @default(now())
   updatedAt              DateTime    @updatedAt
 
-  user                 User                 @relation(fields: [userId], references: [id])
+  user                 User                 @relation(fields: [userId], references: [id], onUpdate: Cascade)
   notificationCategory NotificationCategory @relation(fields: [notificationCategoryId], references: [id])
   channel              Channel              @relation(fields: [channelType], references: [channelType])
 

@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'nestjs-prisma';
 import { CreateNotificationCategoryDto } from './dto/create-notification-category.dto';
 import { UpdateNotificationCategoryDto } from './dto/update-notification-category.dto';
-import { PrismaService } from 'nestjs-prisma';
 
 @Injectable()
 export class NotificationCategoriesService {
   constructor(private readonly prisma: PrismaService) {}
 
   create(
-    applicationId: number,
+    applicationId: string,
     createNotificationCategoryDto: CreateNotificationCategoryDto,
   ) {
     return this.prisma.notificationCategory.create({
@@ -23,7 +23,7 @@ export class NotificationCategoriesService {
     return this.prisma.notificationCategory.findMany();
   }
 
-  findAllByApplicationId(applicationId: number) {
+  findAllByApplicationId(applicationId: string) {
     return this.prisma.notificationCategory.findMany({
       where: {
         applicationId,
@@ -31,7 +31,7 @@ export class NotificationCategoriesService {
     });
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.prisma.notificationCategory.findUniqueOrThrow({
       where: {
         id,
@@ -40,7 +40,7 @@ export class NotificationCategoriesService {
   }
 
   update(
-    id: number,
+    id: string,
     updateNotificationCategoryDto: UpdateNotificationCategoryDto,
   ) {
     return this.prisma.notificationCategory.update({
@@ -48,14 +48,6 @@ export class NotificationCategoriesService {
         id,
       },
       data: updateNotificationCategoryDto,
-    });
-  }
-
-  remove(id: number) {
-    return this.prisma.notificationCategory.delete({
-      where: {
-        id,
-      },
     });
   }
 }

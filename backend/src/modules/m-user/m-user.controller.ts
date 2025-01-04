@@ -10,8 +10,7 @@ import {
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 import * as prisma from '@prisma/client';
 import { AccountsService } from './accounts/accounts.service';
-import { CreateAccountDto } from './accounts/dto/create-account.dto';
-import { UpdateAccountDto } from './accounts/dto/update-account.dto';
+import { UpsertAccountDto } from './accounts/dto/upsert-account.dto';
 import { Account } from './accounts/entities/account.entity';
 import { CreateUserPreferenceDto } from './user-preferences/dto/create-user-preference.dto';
 import { UpdateUserPreferenceDto } from './user-preferences/dto/update-user-preference.dto';
@@ -21,6 +20,7 @@ import { CreateUserDto } from './users/dto/create-user.dto';
 import { UpdateUserDto } from './users/dto/update-user.dto';
 import { User } from './users/entities/user.entity';
 import { UsersService } from './users/users.service';
+import { VerifyUserDto } from './users/dto/verify-user.dto';
 
 @ApiTags('User Module')
 @Controller('m-user')
@@ -58,11 +58,6 @@ export class MUserController {
     return this.usersService.update(userId, updateUserDto);
   }
 
-  @Delete('users/:userId')
-  removeUser(@Param('userId') userId: string) {
-    return this.usersService.remove(userId);
-  }
-
   /**
    * Accounts
    **/
@@ -75,9 +70,9 @@ export class MUserController {
   createAccount(
     @Param('userId') userId: string,
     @Param('channelType') channelType: prisma.$Enums.ChannelType,
-    @Body() createAccountDto: CreateAccountDto,
+    @Body() upsertAccountDto: UpsertAccountDto,
   ): Promise<Account> {
-    return this.accountsService.create(userId, channelType, createAccountDto);
+    return this.accountsService.upsert(userId, channelType, upsertAccountDto);
   }
 
   @ApiParam({
@@ -112,9 +107,9 @@ export class MUserController {
   updateAccount(
     @Param('userId') userId: string,
     @Param('channelType') channelType: prisma.$Enums.ChannelType,
-    @Body() updateAccountDto: UpdateAccountDto,
+    @Body() upsertAccountDto: UpsertAccountDto,
   ): Promise<Account> {
-    return this.accountsService.update(userId, channelType, updateAccountDto);
+    return this.accountsService.upsert(userId, channelType, upsertAccountDto);
   }
 
   @ApiParam({
@@ -127,6 +122,25 @@ export class MUserController {
     @Param('channelType') channelType: prisma.$Enums.ChannelType,
   ) {
     return this.accountsService.remove(userId, channelType);
+  }
+
+  // async verify(
+  //   userId: string,
+  //   channelType: prisma.$Enums.ChannelType,
+  //   otpCode: string,
+  // ) {
+
+  @ApiParam({
+    name: 'channelType',
+    enum: prisma.$Enums.ChannelType,
+  })
+  @Post('users/:userId/channel/:channelType/accounts/verify')
+  verifyAccount(
+    @Param('userId') userId: string,
+    @Param('channelType') channelType: prisma.$Enums.ChannelType,
+    @Body() verifyUserDto: VerifyUserDto,
+  ) {
+    return this.accountsService.verify(userId, channelType, verifyUserDto);
   }
 
   /**
@@ -143,7 +157,7 @@ export class MUserController {
   createUserPreference(
     @Param('userId') userId: string,
     @Param('channelType') channelType: prisma.$Enums.ChannelType,
-    @Param('notificationCategoryId') notificationCategoryId: number,
+    @Param('notificationCategoryId') notificationCategoryId: string,
     @Body() createUserPreferenceDto: CreateUserPreferenceDto,
   ): Promise<UserPreference> {
     return this.userPreferencesService.create(
@@ -176,7 +190,7 @@ export class MUserController {
   findOneUserPreference(
     @Param('userId') userId: string,
     @Param('channelType') channelType: prisma.$Enums.ChannelType,
-    @Param('notificationCategoryId') notificationCategoryId: number,
+    @Param('notificationCategoryId') notificationCategoryId: string,
   ): Promise<UserPreference> {
     return this.userPreferencesService.findOne(
       userId,
@@ -195,7 +209,7 @@ export class MUserController {
   updateUserPreference(
     @Param('userId') userId: string,
     @Param('channelType') channelType: prisma.$Enums.ChannelType,
-    @Param('notificationCategoryId') notificationCategoryId: number,
+    @Param('notificationCategoryId') notificationCategoryId: string,
     @Body() updateUserPreferenceDto: UpdateUserPreferenceDto,
   ): Promise<UserPreference> {
     return this.userPreferencesService.update(
@@ -203,25 +217,6 @@ export class MUserController {
       notificationCategoryId,
       channelType,
       updateUserPreferenceDto,
-    );
-  }
-
-  @ApiParam({
-    name: 'channelType',
-    enum: prisma.$Enums.ChannelType,
-  })
-  @Delete(
-    'users/:userId/channel/:channelType/notification-categories/:notificationCategoryId/user-preferences',
-  )
-  removeUserPreference(
-    @Param('userId') userId: string,
-    @Param('channelType') channelType: prisma.$Enums.ChannelType,
-    @Param('notificationCategoryId') notificationCategoryId: number,
-  ) {
-    return this.userPreferencesService.remove(
-      userId,
-      notificationCategoryId,
-      channelType,
     );
   }
 }

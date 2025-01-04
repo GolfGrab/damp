@@ -9,11 +9,11 @@ import {
 } from 'class-validator';
 
 export class CreateNotificationDto {
-  @IsNumber()
+  @IsString()
   @ApiProperty({
-    type: Number,
+    type: String,
   })
-  templateId: number;
+  templateId: string;
 
   @ApiProperty({
     type: Object,
@@ -24,9 +24,9 @@ export class CreateNotificationDto {
 
   @IsNumber()
   @ApiProperty({
-    type: Number,
+    type: String,
   })
-  notificationCategoryId: number;
+  notificationCategoryId: string;
 
   @IsEnum(prisma.$Enums.Priority)
   @ApiProperty({

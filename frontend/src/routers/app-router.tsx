@@ -1,7 +1,8 @@
-import { Route, Routes } from "react-router";
+import { createBrowserRouter } from "react-router-dom";
+import { AppWithAuth } from "../App";
 import SecuredRoute from "../auth/SecuredRoute";
+import DashBoardLayout from "../layout/DashBoardLayout";
 import About from "../pages/about/About";
-import AuthLayout from "../pages/auth/AuthLayout";
 import Login from "../pages/auth/Login";
 import Callback from "../pages/auth/LoginCallback";
 import Register from "../pages/auth/Register";
@@ -13,42 +14,73 @@ import NotificationsHome from "../pages/notifications/NotificationsHome";
 import PreferenceSettings from "../pages/notifications/PreferenceSettings";
 import home from "./typesafe-routes";
 
-const AppRouter = () => {
-  return (
-    <Routes>
-      <Route path={home.$path()} element={<Home />} />
-      <Route path={home.about.$path()} element={<About />} />
+const appRouter = createBrowserRouter([
+  {
+    Component: AppWithAuth,
+    children: [
+      {
+        Component: DashBoardLayout,
+        children: [
+          {
+            Component: Home,
+            path: home.$path(),
+          },
+          {
+            Component: About,
+            path: home.about.$path(),
+          },
+        ],
+      },
+      {
+        children: [
+          {
+            Component: Login,
+            path: home.auth.login.$path(),
+          },
+          {
+            Component: Register,
+            path: home.auth.register.$path(),
+          },
+          {
+            Component: Callback,
+            path: home.auth.callback.$path(),
+          },
+        ],
+      },
+      {
+        Component: SecuredRoute,
+        children: [
+          {
+            Component: ConcertsHome,
+            path: home.concerts.home.$path(),
+          },
+          {
+            Component: City,
+            path: home.concerts.city.$path(),
+          },
+          {
+            Component: Trending,
+            path: home.concerts.trending.$path(),
+          },
+        ],
+      },
+      {
+        Component: SecuredRoute,
+        children: [
+          {
+            Component: NotificationsHome,
 
-      <Route element={<AuthLayout />}>
-        <Route path={home.auth.login.$path()} element={<Login />} />
-        <Route path={home.auth.register.$path()} element={<Register />} />
-        <Route path={home.auth.callback.$path()} element={<Callback />} />
-      </Route>
+            path: home.notifications.home.$path(),
+          },
+          {
+            Component: PreferenceSettings,
+            path: home.notifications.preferenceSettings.$path(),
+          },
+        ],
+      },
 
-      <Route element={<SecuredRoute />}>
-        <Route path={home.concerts.$path()}>
-          <Route path={home.concerts.home.$path()} element={<ConcertsHome />} />
-          <Route path={home.concerts.city.$path()} element={<City />} />
-          <Route path={home.concerts.trending.$path()} element={<Trending />} />
-        </Route>
-      </Route>
-
-      <Route element={<SecuredRoute />}>
-        <Route path={home.notifications.$path()}>
-          <Route
-            path={home.notifications.home.$path()}
-            element={<NotificationsHome />}
-          />
-          <Route
-            path={home.notifications.preferenceSettings.$path()}
-            element={<PreferenceSettings />}
-          />
-        </Route>
-      </Route>
-
-      <Route
-        path="*"
-        element={
+      {
+        Component: () => (
           <div
             style={{
               color: "red",
@@ -57,10 +89,11 @@ const AppRouter = () => {
           >
             404
           </div>
-        }
-      />
-    </Routes>
-  );
-};
+        ),
+        path: "*",
+      },
+    ],
+  },
+]);
 
-export default AppRouter;
+export default appRouter;

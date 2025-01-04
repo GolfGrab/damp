@@ -15,11 +15,12 @@
     "@fontsource/roboto": "^5.1.0",
     "@mui/icons-material": "^6.2.1",
     "@mui/material": "^6.2.1",
+    "@toolpad/core": "^0.11.0",
     "oidc-client-ts": "^3.1.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-oidc-context": "^3.2.0",
-    "react-router": "^7.1.0",
+    "react-router-dom": "^6.28.1",
     "react-router-typesafe-routes": "^2.0.0"
   },
   "devDependencies": {

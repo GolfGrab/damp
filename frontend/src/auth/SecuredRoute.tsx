@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { hasAuthParams, useAuth } from "react-oidc-context";
-import { Outlet } from "react-router";
+import { Outlet } from "react-router-dom";
 
 const SecuredRoute = () => {
   const auth = useAuth();

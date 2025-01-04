@@ -1,26 +1,39 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 import { CreateApplicationDto } from './dto/create-application.dto';
 import { UpdateApplicationDto } from './dto/update-application.dto';
+import { ApplicationWithApiKey } from './entities/application-with-api-key';
+import { Application } from './entities/application.entity';
 
 @Injectable()
 export class ApplicationsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(createApplicationDto: CreateApplicationDto) {
+  selectAllFieldsIncludingApiKey = Object.fromEntries(
+    Object.values(Prisma.ApplicationScalarFieldEnum).map((field) => [
+      field,
+      true,
+    ]),
+  ) as Prisma.ApplicationSelect;
+
+  create(
+    createApplicationDto: CreateApplicationDto,
+  ): Promise<ApplicationWithApiKey> {
     return this.prisma.application.create({
       data: {
         ...createApplicationDto,
         apiKey: crypto.randomUUID(),
       },
+      select: this.selectAllFieldsIncludingApiKey,
     });
   }
 
-  findAll() {
+  findAll(): Promise<Application[]> {
     return this.prisma.application.findMany();
   }
 
-  findAllByCreatedByUserId(createdByUserId: string) {
+  findAllByCreatedByUserId(createdByUserId: string): Promise<Application[]> {
     return this.prisma.application.findMany({
       where: {
         createdByUserId,
@@ -28,7 +41,7 @@ export class ApplicationsService {
     });
   }
 
-  findOne(applicationId: number) {
+  findOne(applicationId: string): Promise<Application> {
     return this.prisma.application.findUniqueOrThrow({
       where: {
         id: applicationId,
@@ -36,7 +49,10 @@ export class ApplicationsService {
     });
   }
 
-  update(applicationId: number, updateApplicationDto: UpdateApplicationDto) {
+  update(
+    applicationId: string,
+    updateApplicationDto: UpdateApplicationDto,
+  ): Promise<Application> {
     return this.prisma.application.update({
       where: {
         id: applicationId,
@@ -45,7 +61,7 @@ export class ApplicationsService {
     });
   }
 
-  rotateApiKey(applicationId: number) {
+  rotateApiKey(applicationId: string): Promise<ApplicationWithApiKey> {
     return this.prisma.application.update({
       where: {
         id: applicationId,
@@ -53,14 +69,7 @@ export class ApplicationsService {
       data: {
         apiKey: crypto.randomUUID(),
       },
-    });
-  }
-
-  remove(applicationId: number) {
-    return this.prisma.application.delete({
-      where: {
-        id: applicationId,
-      },
+      select: this.selectAllFieldsIncludingApiKey,
     });
   }
 }

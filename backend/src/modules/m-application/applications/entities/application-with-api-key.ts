@@ -1,27 +1,31 @@
 import { ApiProperty } from '@nestjs/swagger';
 import * as prisma from '@prisma/client';
-export class Account implements prisma.Account {
-  @ApiProperty({
-    type: String,
-  })
-  userId: string;
 
+export class ApplicationWithApiKey implements prisma.Application {
   @ApiProperty({
     type: String,
-    enum: prisma.$Enums.ChannelType,
   })
-  channelType: prisma.$Enums.ChannelType;
+  id: string;
 
   @ApiProperty({
     type: String,
   })
-  channelToken: string;
+  name: string;
 
   @ApiProperty({
     type: String,
-    format: 'date-time',
   })
-  verifiedAt: Date | null;
+  description: string;
+
+  @ApiProperty({
+    type: String,
+  })
+  apiKey: string;
+
+  @ApiProperty({
+    type: Boolean,
+  })
+  isEnabled: boolean;
 
   @ApiProperty({
     type: String,
@@ -31,7 +35,17 @@ export class Account implements prisma.Account {
 
   @ApiProperty({
     type: String,
+  })
+  createdByUserId: string;
+
+  @ApiProperty({
+    type: String,
     format: 'date-time',
   })
   updatedAt: Date;
+
+  @ApiProperty({
+    type: String,
+  })
+  updatedByUserId: string;
 }

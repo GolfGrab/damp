@@ -5,6 +5,6 @@ import { NotificationCategoriesModule } from './notification-categories/notifica
 
 @Module({
   controllers: [MApplicationController],
-  imports: [ApplicationsModule, NotificationCategoriesModule]
+  imports: [ApplicationsModule, NotificationCategoriesModule],
 })
 export class MApplicationModule {}
