@@ -1,27 +1,17 @@
-import {
-  IsEnum,
-  IsNumberString,
-  IsOptional,
-  IsString,
-  IsUUID,
-  IsUrl,
-} from 'class-validator';
+import { IsEnum, IsNumberString, IsString, IsUrl } from 'class-validator';
 
 export class Config {
   @IsEnum(['development', 'production'])
   readonly NODE_ENV: 'development' | 'production';
 
   @IsUrl()
-  @IsOptional()
-  readonly OAUTH_URL: string;
-
-  @IsUUID()
-  @IsOptional()
-  readonly CLIENT_ID: string;
+  readonly OAUTH_ISSUER_URL: string;
 
   @IsString()
-  @IsOptional()
-  readonly CLIENT_SECRET: string;
+  readonly OAUTH_CLIENT_ID: string;
+
+  @IsString()
+  readonly OAUTH_CLIENT_SECRET: string;
 
   @IsString()
   readonly QUEUE_URL: string;

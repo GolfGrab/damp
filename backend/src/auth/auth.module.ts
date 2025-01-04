@@ -2,6 +2,7 @@ import { Config } from '@/utils/config/config-dto';
 import { Global, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PrismaService } from 'nestjs-prisma';
+import { Issuer } from 'openid-client';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 
@@ -17,14 +18,13 @@ import { AuthService } from './auth.service';
     {
       provide: AuthService,
       inject: [Config, PrismaService],
-      useFactory: (config: Config, prisma: PrismaService) => {
-        // const issuer = await Issuer.discover(config.OAUTH_URL);
-        // const client = new issuer.Client({
-        //   client_id: config.CLIENT_ID,
-        //   client_secret: config.CLIENT_SECRET,
-        // });
-        // return new AuthService(client, prisma);
-        return new AuthService(prisma);
+      useFactory: async (config: Config, prisma: PrismaService) => {
+        const issuer = await Issuer.discover(config.OAUTH_ISSUER_URL);
+        const client = new issuer.Client({
+          client_id: config.OAUTH_CLIENT_ID,
+          client_secret: config.OAUTH_CLIENT_SECRET,
+        });
+        return new AuthService(client, prisma);
       },
     },
   ],

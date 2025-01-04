@@ -6,8 +6,8 @@ export const generateSwaggerDoc = (app: INestApplication<any>) => {
     .setTitle('NestJS Prisma Example')
     .setDescription('The NestJS Prisma Example API description')
     .setVersion('0.0.1')
-    .addBearerAuth(undefined, 'Api Key')
-    .addBearerAuth(undefined, 'Access Token')
+    .addBearerAuth(undefined, 'Api_Key')
+    .addBearerAuth(undefined, 'Access_Token')
     .build();
 
   const doc = SwaggerModule.createDocument(app, config);

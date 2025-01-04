@@ -1,7 +1,8 @@
 import { Button, List, ListItem } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router-dom";
+import { apiClient } from "../../api";
 import reactLogo from "/react.svg";
 import viteLogo from "/vite.svg";
 
@@ -9,6 +10,18 @@ function Home() {
   const [count, setCount] = useState(0);
   const auth = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (auth.isAuthenticated) {
+      apiClient.AuthApi.authControllerMe({
+        headers: {
+          Authorization: `Bearer ${auth.user?.access_token}`,
+        },
+      }).then((res) => {
+        console.log(res);
+      });
+    }
+  }, [auth.isAuthenticated, auth.user?.access_token]);
 
   return (
     <>
@@ -38,6 +51,9 @@ function Home() {
       {auth.isAuthenticated ? (
         <div>
           Hello {JSON.stringify(auth.user?.profile)}{" "}
+          <div>
+            access token: {auth.user?.access_token} <br />
+          </div>
           <Button variant="contained" onClick={() => void auth.removeUser()}>
             Log out
           </Button>
