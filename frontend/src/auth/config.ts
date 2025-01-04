@@ -1,6 +1,6 @@
 import { WebStorageStateStore } from "oidc-client-ts";
 import { AuthProviderProps } from "react-oidc-context";
-import { Location, NavigateFunction } from "react-router";
+import { Location, NavigateFunction } from "react-router-dom";
 
 export const getOidcConfig = (
   navigator: NavigateFunction
