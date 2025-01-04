@@ -4,6 +4,7 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import { createTheme, ThemeProvider } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { AuthProvider } from "react-oidc-context";
@@ -17,14 +18,18 @@ const theme = createTheme({
   },
 });
 
+const queryClient = new QueryClient();
+
 export const App = () => {
   const navigator = useNavigate();
   return (
     <AuthProvider {...getOidcConfig(navigator)}>
-      <CssBaseline enableColorScheme />
-      <ThemeProvider theme={theme}>
-        <AppRouter />
-      </ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline enableColorScheme />
+          <AppRouter />
+        </ThemeProvider>
+      </QueryClientProvider>
     </AuthProvider>
   );
 };
