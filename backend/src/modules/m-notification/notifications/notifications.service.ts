@@ -1,11 +1,13 @@
 import { Config } from '@/utils/config/config-dto';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ClientProxy, RmqRecordBuilder } from '@nestjs/microservices';
-import { $Enums } from '@prisma/client';
+import { $Enums, Notification, Prisma } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 import { inspect } from 'util';
 import { TemplatesService } from '../templates/templates.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
+import { PaginationQueryDto } from '../../../utils/paginator/paginationQuery.dto';
+import { paginate } from '../../../utils/paginator/pagination.function';
 
 const priorityMap = {
   [$Enums.Priority.LOW]: 1,
@@ -245,6 +247,37 @@ export class NotificationsService {
       where: {
         id,
       },
+    });
+  }
+
+  async getPaginatedNotificationsByUser(
+    userId: string,
+    paginateQuery: PaginationQueryDto,
+  ) {
+    return paginate<Notification, Prisma.NotificationFindManyArgs>({
+      prismaQueryModel: this.prisma.notification,
+      findManyArgs: {
+        where: {
+          notificationTasks: {
+            some: {
+              userId,
+            },
+          },
+        },
+        include: {
+          notificationTasks: {
+            where: {
+              userId,
+            },
+          },
+          compiledMessages: {
+            where: {
+              messageType: $Enums.MessageType.HTML,
+            },
+          },
+        },
+      },
+      paginateOptions: paginateQuery,
     });
   }
 }

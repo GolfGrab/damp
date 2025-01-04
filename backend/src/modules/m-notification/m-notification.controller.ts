@@ -1,4 +1,4 @@
-import { GetApplication, KeyAuth } from '@/auth/auth.decorator';
+import { GetApplication, GetUser, KeyAuth } from '@/auth/auth.decorator';
 import {
   Body,
   Controller,
@@ -6,10 +6,11 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Application, MessageType } from '@prisma/client';
+import { Application, MessageType, User } from '@prisma/client';
 import { CreateNotificationDto } from './notifications/dto/create-notification.dto';
 import { Notification } from './notifications/entities/notification.entity';
 import { NotificationsService } from './notifications/notifications.service';
@@ -18,6 +19,9 @@ import { GetPreviewTemplateDto } from './templates/dto/get-preview-template.dto'
 import { UpdateTemplateDto } from './templates/dto/update-template.dto';
 import { Template } from './templates/entities/template.entity';
 import { TemplatesService } from './templates/templates.service';
+import { ApiPaginatedResponse } from '../../utils/paginator/pagination.decorator';
+import { PaginatedResult } from '../../utils/paginator/pagination.type';
+import { PaginationQueryDto } from '../../utils/paginator/paginationQuery.dto';
 
 @ApiTags('Notification Module')
 @Controller('m-notification')
@@ -132,5 +136,17 @@ export class MNotificationController {
     @Param('notificationId') notificationId: number,
   ): Promise<Notification> {
     return this.notificationsService.findOne(notificationId);
+  }
+
+  @Get('users/:userId/notifications')
+  @ApiPaginatedResponse(Notification)
+  getPaginatedNotificationsByUserId(
+    @Query() paginateQuery: PaginationQueryDto,
+    @Param('userId') userId: string,
+  ): Promise<PaginatedResult<Notification>> {
+    return this.notificationsService.getPaginatedNotificationsByUser(
+      userId,
+      paginateQuery,
+    );
   }
 }
