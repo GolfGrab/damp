@@ -1,5 +1,6 @@
 import { HomeOutlined, InfoOutlined } from "@mui/icons-material";
 import { CssBaseline } from "@mui/material";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Branding, Navigation } from "@toolpad/core";
 import { AppProvider } from "@toolpad/core/react-router-dom";
 import { AuthProvider, useAuth } from "react-oidc-context";
@@ -24,11 +25,11 @@ const NAVIGATION: Navigation = [
 
 const BRANDING: Branding = {
   homeUrl: import.meta.env.BASE_URL,
-  title: "Noti Back-Office",
 };
 
 export const App = () => {
   const auth = useAuth();
+  const queryClient = new QueryClient();
 
   return (
     <>
@@ -58,7 +59,9 @@ export const App = () => {
           signOut: () => void auth.signoutRedirect(),
         }}
       >
-        <Outlet />
+        <QueryClientProvider client={queryClient}>
+          <Outlet />
+        </QueryClientProvider>
       </AppProvider>
     </>
   );
