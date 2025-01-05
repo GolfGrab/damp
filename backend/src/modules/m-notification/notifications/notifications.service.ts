@@ -276,7 +276,9 @@ export class NotificationsService {
           },
           compiledMessages: {
             where: {
-              messageType: $Enums.MessageType.HTML,
+              messageType: {
+                in: [$Enums.MessageType.HTML, $Enums.MessageType.TEXT],
+              },
             },
           },
         },

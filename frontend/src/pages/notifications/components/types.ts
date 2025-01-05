@@ -4,4 +4,5 @@ export type NotificationPreviewContent = {
   message: string;
   createdAt: Date;
   image?: string;
+  title: string;
 };

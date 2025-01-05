@@ -15,8 +15,9 @@ const NotificationDetails = () => {
     image: "https://source.unsplash.com/random/300x300",
   };
   return (
-    <NotificationCenterGenericLayout title="Notification Details"
-     parentPath="/notifications"
+    <NotificationCenterGenericLayout
+      title="Notification Details"
+      parentPath="/notifications"
     >
       <Stack direction={"row"} gap={2}>
         <Avatar
@@ -36,6 +37,7 @@ const NotificationDetails = () => {
           </Stack>
         </Stack>
       </Stack>
+      <Typography variant="body1">{applicationDetails.message}</Typography>
     </NotificationCenterGenericLayout>
   );
 };

@@ -11,7 +11,10 @@ import { groupBy, sortBy } from "lodash";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import { apiClient } from "../../../api";
-import { PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDto } from "../../../api/generated";
+import {
+  MNotificationControllerPreviewTemplateMessageTypeEnum,
+  PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDto,
+} from "../../../api/generated";
 import NotificationListCard from "./NotificationListCard";
 import { NotificationPreviewContent } from "./types";
 
@@ -24,9 +27,22 @@ const groupSortAndTransformNotifications = (
       ({
         id: notification.id.toString(),
         applicationName: notification.applicationId,
-        message: notification.compiledMessages[0].compiledMessage,
+        message:
+          notification.compiledMessages.find(
+            (message) =>
+              message.messageType ===
+              MNotificationControllerPreviewTemplateMessageTypeEnum.Html
+          )?.compiledMessage ?? "",
         createdAt: new Date(notification.createdAt),
         image: notification.applicationId,
+        title:
+          notification.compiledMessages
+            .find(
+              (message) =>
+                message.messageType ===
+                MNotificationControllerPreviewTemplateMessageTypeEnum.Text
+            )
+            ?.compiledMessage.split("\n", 1)[0] ?? "",
       }) satisfies NotificationPreviewContent
   );
   // Group the notifications by date
@@ -62,7 +78,7 @@ const useNotificationsInfiniteQuery = () =>
 const NotificationList = () => {
   const { ref, inView } = useInView();
 
-  const { data, error, isFetchingNextPage, fetchNextPage } =
+  const { data, error, isFetchingNextPage, fetchNextPage, isLoading } =
     useNotificationsInfiniteQuery();
 
   console.log(data);
@@ -116,6 +132,11 @@ const NotificationList = () => {
           );
         })}
       </List>
+      <Divider
+        variant="inset"
+        component="li"
+        sx={{ padding: 0, margin: 0, listStyleType: "none" }}
+      />
       <Grid2
         container
         ref={ref}
@@ -124,7 +145,7 @@ const NotificationList = () => {
         justifyContent="center"
         margin={2}
       >
-        {isFetchingNextPage ? (
+        {isLoading || isFetchingNextPage ? (
           <CircularProgress />
         ) : (
           <Typography variant="body1">You have seen it all!</Typography>
