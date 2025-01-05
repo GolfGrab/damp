@@ -628,6 +628,18 @@ export interface NotificationTask {
 export interface OutputNotificationWithCompiledMessageAndNotificationTaskDto {
     /**
      * 
+     * @type {PickTypeClass}
+     * @memberof OutputNotificationWithCompiledMessageAndNotificationTaskDto
+     */
+    'notificationCategory': PickTypeClass;
+    /**
+     * 
+     * @type {PickTypeClass}
+     * @memberof OutputNotificationWithCompiledMessageAndNotificationTaskDto
+     */
+    'application': PickTypeClass;
+    /**
+     * 
      * @type {Array<NotificationTask>}
      * @memberof OutputNotificationWithCompiledMessageAndNotificationTaskDto
      */
@@ -748,6 +760,19 @@ export interface PaginatedResponseOfOutputNotificationWithCompiledMessageAndNoti
      * @memberof PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta
      */
     'next'?: number | null;
+}
+/**
+ * 
+ * @export
+ * @interface PickTypeClass
+ */
+export interface PickTypeClass {
+    /**
+     * 
+     * @type {string}
+     * @memberof PickTypeClass
+     */
+    'name': string;
 }
 /**
  * 

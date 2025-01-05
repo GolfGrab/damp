@@ -255,6 +255,7 @@ export class NotificationsService {
     userId: string,
     paginateQuery: PaginationQueryDto,
   ) {
+    // TODO Omit system OPT
     return paginate<
       OutputNotificationWithCompiledMessageAndNotificationTaskDto,
       Prisma.NotificationFindManyArgs
@@ -281,6 +282,16 @@ export class NotificationsService {
               },
             },
           },
+          application: {
+            select: {
+              name: true,
+            },
+          },
+          notificationCategory: {
+            select: {
+              name: true,
+            },
+          },
         },
       },
       paginateOptions: paginateQuery,
@@ -288,6 +299,7 @@ export class NotificationsService {
   }
 
   findOneByUser(userId: string, notificationId: number) {
+    // TODO Omit system OPT
     return this.prisma.notification.findFirstOrThrow({
       where: {
         id: notificationId,
@@ -305,7 +317,19 @@ export class NotificationsService {
         },
         compiledMessages: {
           where: {
-            messageType: $Enums.MessageType.HTML,
+            messageType: {
+              in: [$Enums.MessageType.HTML, $Enums.MessageType.TEXT],
+            },
+          },
+        },
+        application: {
+          select: {
+            name: true,
+          },
+        },
+        notificationCategory: {
+          select: {
+            name: true,
           },
         },
       },
