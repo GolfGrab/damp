@@ -2,6 +2,6 @@ export type NotificationPreviewContent = {
   id: string;
   applicationName: string;
   message: string;
-  createdTime: Date;
+  createdAt: Date;
   image?: string;
 };

@@ -195,6 +195,49 @@ export interface ApplicationWithApiKey {
 /**
  * 
  * @export
+ * @interface CompiledMessage
+ */
+export interface CompiledMessage {
+    /**
+     * 
+     * @type {string}
+     * @memberof CompiledMessage
+     */
+    'templateId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CompiledMessage
+     */
+    'createdAt': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CompiledMessage
+     */
+    'updatedAt': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof CompiledMessage
+     */
+    'notificationId': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof CompiledMessage
+     */
+    'messageType': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CompiledMessage
+     */
+    'compiledMessage': string;
+}
+/**
+ * 
+ * @export
  * @interface CreateApplicationDto
  */
 export interface CreateApplicationDto {
@@ -495,62 +538,214 @@ export interface NotificationCategory {
 /**
  * 
  * @export
- * @interface PaginatedResponseOfNotification
+ * @interface NotificationTask
  */
-export interface PaginatedResponseOfNotification {
+export interface NotificationTask {
     /**
      * 
-     * @type {Array<Notification>}
-     * @memberof PaginatedResponseOfNotification
+     * @type {string}
+     * @memberof NotificationTask
      */
-    'data'?: Array<Notification>;
+    'templateId': string;
     /**
      * 
-     * @type {PaginatedResponseOfNotificationAllOfMeta}
-     * @memberof PaginatedResponseOfNotification
+     * @type {string}
+     * @memberof NotificationTask
      */
-    'meta'?: PaginatedResponseOfNotificationAllOfMeta;
+    'priority': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationTask
+     */
+    'createdAt': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationTask
+     */
+    'updatedAt': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationTask
+     */
+    'channelType': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationTask
+     */
+    'userId': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof NotificationTask
+     */
+    'notificationId': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationTask
+     */
+    'messageType': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationTask
+     */
+    'sentStatus': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationTask
+     */
+    'sentTimestamp'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationTask
+     */
+    'failedTimestamp'?: string | null;
+    /**
+     * 
+     * @type {number}
+     * @memberof NotificationTask
+     */
+    'retryCount': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof NotificationTask
+     */
+    'retryLimit': number;
 }
 /**
  * 
  * @export
- * @interface PaginatedResponseOfNotificationAllOfMeta
+ * @interface OutputNotificationWithCompiledMessageAndNotificationTaskDto
  */
-export interface PaginatedResponseOfNotificationAllOfMeta {
+export interface OutputNotificationWithCompiledMessageAndNotificationTaskDto {
+    /**
+     * 
+     * @type {Array<NotificationTask>}
+     * @memberof OutputNotificationWithCompiledMessageAndNotificationTaskDto
+     */
+    'notificationTasks': Array<NotificationTask>;
+    /**
+     * 
+     * @type {Array<CompiledMessage>}
+     * @memberof OutputNotificationWithCompiledMessageAndNotificationTaskDto
+     */
+    'compiledMessages': Array<CompiledMessage>;
+    /**
+     * 
+     * @type {string}
+     * @memberof OutputNotificationWithCompiledMessageAndNotificationTaskDto
+     */
+    'applicationId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OutputNotificationWithCompiledMessageAndNotificationTaskDto
+     */
+    'notificationCategoryId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OutputNotificationWithCompiledMessageAndNotificationTaskDto
+     */
+    'templateId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OutputNotificationWithCompiledMessageAndNotificationTaskDto
+     */
+    'templateData': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OutputNotificationWithCompiledMessageAndNotificationTaskDto
+     */
+    'priority': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OutputNotificationWithCompiledMessageAndNotificationTaskDto
+     */
+    'createdAt': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OutputNotificationWithCompiledMessageAndNotificationTaskDto
+     */
+    'updatedAt': string;
     /**
      * 
      * @type {number}
-     * @memberof PaginatedResponseOfNotificationAllOfMeta
+     * @memberof OutputNotificationWithCompiledMessageAndNotificationTaskDto
+     */
+    'id': number;
+}
+/**
+ * 
+ * @export
+ * @interface PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDto
+ */
+export interface PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDto {
+    /**
+     * 
+     * @type {Array<OutputNotificationWithCompiledMessageAndNotificationTaskDto>}
+     * @memberof PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDto
+     */
+    'data'?: Array<OutputNotificationWithCompiledMessageAndNotificationTaskDto>;
+    /**
+     * 
+     * @type {PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta}
+     * @memberof PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDto
+     */
+    'meta'?: PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta;
+}
+/**
+ * 
+ * @export
+ * @interface PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta
+ */
+export interface PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta {
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta
      */
     'total'?: number;
     /**
      * 
      * @type {number}
-     * @memberof PaginatedResponseOfNotificationAllOfMeta
+     * @memberof PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta
      */
     'lastPage'?: number;
     /**
      * 
      * @type {number}
-     * @memberof PaginatedResponseOfNotificationAllOfMeta
+     * @memberof PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta
      */
     'currentPage'?: number;
     /**
      * 
      * @type {number}
-     * @memberof PaginatedResponseOfNotificationAllOfMeta
+     * @memberof PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta
      */
     'perPage'?: number;
     /**
      * 
      * @type {number}
-     * @memberof PaginatedResponseOfNotificationAllOfMeta
+     * @memberof PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta
      */
     'prev'?: number | null;
     /**
      * 
      * @type {number}
-     * @memberof PaginatedResponseOfNotificationAllOfMeta
+     * @memberof PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta
      */
     'next'?: number | null;
 }
@@ -2471,7 +2666,7 @@ export const NotificationModuleApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async mNotificationControllerGetNotificationsForUserById(userId: string, notificationId: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResponseOfNotification>> {
+        async mNotificationControllerGetNotificationsForUserById(userId: string, notificationId: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OutputNotificationWithCompiledMessageAndNotificationTaskDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.mNotificationControllerGetNotificationsForUserById(userId, notificationId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['NotificationModuleApi.mNotificationControllerGetNotificationsForUserById']?.[localVarOperationServerIndex]?.url;
@@ -2485,7 +2680,7 @@ export const NotificationModuleApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async mNotificationControllerGetPaginatedNotificationsByUserId(userId: string, page?: number, perPage?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResponseOfNotification>> {
+        async mNotificationControllerGetPaginatedNotificationsByUserId(userId: string, page?: number, perPage?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.mNotificationControllerGetPaginatedNotificationsByUserId(userId, page, perPage, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['NotificationModuleApi.mNotificationControllerGetPaginatedNotificationsByUserId']?.[localVarOperationServerIndex]?.url;
@@ -2617,7 +2812,7 @@ export const NotificationModuleApiFactory = function (configuration?: Configurat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        mNotificationControllerGetNotificationsForUserById(userId: string, notificationId: number, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedResponseOfNotification> {
+        mNotificationControllerGetNotificationsForUserById(userId: string, notificationId: number, options?: RawAxiosRequestConfig): AxiosPromise<OutputNotificationWithCompiledMessageAndNotificationTaskDto> {
             return localVarFp.mNotificationControllerGetNotificationsForUserById(userId, notificationId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2628,7 +2823,7 @@ export const NotificationModuleApiFactory = function (configuration?: Configurat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        mNotificationControllerGetPaginatedNotificationsByUserId(userId: string, page?: number, perPage?: number, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedResponseOfNotification> {
+        mNotificationControllerGetPaginatedNotificationsByUserId(userId: string, page?: number, perPage?: number, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDto> {
             return localVarFp.mNotificationControllerGetPaginatedNotificationsByUserId(userId, page, perPage, options).then((request) => request(axios, basePath));
         },
         /**

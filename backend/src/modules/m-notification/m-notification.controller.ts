@@ -140,7 +140,9 @@ export class MNotificationController {
   }
 
   @Auth()
-  @ApiPaginatedResponse(Notification)
+  @ApiPaginatedResponse(
+    OutputNotificationWithCompiledMessageAndNotificationTaskDto,
+  )
   @Get('users/:userId/notifications')
   getPaginatedNotificationsByUserId(
     @Query() paginateQuery: PaginationQueryDto,
@@ -156,7 +158,9 @@ export class MNotificationController {
   }
 
   @Auth()
-  @ApiPaginatedResponse(Notification)
+  @ApiResponse({
+    type: OutputNotificationWithCompiledMessageAndNotificationTaskDto,
+  })
   @Get('users/:userId/notifications/:notificationId')
   getNotificationsForUserById(
     @GetUser() user: User,

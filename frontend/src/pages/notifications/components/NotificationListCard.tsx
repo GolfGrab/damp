@@ -15,7 +15,7 @@ type NotificationListCardProps = {
 };
 
 const NotificationListCard = ({
-  content: { applicationName, image, message, createdTime, id },
+  content: { applicationName, image, message, createdAt: createdTime, id },
 }: NotificationListCardProps) => {
   dayjs.extend(relativeTime);
   const navigate = useNavigate();
