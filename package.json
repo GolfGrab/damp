@@ -4,7 +4,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start:backend": "cd backend && npm i && npm run prisma:generate && npm run start:dev -- --preserveWatchOutput",
-    "start:consumer": "cd consumer && npm i && npm run prisma:generate && npm run start:dev -- --preserveWatchOutput",
+    "start:consumer": "cd consumer && npm i && npm run prisma:generate && npm run start:all:dev -- --preserveWatchOutput",
     "start:frontend": "cd frontend && npm i && npm run dev",
     "start:queue": "cd queue && docker compose up",
     "start:smtp": "cd smtp && docker compose up",
