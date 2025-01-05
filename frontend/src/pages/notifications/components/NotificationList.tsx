@@ -12,6 +12,7 @@ import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import { apiClient } from "../../../api";
 import {
+  AccountChannelTypeEnum,
   MNotificationControllerPreviewTemplateMessageTypeEnum,
   PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDto,
 } from "../../../api/generated";
@@ -25,8 +26,8 @@ const groupSortAndTransformNotifications = (
   const notificationPreviewContents = items?.map(
     (notification) =>
       ({
-        id: notification.id.toString(),
-        applicationName: notification.applicationId,
+        id: notification.id,
+        applicationName: notification.application.name ?? "",
         message:
           notification.compiledMessages.find(
             (message) =>
@@ -34,7 +35,7 @@ const groupSortAndTransformNotifications = (
               MNotificationControllerPreviewTemplateMessageTypeEnum.Html
           )?.compiledMessage ?? "",
         createdAt: new Date(notification.createdAt),
-        image: notification.applicationId,
+        image: notification.application.name,
         title:
           notification.compiledMessages
             .find(
@@ -43,6 +44,10 @@ const groupSortAndTransformNotifications = (
                 MNotificationControllerPreviewTemplateMessageTypeEnum.Text
             )
             ?.compiledMessage.split("\n", 1)[0] ?? "",
+        notificationCategoryName: notification.notificationCategory.name,
+        channelTypes: notification.notificationTasks.map(
+          (task) => task.channelType as AccountChannelTypeEnum
+        ),
       }) satisfies NotificationPreviewContent
   );
   // Group the notifications by date
