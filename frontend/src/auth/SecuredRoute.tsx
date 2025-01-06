@@ -37,7 +37,22 @@ const SecuredRoute = () => {
   }
 
   if (auth.error) {
-    return <div>Oops... {auth.error.message}</div>;
+    return (
+      <>
+        <div>Oops... {auth.error.message}</div>
+        <button
+          onClick={() =>
+            auth.signinRedirect({
+              state: {
+                returnTo: window.location,
+              },
+            })
+          }
+        >
+          Retry
+        </button>
+      </>
+    );
   }
 
   axiosInstance.defaults.headers.common["Authorization"] =

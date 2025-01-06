@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserPreferenceDto } from './dto/create-user-preference.dto';
-import { UpdateUserPreferenceDto } from './dto/update-user-preference.dto';
 import * as prisma from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
+import { UpsertUserPreferenceDto } from './dto/upsert-user-preference.dto';
 
 @Injectable()
 export class UserPreferencesService {
@@ -12,7 +11,7 @@ export class UserPreferencesService {
     userId: string,
     notificationCategoryId: string,
     channelType: prisma.$Enums.ChannelType,
-    createUserPreferenceDto: CreateUserPreferenceDto,
+    upsertUserPreferenceDto: UpsertUserPreferenceDto,
   ) {
     return this.prisma.userPreference.upsert({
       where: {
@@ -26,30 +25,10 @@ export class UserPreferencesService {
         userId,
         notificationCategoryId,
         channelType,
-        ...createUserPreferenceDto,
+        ...upsertUserPreferenceDto,
       },
-      update: createUserPreferenceDto,
+      update: upsertUserPreferenceDto,
     });
-  }
-
-  create(
-    userId: string,
-    notificationCategoryId: string,
-    channelType: prisma.$Enums.ChannelType,
-    createUserPreferenceDto: CreateUserPreferenceDto,
-  ) {
-    return this.prisma.userPreference.create({
-      data: {
-        userId,
-        notificationCategoryId,
-        channelType,
-        ...createUserPreferenceDto,
-      },
-    });
-  }
-
-  findAll() {
-    return this.prisma.userPreference.findMany();
   }
 
   findAllByUserId(userId: string) {
@@ -60,37 +39,19 @@ export class UserPreferencesService {
     });
   }
 
-  findOne(
+  updateManyByUserIdAndChannelType(
     userId: string,
-    notificationCategoryId: string,
     channelType: prisma.$Enums.ChannelType,
+    upsertUserPreferenceDto: UpsertUserPreferenceDto,
   ) {
-    return this.prisma.userPreference.findUniqueOrThrow({
+    return this.prisma.userPreference.updateMany({
       where: {
-        userId_channelType_notificationCategoryId: {
-          userId,
-          channelType,
-          notificationCategoryId,
-        },
+        userId,
+        channelType,
       },
-    });
-  }
-
-  update(
-    userId: string,
-    notificationCategoryId: string,
-    channelType: prisma.$Enums.ChannelType,
-    updateUserPreferenceDto: UpdateUserPreferenceDto,
-  ) {
-    return this.prisma.userPreference.update({
-      where: {
-        userId_channelType_notificationCategoryId: {
-          userId,
-          channelType,
-          notificationCategoryId,
-        },
+      data: {
+        ...upsertUserPreferenceDto,
       },
-      data: updateUserPreferenceDto,
     });
   }
 }

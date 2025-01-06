@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'nestjs-prisma';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -23,17 +22,6 @@ export class UsersService {
     return this.prisma.user.findFirstOrThrow({
       where: {
         id: userId,
-      },
-    });
-  }
-
-  update(userId: string, updateUserDto: UpdateUserDto) {
-    return this.prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        id: updateUserDto.id,
       },
     });
   }

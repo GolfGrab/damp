@@ -48,17 +48,17 @@ model Account {
 }
 
 model Otp {
-  id          Int         @id @default(autoincrement())
+  id          Int          @id @default(autoincrement())
   otpCode     String
-  createdAt   DateTime    @default(now())
+  createdAt   DateTime     @default(now())
   expiredAt   DateTime
   verifiedAt  DateTime?
-  userId      String
-  channelType ChannelType
+  userId      String?
+  channelType ChannelType?
 
-  user    User    @relation(fields: [userId], references: [id], onUpdate: Cascade)
-  channel Channel @relation(fields: [channelType], references: [channelType])
-  account Account @relation(fields: [userId, channelType], references: [userId, channelType])
+  user    User?    @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: NoAction)
+  channel Channel? @relation(fields: [channelType], references: [channelType], onUpdate: NoAction, onDelete: NoAction)
+  account Account? @relation(fields: [userId, channelType], references: [userId, channelType], onDelete: SetNull, onUpdate: SetNull)
 }
 
 model Channel {

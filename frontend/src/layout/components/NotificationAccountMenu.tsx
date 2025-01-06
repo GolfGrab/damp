@@ -22,7 +22,7 @@ const navigationItems = [
   {
     title: "Preference Settings",
     icon: <Tune />,
-    to: "/notifications/user-preferences",
+    to: "/notifications/applications",
   },
 ] as const;
 

@@ -56,7 +56,12 @@ export class NotificationsService {
         include: {
           userPreferences: {
             where: {
-              isPreferred: true,
+              // allow sending notification to unverified accounts for OTP
+              isPreferred: Object.values($Enums.ChannelType)
+                .map((channelType) => `System_${channelType}_OTP`)
+                .includes(createNotificationDto.notificationCategoryId)
+                ? undefined
+                : true,
               userId: {
                 in: createNotificationDto.recipientIds,
               },

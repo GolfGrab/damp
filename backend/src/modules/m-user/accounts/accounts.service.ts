@@ -28,33 +28,12 @@ export class AccountsService {
       new Date().getTime() + 1000 * 60 * 5, // 5 minutes
     );
 
-    // set user preferences for OTP
-    await this.userPreferencesService.upsert(
-      userId,
-      `System_${channelType}_OTP`,
-      channelType,
-      {
-        isPreferred: true,
-      },
-    );
-
-    // send otp code to user
-    await this.notificationService.create('System-application', {
-      recipientIds: [userId],
-      notificationCategoryId: `System_${channelType}_OTP`,
-      priority: prisma.Priority.HIGH,
-      templateId: `System_${channelType}_OTP`,
-      templateData: {
-        otpCode,
-      },
-    });
-
     const prismaOtpCreateWithoutAccountInput = {
       otpCode,
       expiredAt,
     };
 
-    return this.prisma.account.upsert({
+    const account = await this.prisma.account.upsert({
       where: {
         userId_channelType: {
           userId,
@@ -78,6 +57,19 @@ export class AccountsService {
         verifiedAt: null,
       },
     });
+
+    // send otp code to user
+    await this.notificationService.create('System-application', {
+      recipientIds: [userId],
+      notificationCategoryId: `System_${channelType}_OTP`,
+      priority: prisma.Priority.HIGH,
+      templateId: `System_${channelType}_OTP`,
+      templateData: {
+        otpCode,
+      },
+    });
+
+    return account;
   }
 
   generateOtp() {
@@ -135,25 +127,10 @@ export class AccountsService {
     });
   }
 
-  findAll() {
-    return this.prisma.account.findMany();
-  }
-
   findAllByUserId(userId: string) {
     return this.prisma.account.findMany({
       where: {
         userId,
-      },
-    });
-  }
-
-  findOne(userId: string, channelType: prisma.$Enums.ChannelType) {
-    return this.prisma.account.findUniqueOrThrow({
-      where: {
-        userId_channelType: {
-          userId,
-          channelType,
-        },
       },
     });
   }
