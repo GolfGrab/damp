@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { groupBy, sortBy } from "lodash";
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import { apiClient } from "../../../api";
 import {
@@ -83,10 +83,8 @@ const useNotificationsInfiniteQuery = () =>
 const NotificationList = () => {
   const { ref, inView } = useInView();
 
-  const { data, error, isFetchingNextPage, fetchNextPage, isLoading } =
+  const { data, isError, isFetchingNextPage, fetchNextPage, isLoading } =
     useNotificationsInfiniteQuery();
-
-  console.log(data);
 
   // Assume bff send notifications in date descending order
   const groupedAndSortedNotifications = groupSortAndTransformNotifications(
@@ -99,10 +97,13 @@ const NotificationList = () => {
     }
   }, [fetchNextPage, inView]);
 
-  if (error) {
+  if (isError) {
     return (
       <Typography>Something went wrong, please try again later.</Typography>
     );
+  }
+  if (isLoading) {
+    return <CircularProgress />;
   }
   return (
     <>
@@ -112,28 +113,20 @@ const NotificationList = () => {
           bgcolor: "background.paper",
           "& ul": { padding: 0, listStyleType: "none" },
         }}
-        subheader={<li />}
       >
         {groupedAndSortedNotifications.map(([date, notifications]) => {
           return (
-            <>
-              <li key={`section-${date}`}>
-                <ul>
-                  <ListSubheader>{date}</ListSubheader>
-                  {notifications.map((notification, ind) => (
-                    <>
-                      <NotificationListCard
-                        content={notification}
-                        key={notification.id}
-                      />
-                      {ind !== notifications.length - 1 && (
-                        <Divider variant="inset" component="li" />
-                      )}
-                    </>
-                  ))}
-                </ul>
-              </li>
-            </>
+            <Fragment key={`section-${date}`}>
+              <ListSubheader>{date}</ListSubheader>
+              {notifications.map((notification, ind) => (
+                <Fragment key={`notification.id-${notification.id}`}>
+                  <NotificationListCard content={notification} />
+                  {ind !== notifications.length - 1 && (
+                    <Divider variant="inset" component="li" />
+                  )}
+                </Fragment>
+              ))}
+            </Fragment>
           );
         })}
       </List>

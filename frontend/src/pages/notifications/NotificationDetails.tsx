@@ -38,9 +38,9 @@ const Layout = ({ children }: React.PropsWithChildren) => {
     >
       <Stack
         gap={3}
-        alignContent={"center"}
-        justifyContent={"center"}
-        alignItems={"center"}
+        alignContent="center"
+        justifyContent="center"
+        alignItems="center"
       >
         {children}
       </Stack>
@@ -102,16 +102,16 @@ const NotificationDetails = () => {
         src={notificationDetails.image}
         sx={{ width: 64, height: 64 }}
       />
-      <Stack width={"100%"} alignItems={"center"} gap={1}>
+      <Stack width="100%" alignItems="center" gap={1}>
         <Typography variant="h6">{notificationDetails.title}</Typography>
         <Typography
           component="span"
           variant="body2"
           sx={{ color: "text.primary" }}
-          display={"inline"}
+          display="inline"
           noWrap
-          width={"100%"}
-          textAlign={"center"}
+          width="100%"
+          textAlign="center"
         >
           {notificationDetails.applicationName +
             " — " +
@@ -123,7 +123,7 @@ const NotificationDetails = () => {
           # {notificationDetails.notificationCategoryName}
         </Typography>
       </Stack>
-      <Stack direction={"row"} gap={1}>
+      <Stack direction="row" gap={1}>
         {notificationDetails.channelTypes?.map((channelType) => (
           <Chip
             key={channelType}
