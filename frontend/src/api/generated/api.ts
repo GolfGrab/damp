@@ -365,19 +365,6 @@ export interface CreateUserDto {
 /**
  * 
  * @export
- * @interface CreateUserPreferenceDto
- */
-export interface CreateUserPreferenceDto {
-    /**
-     * 
-     * @type {boolean}
-     * @memberof CreateUserPreferenceDto
-     */
-    'isPreferred': boolean;
-}
-/**
- * 
- * @export
  * @interface GetPreviewTemplateDto
  */
 export interface GetPreviewTemplateDto {
@@ -491,6 +478,68 @@ export interface NotificationCategory {
      * @memberof NotificationCategory
      */
     'updatedByUserId': string;
+}
+/**
+ * 
+ * @export
+ * @interface PaginatedResponseOfNotification
+ */
+export interface PaginatedResponseOfNotification {
+    /**
+     * 
+     * @type {Array<Notification>}
+     * @memberof PaginatedResponseOfNotification
+     */
+    'data'?: Array<Notification>;
+    /**
+     * 
+     * @type {PaginatedResponseOfNotificationAllOfMeta}
+     * @memberof PaginatedResponseOfNotification
+     */
+    'meta'?: PaginatedResponseOfNotificationAllOfMeta;
+}
+/**
+ * 
+ * @export
+ * @interface PaginatedResponseOfNotificationAllOfMeta
+ */
+export interface PaginatedResponseOfNotificationAllOfMeta {
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedResponseOfNotificationAllOfMeta
+     */
+    'total'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedResponseOfNotificationAllOfMeta
+     */
+    'lastPage'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedResponseOfNotificationAllOfMeta
+     */
+    'currentPage'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedResponseOfNotificationAllOfMeta
+     */
+    'perPage'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedResponseOfNotificationAllOfMeta
+     */
+    'prev'?: number | null;
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedResponseOfNotificationAllOfMeta
+     */
+    'next'?: number | null;
 }
 /**
  * 
@@ -656,19 +705,6 @@ export interface UpdateUserDto {
 /**
  * 
  * @export
- * @interface UpdateUserPreferenceDto
- */
-export interface UpdateUserPreferenceDto {
-    /**
-     * 
-     * @type {boolean}
-     * @memberof UpdateUserPreferenceDto
-     */
-    'isPreferred'?: boolean;
-}
-/**
- * 
- * @export
  * @interface UpsertAccountDto
  */
 export interface UpsertAccountDto {
@@ -678,6 +714,19 @@ export interface UpsertAccountDto {
      * @memberof UpsertAccountDto
      */
     'channelToken': string;
+}
+/**
+ * 
+ * @export
+ * @interface UpsertUserPreferenceDto
+ */
+export interface UpsertUserPreferenceDto {
+    /**
+     * 
+     * @type {boolean}
+     * @memberof UpsertUserPreferenceDto
+     */
+    'isPreferred': boolean;
 }
 /**
  * 
@@ -2115,6 +2164,49 @@ export const NotificationModuleApiAxiosParamCreator = function (configuration?: 
         },
         /**
          * 
+         * @param {string} userId 
+         * @param {number} [page] 
+         * @param {number} [perPage] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        mNotificationControllerGetPaginatedNotificationsByUserId: async (userId: string, page?: number, perPage?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('mNotificationControllerGetPaginatedNotificationsByUserId', 'userId', userId)
+            const localVarPath = `/m-notification/users/{userId}/notifications`
+                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (page !== undefined) {
+                localVarQueryParameter['page'] = page;
+            }
+
+            if (perPage !== undefined) {
+                localVarQueryParameter['perPage'] = perPage;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @param {string} templateId 
          * @param {MNotificationControllerPreviewTemplateMessageTypeEnum} messageType 
          * @param {GetPreviewTemplateDto} getPreviewTemplateDto 
@@ -2316,6 +2408,20 @@ export const NotificationModuleApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {string} userId 
+         * @param {number} [page] 
+         * @param {number} [perPage] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async mNotificationControllerGetPaginatedNotificationsByUserId(userId: string, page?: number, perPage?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResponseOfNotification>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.mNotificationControllerGetPaginatedNotificationsByUserId(userId, page, perPage, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['NotificationModuleApi.mNotificationControllerGetPaginatedNotificationsByUserId']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @param {string} templateId 
          * @param {MNotificationControllerPreviewTemplateMessageTypeEnum} messageType 
          * @param {GetPreviewTemplateDto} getPreviewTemplateDto 
@@ -2432,6 +2538,17 @@ export const NotificationModuleApiFactory = function (configuration?: Configurat
          */
         mNotificationControllerFindOneTemplate(templateId: string, options?: RawAxiosRequestConfig): AxiosPromise<Template> {
             return localVarFp.mNotificationControllerFindOneTemplate(templateId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} userId 
+         * @param {number} [page] 
+         * @param {number} [perPage] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        mNotificationControllerGetPaginatedNotificationsByUserId(userId: string, page?: number, perPage?: number, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedResponseOfNotification> {
+            return localVarFp.mNotificationControllerGetPaginatedNotificationsByUserId(userId, page, perPage, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -2566,6 +2683,19 @@ export class NotificationModuleApi extends BaseAPI {
 
     /**
      * 
+     * @param {string} userId 
+     * @param {number} [page] 
+     * @param {number} [perPage] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof NotificationModuleApi
+     */
+    public mNotificationControllerGetPaginatedNotificationsByUserId(userId: string, page?: number, perPage?: number, options?: RawAxiosRequestConfig) {
+        return NotificationModuleApiFp(this.configuration).mNotificationControllerGetPaginatedNotificationsByUserId(userId, page, perPage, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @param {string} templateId 
      * @param {MNotificationControllerPreviewTemplateMessageTypeEnum} messageType 
      * @param {GetPreviewTemplateDto} getPreviewTemplateDto 
@@ -2608,50 +2738,6 @@ export type MNotificationControllerPreviewTemplateMessageTypeEnum = typeof MNoti
 export const UserModuleApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * Accounts
-         * @summary 
-         * @param {string} userId 
-         * @param {MUserControllerCreateAccountChannelTypeEnum} channelType 
-         * @param {UpsertAccountDto} upsertAccountDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        mUserControllerCreateAccount: async (userId: string, channelType: MUserControllerCreateAccountChannelTypeEnum, upsertAccountDto: UpsertAccountDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'userId' is not null or undefined
-            assertParamExists('mUserControllerCreateAccount', 'userId', userId)
-            // verify required parameter 'channelType' is not null or undefined
-            assertParamExists('mUserControllerCreateAccount', 'channelType', channelType)
-            // verify required parameter 'upsertAccountDto' is not null or undefined
-            assertParamExists('mUserControllerCreateAccount', 'upsertAccountDto', upsertAccountDto)
-            const localVarPath = `/m-user/users/{userId}/channel/{channelType}/accounts`
-                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)))
-                .replace(`{${"channelType"}}`, encodeURIComponent(String(channelType)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(upsertAccountDto, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
          * Users
          * @summary 
          * @param {CreateUserDto} createUserDto 
@@ -2681,54 +2767,6 @@ export const UserModuleApiAxiosParamCreator = function (configuration?: Configur
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(createUserDto, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * User Preferences
-         * @summary 
-         * @param {string} userId 
-         * @param {MUserControllerCreateUserPreferenceChannelTypeEnum} channelType 
-         * @param {string} notificationCategoryId 
-         * @param {CreateUserPreferenceDto} createUserPreferenceDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        mUserControllerCreateUserPreference: async (userId: string, channelType: MUserControllerCreateUserPreferenceChannelTypeEnum, notificationCategoryId: string, createUserPreferenceDto: CreateUserPreferenceDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'userId' is not null or undefined
-            assertParamExists('mUserControllerCreateUserPreference', 'userId', userId)
-            // verify required parameter 'channelType' is not null or undefined
-            assertParamExists('mUserControllerCreateUserPreference', 'channelType', channelType)
-            // verify required parameter 'notificationCategoryId' is not null or undefined
-            assertParamExists('mUserControllerCreateUserPreference', 'notificationCategoryId', notificationCategoryId)
-            // verify required parameter 'createUserPreferenceDto' is not null or undefined
-            assertParamExists('mUserControllerCreateUserPreference', 'createUserPreferenceDto', createUserPreferenceDto)
-            const localVarPath = `/m-user/users/{userId}/channel/{channelType}/notification-categories/{notificationCategoryId}/user-preferences`
-                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)))
-                .replace(`{${"channelType"}}`, encodeURIComponent(String(channelType)))
-                .replace(`{${"notificationCategoryId"}}`, encodeURIComponent(String(notificationCategoryId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(createUserPreferenceDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -3039,19 +3077,19 @@ export const UserModuleApiAxiosParamCreator = function (configuration?: Configur
         /**
          * 
          * @param {string} userId 
-         * @param {MUserControllerUpdateAccountChannelTypeEnum} channelType 
-         * @param {UpsertAccountDto} upsertAccountDto 
+         * @param {MUserControllerUpdateManyUserPreferencesChannelTypeEnum} channelType 
+         * @param {UpsertUserPreferenceDto} upsertUserPreferenceDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        mUserControllerUpdateAccount: async (userId: string, channelType: MUserControllerUpdateAccountChannelTypeEnum, upsertAccountDto: UpsertAccountDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        mUserControllerUpdateManyUserPreferences: async (userId: string, channelType: MUserControllerUpdateManyUserPreferencesChannelTypeEnum, upsertUserPreferenceDto: UpsertUserPreferenceDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'userId' is not null or undefined
-            assertParamExists('mUserControllerUpdateAccount', 'userId', userId)
+            assertParamExists('mUserControllerUpdateManyUserPreferences', 'userId', userId)
             // verify required parameter 'channelType' is not null or undefined
-            assertParamExists('mUserControllerUpdateAccount', 'channelType', channelType)
-            // verify required parameter 'upsertAccountDto' is not null or undefined
-            assertParamExists('mUserControllerUpdateAccount', 'upsertAccountDto', upsertAccountDto)
-            const localVarPath = `/m-user/users/{userId}/channel/{channelType}/accounts`
+            assertParamExists('mUserControllerUpdateManyUserPreferences', 'channelType', channelType)
+            // verify required parameter 'upsertUserPreferenceDto' is not null or undefined
+            assertParamExists('mUserControllerUpdateManyUserPreferences', 'upsertUserPreferenceDto', upsertUserPreferenceDto)
+            const localVarPath = `/m-user/users/{userId}/channel/{channelType}/user-preferences`
                 .replace(`{${"userId"}}`, encodeURIComponent(String(userId)))
                 .replace(`{${"channelType"}}`, encodeURIComponent(String(channelType)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -3061,7 +3099,7 @@ export const UserModuleApiAxiosParamCreator = function (configuration?: Configur
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -3072,7 +3110,7 @@ export const UserModuleApiAxiosParamCreator = function (configuration?: Configur
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(upsertAccountDto, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(upsertUserPreferenceDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -3119,23 +3157,68 @@ export const UserModuleApiAxiosParamCreator = function (configuration?: Configur
             };
         },
         /**
-         * 
+         * Accounts
+         * @summary 
          * @param {string} userId 
-         * @param {MUserControllerUpdateUserPreferenceChannelTypeEnum} channelType 
-         * @param {string} notificationCategoryId 
-         * @param {UpdateUserPreferenceDto} updateUserPreferenceDto 
+         * @param {MUserControllerUpsertAccountChannelTypeEnum} channelType 
+         * @param {UpsertAccountDto} upsertAccountDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        mUserControllerUpdateUserPreference: async (userId: string, channelType: MUserControllerUpdateUserPreferenceChannelTypeEnum, notificationCategoryId: string, updateUserPreferenceDto: UpdateUserPreferenceDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        mUserControllerUpsertAccount: async (userId: string, channelType: MUserControllerUpsertAccountChannelTypeEnum, upsertAccountDto: UpsertAccountDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'userId' is not null or undefined
-            assertParamExists('mUserControllerUpdateUserPreference', 'userId', userId)
+            assertParamExists('mUserControllerUpsertAccount', 'userId', userId)
             // verify required parameter 'channelType' is not null or undefined
-            assertParamExists('mUserControllerUpdateUserPreference', 'channelType', channelType)
+            assertParamExists('mUserControllerUpsertAccount', 'channelType', channelType)
+            // verify required parameter 'upsertAccountDto' is not null or undefined
+            assertParamExists('mUserControllerUpsertAccount', 'upsertAccountDto', upsertAccountDto)
+            const localVarPath = `/m-user/users/{userId}/channel/{channelType}/accounts`
+                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)))
+                .replace(`{${"channelType"}}`, encodeURIComponent(String(channelType)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(upsertAccountDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * User Preferences
+         * @summary 
+         * @param {string} userId 
+         * @param {MUserControllerUpsertUserPreferenceChannelTypeEnum} channelType 
+         * @param {string} notificationCategoryId 
+         * @param {UpsertUserPreferenceDto} upsertUserPreferenceDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        mUserControllerUpsertUserPreference: async (userId: string, channelType: MUserControllerUpsertUserPreferenceChannelTypeEnum, notificationCategoryId: string, upsertUserPreferenceDto: UpsertUserPreferenceDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('mUserControllerUpsertUserPreference', 'userId', userId)
+            // verify required parameter 'channelType' is not null or undefined
+            assertParamExists('mUserControllerUpsertUserPreference', 'channelType', channelType)
             // verify required parameter 'notificationCategoryId' is not null or undefined
-            assertParamExists('mUserControllerUpdateUserPreference', 'notificationCategoryId', notificationCategoryId)
-            // verify required parameter 'updateUserPreferenceDto' is not null or undefined
-            assertParamExists('mUserControllerUpdateUserPreference', 'updateUserPreferenceDto', updateUserPreferenceDto)
+            assertParamExists('mUserControllerUpsertUserPreference', 'notificationCategoryId', notificationCategoryId)
+            // verify required parameter 'upsertUserPreferenceDto' is not null or undefined
+            assertParamExists('mUserControllerUpsertUserPreference', 'upsertUserPreferenceDto', upsertUserPreferenceDto)
             const localVarPath = `/m-user/users/{userId}/channel/{channelType}/notification-categories/{notificationCategoryId}/user-preferences`
                 .replace(`{${"userId"}}`, encodeURIComponent(String(userId)))
                 .replace(`{${"channelType"}}`, encodeURIComponent(String(channelType)))
@@ -3147,7 +3230,7 @@ export const UserModuleApiAxiosParamCreator = function (configuration?: Configur
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -3158,7 +3241,7 @@ export const UserModuleApiAxiosParamCreator = function (configuration?: Configur
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(updateUserPreferenceDto, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(upsertUserPreferenceDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -3219,21 +3302,6 @@ export const UserModuleApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = UserModuleApiAxiosParamCreator(configuration)
     return {
         /**
-         * Accounts
-         * @summary 
-         * @param {string} userId 
-         * @param {MUserControllerCreateAccountChannelTypeEnum} channelType 
-         * @param {UpsertAccountDto} upsertAccountDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async mUserControllerCreateAccount(userId: string, channelType: MUserControllerCreateAccountChannelTypeEnum, upsertAccountDto: UpsertAccountDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Account>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.mUserControllerCreateAccount(userId, channelType, upsertAccountDto, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['UserModuleApi.mUserControllerCreateAccount']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
          * Users
          * @summary 
          * @param {CreateUserDto} createUserDto 
@@ -3244,22 +3312,6 @@ export const UserModuleApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.mUserControllerCreateUser(createUserDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['UserModuleApi.mUserControllerCreateUser']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * User Preferences
-         * @summary 
-         * @param {string} userId 
-         * @param {MUserControllerCreateUserPreferenceChannelTypeEnum} channelType 
-         * @param {string} notificationCategoryId 
-         * @param {CreateUserPreferenceDto} createUserPreferenceDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async mUserControllerCreateUserPreference(userId: string, channelType: MUserControllerCreateUserPreferenceChannelTypeEnum, notificationCategoryId: string, createUserPreferenceDto: CreateUserPreferenceDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserPreference>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.mUserControllerCreateUserPreference(userId, channelType, notificationCategoryId, createUserPreferenceDto, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['UserModuleApi.mUserControllerCreateUserPreference']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -3374,15 +3426,15 @@ export const UserModuleApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @param {string} userId 
-         * @param {MUserControllerUpdateAccountChannelTypeEnum} channelType 
-         * @param {UpsertAccountDto} upsertAccountDto 
+         * @param {MUserControllerUpdateManyUserPreferencesChannelTypeEnum} channelType 
+         * @param {UpsertUserPreferenceDto} upsertUserPreferenceDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async mUserControllerUpdateAccount(userId: string, channelType: MUserControllerUpdateAccountChannelTypeEnum, upsertAccountDto: UpsertAccountDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Account>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.mUserControllerUpdateAccount(userId, channelType, upsertAccountDto, options);
+        async mUserControllerUpdateManyUserPreferences(userId: string, channelType: MUserControllerUpdateManyUserPreferencesChannelTypeEnum, upsertUserPreferenceDto: UpsertUserPreferenceDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<object>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.mUserControllerUpdateManyUserPreferences(userId, channelType, upsertUserPreferenceDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['UserModuleApi.mUserControllerUpdateAccount']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['UserModuleApi.mUserControllerUpdateManyUserPreferences']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -3399,18 +3451,34 @@ export const UserModuleApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * 
+         * Accounts
+         * @summary 
          * @param {string} userId 
-         * @param {MUserControllerUpdateUserPreferenceChannelTypeEnum} channelType 
-         * @param {string} notificationCategoryId 
-         * @param {UpdateUserPreferenceDto} updateUserPreferenceDto 
+         * @param {MUserControllerUpsertAccountChannelTypeEnum} channelType 
+         * @param {UpsertAccountDto} upsertAccountDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async mUserControllerUpdateUserPreference(userId: string, channelType: MUserControllerUpdateUserPreferenceChannelTypeEnum, notificationCategoryId: string, updateUserPreferenceDto: UpdateUserPreferenceDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserPreference>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.mUserControllerUpdateUserPreference(userId, channelType, notificationCategoryId, updateUserPreferenceDto, options);
+        async mUserControllerUpsertAccount(userId: string, channelType: MUserControllerUpsertAccountChannelTypeEnum, upsertAccountDto: UpsertAccountDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Account>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.mUserControllerUpsertAccount(userId, channelType, upsertAccountDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['UserModuleApi.mUserControllerUpdateUserPreference']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['UserModuleApi.mUserControllerUpsertAccount']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * User Preferences
+         * @summary 
+         * @param {string} userId 
+         * @param {MUserControllerUpsertUserPreferenceChannelTypeEnum} channelType 
+         * @param {string} notificationCategoryId 
+         * @param {UpsertUserPreferenceDto} upsertUserPreferenceDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async mUserControllerUpsertUserPreference(userId: string, channelType: MUserControllerUpsertUserPreferenceChannelTypeEnum, notificationCategoryId: string, upsertUserPreferenceDto: UpsertUserPreferenceDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserPreference>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.mUserControllerUpsertUserPreference(userId, channelType, notificationCategoryId, upsertUserPreferenceDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserModuleApi.mUserControllerUpsertUserPreference']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -3438,18 +3506,6 @@ export const UserModuleApiFactory = function (configuration?: Configuration, bas
     const localVarFp = UserModuleApiFp(configuration)
     return {
         /**
-         * Accounts
-         * @summary 
-         * @param {string} userId 
-         * @param {MUserControllerCreateAccountChannelTypeEnum} channelType 
-         * @param {UpsertAccountDto} upsertAccountDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        mUserControllerCreateAccount(userId: string, channelType: MUserControllerCreateAccountChannelTypeEnum, upsertAccountDto: UpsertAccountDto, options?: RawAxiosRequestConfig): AxiosPromise<Account> {
-            return localVarFp.mUserControllerCreateAccount(userId, channelType, upsertAccountDto, options).then((request) => request(axios, basePath));
-        },
-        /**
          * Users
          * @summary 
          * @param {CreateUserDto} createUserDto 
@@ -3458,19 +3514,6 @@ export const UserModuleApiFactory = function (configuration?: Configuration, bas
          */
         mUserControllerCreateUser(createUserDto: CreateUserDto, options?: RawAxiosRequestConfig): AxiosPromise<User> {
             return localVarFp.mUserControllerCreateUser(createUserDto, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * User Preferences
-         * @summary 
-         * @param {string} userId 
-         * @param {MUserControllerCreateUserPreferenceChannelTypeEnum} channelType 
-         * @param {string} notificationCategoryId 
-         * @param {CreateUserPreferenceDto} createUserPreferenceDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        mUserControllerCreateUserPreference(userId: string, channelType: MUserControllerCreateUserPreferenceChannelTypeEnum, notificationCategoryId: string, createUserPreferenceDto: CreateUserPreferenceDto, options?: RawAxiosRequestConfig): AxiosPromise<UserPreference> {
-            return localVarFp.mUserControllerCreateUserPreference(userId, channelType, notificationCategoryId, createUserPreferenceDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -3557,13 +3600,13 @@ export const UserModuleApiFactory = function (configuration?: Configuration, bas
         /**
          * 
          * @param {string} userId 
-         * @param {MUserControllerUpdateAccountChannelTypeEnum} channelType 
-         * @param {UpsertAccountDto} upsertAccountDto 
+         * @param {MUserControllerUpdateManyUserPreferencesChannelTypeEnum} channelType 
+         * @param {UpsertUserPreferenceDto} upsertUserPreferenceDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        mUserControllerUpdateAccount(userId: string, channelType: MUserControllerUpdateAccountChannelTypeEnum, upsertAccountDto: UpsertAccountDto, options?: RawAxiosRequestConfig): AxiosPromise<Account> {
-            return localVarFp.mUserControllerUpdateAccount(userId, channelType, upsertAccountDto, options).then((request) => request(axios, basePath));
+        mUserControllerUpdateManyUserPreferences(userId: string, channelType: MUserControllerUpdateManyUserPreferencesChannelTypeEnum, upsertUserPreferenceDto: UpsertUserPreferenceDto, options?: RawAxiosRequestConfig): AxiosPromise<object> {
+            return localVarFp.mUserControllerUpdateManyUserPreferences(userId, channelType, upsertUserPreferenceDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -3576,16 +3619,29 @@ export const UserModuleApiFactory = function (configuration?: Configuration, bas
             return localVarFp.mUserControllerUpdateUser(userId, updateUserDto, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * Accounts
+         * @summary 
          * @param {string} userId 
-         * @param {MUserControllerUpdateUserPreferenceChannelTypeEnum} channelType 
-         * @param {string} notificationCategoryId 
-         * @param {UpdateUserPreferenceDto} updateUserPreferenceDto 
+         * @param {MUserControllerUpsertAccountChannelTypeEnum} channelType 
+         * @param {UpsertAccountDto} upsertAccountDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        mUserControllerUpdateUserPreference(userId: string, channelType: MUserControllerUpdateUserPreferenceChannelTypeEnum, notificationCategoryId: string, updateUserPreferenceDto: UpdateUserPreferenceDto, options?: RawAxiosRequestConfig): AxiosPromise<UserPreference> {
-            return localVarFp.mUserControllerUpdateUserPreference(userId, channelType, notificationCategoryId, updateUserPreferenceDto, options).then((request) => request(axios, basePath));
+        mUserControllerUpsertAccount(userId: string, channelType: MUserControllerUpsertAccountChannelTypeEnum, upsertAccountDto: UpsertAccountDto, options?: RawAxiosRequestConfig): AxiosPromise<Account> {
+            return localVarFp.mUserControllerUpsertAccount(userId, channelType, upsertAccountDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * User Preferences
+         * @summary 
+         * @param {string} userId 
+         * @param {MUserControllerUpsertUserPreferenceChannelTypeEnum} channelType 
+         * @param {string} notificationCategoryId 
+         * @param {UpsertUserPreferenceDto} upsertUserPreferenceDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        mUserControllerUpsertUserPreference(userId: string, channelType: MUserControllerUpsertUserPreferenceChannelTypeEnum, notificationCategoryId: string, upsertUserPreferenceDto: UpsertUserPreferenceDto, options?: RawAxiosRequestConfig): AxiosPromise<UserPreference> {
+            return localVarFp.mUserControllerUpsertUserPreference(userId, channelType, notificationCategoryId, upsertUserPreferenceDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -3609,20 +3665,6 @@ export const UserModuleApiFactory = function (configuration?: Configuration, bas
  */
 export class UserModuleApi extends BaseAPI {
     /**
-     * Accounts
-     * @summary 
-     * @param {string} userId 
-     * @param {MUserControllerCreateAccountChannelTypeEnum} channelType 
-     * @param {UpsertAccountDto} upsertAccountDto 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof UserModuleApi
-     */
-    public mUserControllerCreateAccount(userId: string, channelType: MUserControllerCreateAccountChannelTypeEnum, upsertAccountDto: UpsertAccountDto, options?: RawAxiosRequestConfig) {
-        return UserModuleApiFp(this.configuration).mUserControllerCreateAccount(userId, channelType, upsertAccountDto, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
      * Users
      * @summary 
      * @param {CreateUserDto} createUserDto 
@@ -3632,21 +3674,6 @@ export class UserModuleApi extends BaseAPI {
      */
     public mUserControllerCreateUser(createUserDto: CreateUserDto, options?: RawAxiosRequestConfig) {
         return UserModuleApiFp(this.configuration).mUserControllerCreateUser(createUserDto, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * User Preferences
-     * @summary 
-     * @param {string} userId 
-     * @param {MUserControllerCreateUserPreferenceChannelTypeEnum} channelType 
-     * @param {string} notificationCategoryId 
-     * @param {CreateUserPreferenceDto} createUserPreferenceDto 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof UserModuleApi
-     */
-    public mUserControllerCreateUserPreference(userId: string, channelType: MUserControllerCreateUserPreferenceChannelTypeEnum, notificationCategoryId: string, createUserPreferenceDto: CreateUserPreferenceDto, options?: RawAxiosRequestConfig) {
-        return UserModuleApiFp(this.configuration).mUserControllerCreateUserPreference(userId, channelType, notificationCategoryId, createUserPreferenceDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -3752,14 +3779,14 @@ export class UserModuleApi extends BaseAPI {
     /**
      * 
      * @param {string} userId 
-     * @param {MUserControllerUpdateAccountChannelTypeEnum} channelType 
-     * @param {UpsertAccountDto} upsertAccountDto 
+     * @param {MUserControllerUpdateManyUserPreferencesChannelTypeEnum} channelType 
+     * @param {UpsertUserPreferenceDto} upsertUserPreferenceDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof UserModuleApi
      */
-    public mUserControllerUpdateAccount(userId: string, channelType: MUserControllerUpdateAccountChannelTypeEnum, upsertAccountDto: UpsertAccountDto, options?: RawAxiosRequestConfig) {
-        return UserModuleApiFp(this.configuration).mUserControllerUpdateAccount(userId, channelType, upsertAccountDto, options).then((request) => request(this.axios, this.basePath));
+    public mUserControllerUpdateManyUserPreferences(userId: string, channelType: MUserControllerUpdateManyUserPreferencesChannelTypeEnum, upsertUserPreferenceDto: UpsertUserPreferenceDto, options?: RawAxiosRequestConfig) {
+        return UserModuleApiFp(this.configuration).mUserControllerUpdateManyUserPreferences(userId, channelType, upsertUserPreferenceDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -3775,17 +3802,32 @@ export class UserModuleApi extends BaseAPI {
     }
 
     /**
-     * 
+     * Accounts
+     * @summary 
      * @param {string} userId 
-     * @param {MUserControllerUpdateUserPreferenceChannelTypeEnum} channelType 
-     * @param {string} notificationCategoryId 
-     * @param {UpdateUserPreferenceDto} updateUserPreferenceDto 
+     * @param {MUserControllerUpsertAccountChannelTypeEnum} channelType 
+     * @param {UpsertAccountDto} upsertAccountDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof UserModuleApi
      */
-    public mUserControllerUpdateUserPreference(userId: string, channelType: MUserControllerUpdateUserPreferenceChannelTypeEnum, notificationCategoryId: string, updateUserPreferenceDto: UpdateUserPreferenceDto, options?: RawAxiosRequestConfig) {
-        return UserModuleApiFp(this.configuration).mUserControllerUpdateUserPreference(userId, channelType, notificationCategoryId, updateUserPreferenceDto, options).then((request) => request(this.axios, this.basePath));
+    public mUserControllerUpsertAccount(userId: string, channelType: MUserControllerUpsertAccountChannelTypeEnum, upsertAccountDto: UpsertAccountDto, options?: RawAxiosRequestConfig) {
+        return UserModuleApiFp(this.configuration).mUserControllerUpsertAccount(userId, channelType, upsertAccountDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * User Preferences
+     * @summary 
+     * @param {string} userId 
+     * @param {MUserControllerUpsertUserPreferenceChannelTypeEnum} channelType 
+     * @param {string} notificationCategoryId 
+     * @param {UpsertUserPreferenceDto} upsertUserPreferenceDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UserModuleApi
+     */
+    public mUserControllerUpsertUserPreference(userId: string, channelType: MUserControllerUpsertUserPreferenceChannelTypeEnum, notificationCategoryId: string, upsertUserPreferenceDto: UpsertUserPreferenceDto, options?: RawAxiosRequestConfig) {
+        return UserModuleApiFp(this.configuration).mUserControllerUpsertUserPreference(userId, channelType, notificationCategoryId, upsertUserPreferenceDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -3802,26 +3844,6 @@ export class UserModuleApi extends BaseAPI {
     }
 }
 
-/**
- * @export
- */
-export const MUserControllerCreateAccountChannelTypeEnum = {
-    Email: 'EMAIL',
-    Sms: 'SMS',
-    WebPush: 'WEB_PUSH',
-    Slack: 'SLACK'
-} as const;
-export type MUserControllerCreateAccountChannelTypeEnum = typeof MUserControllerCreateAccountChannelTypeEnum[keyof typeof MUserControllerCreateAccountChannelTypeEnum];
-/**
- * @export
- */
-export const MUserControllerCreateUserPreferenceChannelTypeEnum = {
-    Email: 'EMAIL',
-    Sms: 'SMS',
-    WebPush: 'WEB_PUSH',
-    Slack: 'SLACK'
-} as const;
-export type MUserControllerCreateUserPreferenceChannelTypeEnum = typeof MUserControllerCreateUserPreferenceChannelTypeEnum[keyof typeof MUserControllerCreateUserPreferenceChannelTypeEnum];
 /**
  * @export
  */
@@ -3855,23 +3877,33 @@ export type MUserControllerRemoveAccountChannelTypeEnum = typeof MUserController
 /**
  * @export
  */
-export const MUserControllerUpdateAccountChannelTypeEnum = {
+export const MUserControllerUpdateManyUserPreferencesChannelTypeEnum = {
     Email: 'EMAIL',
     Sms: 'SMS',
     WebPush: 'WEB_PUSH',
     Slack: 'SLACK'
 } as const;
-export type MUserControllerUpdateAccountChannelTypeEnum = typeof MUserControllerUpdateAccountChannelTypeEnum[keyof typeof MUserControllerUpdateAccountChannelTypeEnum];
+export type MUserControllerUpdateManyUserPreferencesChannelTypeEnum = typeof MUserControllerUpdateManyUserPreferencesChannelTypeEnum[keyof typeof MUserControllerUpdateManyUserPreferencesChannelTypeEnum];
 /**
  * @export
  */
-export const MUserControllerUpdateUserPreferenceChannelTypeEnum = {
+export const MUserControllerUpsertAccountChannelTypeEnum = {
     Email: 'EMAIL',
     Sms: 'SMS',
     WebPush: 'WEB_PUSH',
     Slack: 'SLACK'
 } as const;
-export type MUserControllerUpdateUserPreferenceChannelTypeEnum = typeof MUserControllerUpdateUserPreferenceChannelTypeEnum[keyof typeof MUserControllerUpdateUserPreferenceChannelTypeEnum];
+export type MUserControllerUpsertAccountChannelTypeEnum = typeof MUserControllerUpsertAccountChannelTypeEnum[keyof typeof MUserControllerUpsertAccountChannelTypeEnum];
+/**
+ * @export
+ */
+export const MUserControllerUpsertUserPreferenceChannelTypeEnum = {
+    Email: 'EMAIL',
+    Sms: 'SMS',
+    WebPush: 'WEB_PUSH',
+    Slack: 'SLACK'
+} as const;
+export type MUserControllerUpsertUserPreferenceChannelTypeEnum = typeof MUserControllerUpsertUserPreferenceChannelTypeEnum[keyof typeof MUserControllerUpsertUserPreferenceChannelTypeEnum];
 /**
  * @export
  */

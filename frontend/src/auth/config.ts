@@ -14,4 +14,5 @@ export const getOidcConfig = (
   },
   userStore: new WebStorageStateStore({ store: window.localStorage }),
   stateStore: new WebStorageStateStore({ store: sessionStorage }),
+  automaticSilentRenew: true,
 });

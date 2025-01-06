@@ -4,10 +4,10 @@ import { ClientProxy, RmqRecordBuilder } from '@nestjs/microservices';
 import { $Enums, Notification, Prisma } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 import { inspect } from 'util';
+import { paginate } from '../../../utils/paginator/pagination.function';
+import { PaginationQueryDto } from '../../../utils/paginator/paginationQuery.dto';
 import { TemplatesService } from '../templates/templates.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
-import { PaginationQueryDto } from '../../../utils/paginator/paginationQuery.dto';
-import { paginate } from '../../../utils/paginator/pagination.function';
 
 const priorityMap = {
   [$Enums.Priority.LOW]: 1,
@@ -55,7 +55,12 @@ export class NotificationsService {
         include: {
           userPreferences: {
             where: {
-              isPreferred: true,
+              // allow sending notification to unverified accounts for OTP
+              isPreferred: Object.values($Enums.ChannelType)
+                .map((channelType) => `System_${channelType}_OTP`)
+                .includes(createNotificationDto.notificationCategoryId)
+                ? undefined
+                : true,
               userId: {
                 in: createNotificationDto.recipientIds,
               },
@@ -250,7 +255,7 @@ export class NotificationsService {
     });
   }
 
-  async getPaginatedNotificationsByUser(
+  getPaginatedNotificationsByUser(
     userId: string,
     paginateQuery: PaginationQueryDto,
   ) {
