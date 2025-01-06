@@ -1,13 +1,14 @@
 import { Config } from '@/utils/config/config-dto';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ClientProxy, RmqRecordBuilder } from '@nestjs/microservices';
-import { $Enums, Notification, Prisma } from '@prisma/client';
+import { $Enums, Prisma } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 import { inspect } from 'util';
+import { paginate } from '../../../utils/paginator/pagination.function';
+import { PaginationQueryDto } from '../../../utils/paginator/paginationQuery.dto';
 import { TemplatesService } from '../templates/templates.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
-import { PaginationQueryDto } from '../../../utils/paginator/paginationQuery.dto';
-import { paginate } from '../../../utils/paginator/pagination.function';
+import { OutputNotificationWithCompiledMessageAndNotificationTaskDto } from './dto/output-notification-with-compiled-message-and-notification-task.dto';
 
 const priorityMap = {
   [$Enums.Priority.LOW]: 1,
@@ -250,11 +251,15 @@ export class NotificationsService {
     });
   }
 
-  async getPaginatedNotificationsByUser(
+  getPaginatedNotificationsByUser(
     userId: string,
     paginateQuery: PaginationQueryDto,
   ) {
-    return paginate<Notification, Prisma.NotificationFindManyArgs>({
+    // TODO Omit system OPT
+    return paginate<
+      OutputNotificationWithCompiledMessageAndNotificationTaskDto,
+      Prisma.NotificationFindManyArgs
+    >({
       prismaQueryModel: this.prisma.notification,
       findManyArgs: {
         where: {
@@ -272,12 +277,62 @@ export class NotificationsService {
           },
           compiledMessages: {
             where: {
-              messageType: $Enums.MessageType.HTML,
+              messageType: {
+                in: [$Enums.MessageType.HTML, $Enums.MessageType.TEXT],
+              },
+            },
+          },
+          application: {
+            select: {
+              name: true,
+            },
+          },
+          notificationCategory: {
+            select: {
+              name: true,
             },
           },
         },
       },
       paginateOptions: paginateQuery,
+    });
+  }
+
+  findOneByUser(userId: string, notificationId: number) {
+    // TODO Omit system OPT
+    return this.prisma.notification.findFirstOrThrow({
+      where: {
+        id: notificationId,
+        notificationTasks: {
+          some: {
+            userId,
+          },
+        },
+      },
+      include: {
+        notificationTasks: {
+          where: {
+            userId,
+          },
+        },
+        compiledMessages: {
+          where: {
+            messageType: {
+              in: [$Enums.MessageType.HTML, $Enums.MessageType.TEXT],
+            },
+          },
+        },
+        application: {
+          select: {
+            name: true,
+          },
+        },
+        notificationCategory: {
+          select: {
+            name: true,
+          },
+        },
+      },
     });
   }
 }

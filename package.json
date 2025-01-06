@@ -1,0 +1,19 @@
+{
+  "name": "damp",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:backend": "cd backend && npm i && npm run prisma:generate && npm run start:dev -- --preserveWatchOutput",
+    "start:consumer": "cd consumer && npm i && npm run prisma:generate && npm run start:all:dev -- --preserveWatchOutput",
+    "start:frontend": "cd frontend && npm i && npm run dev",
+    "start:queue": "cd queue && docker compose up",
+    "start:smtp": "cd smtp && docker compose up",
+    "start": "concurrently -k -n backend,consumer,frontend,queue,smtp -c yellow,green,blue,magenta,cyan \"npm run start:backend\" \"npm run start:consumer\" \"npm run start:frontend\" \"npm run start:queue\" \"npm run start:smtp\""
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

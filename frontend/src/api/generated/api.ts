@@ -195,6 +195,49 @@ export interface ApplicationWithApiKey {
 /**
  * 
  * @export
+ * @interface CompiledMessage
+ */
+export interface CompiledMessage {
+    /**
+     * 
+     * @type {string}
+     * @memberof CompiledMessage
+     */
+    'templateId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CompiledMessage
+     */
+    'createdAt': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CompiledMessage
+     */
+    'updatedAt': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof CompiledMessage
+     */
+    'notificationId': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof CompiledMessage
+     */
+    'messageType': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CompiledMessage
+     */
+    'compiledMessage': string;
+}
+/**
+ * 
+ * @export
  * @interface CreateApplicationDto
  */
 export interface CreateApplicationDto {
@@ -491,6 +534,245 @@ export interface NotificationCategory {
      * @memberof NotificationCategory
      */
     'updatedByUserId': string;
+}
+/**
+ * 
+ * @export
+ * @interface NotificationTask
+ */
+export interface NotificationTask {
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationTask
+     */
+    'templateId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationTask
+     */
+    'priority': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationTask
+     */
+    'createdAt': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationTask
+     */
+    'updatedAt': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationTask
+     */
+    'channelType': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationTask
+     */
+    'userId': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof NotificationTask
+     */
+    'notificationId': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationTask
+     */
+    'messageType': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationTask
+     */
+    'sentStatus': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationTask
+     */
+    'sentTimestamp'?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationTask
+     */
+    'failedTimestamp'?: string | null;
+    /**
+     * 
+     * @type {number}
+     * @memberof NotificationTask
+     */
+    'retryCount': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof NotificationTask
+     */
+    'retryLimit': number;
+}
+/**
+ * 
+ * @export
+ * @interface OutputNotificationWithCompiledMessageAndNotificationTaskDto
+ */
+export interface OutputNotificationWithCompiledMessageAndNotificationTaskDto {
+    /**
+     * 
+     * @type {PickTypeClass}
+     * @memberof OutputNotificationWithCompiledMessageAndNotificationTaskDto
+     */
+    'notificationCategory': PickTypeClass;
+    /**
+     * 
+     * @type {PickTypeClass}
+     * @memberof OutputNotificationWithCompiledMessageAndNotificationTaskDto
+     */
+    'application': PickTypeClass;
+    /**
+     * 
+     * @type {Array<NotificationTask>}
+     * @memberof OutputNotificationWithCompiledMessageAndNotificationTaskDto
+     */
+    'notificationTasks': Array<NotificationTask>;
+    /**
+     * 
+     * @type {Array<CompiledMessage>}
+     * @memberof OutputNotificationWithCompiledMessageAndNotificationTaskDto
+     */
+    'compiledMessages': Array<CompiledMessage>;
+    /**
+     * 
+     * @type {string}
+     * @memberof OutputNotificationWithCompiledMessageAndNotificationTaskDto
+     */
+    'applicationId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OutputNotificationWithCompiledMessageAndNotificationTaskDto
+     */
+    'notificationCategoryId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OutputNotificationWithCompiledMessageAndNotificationTaskDto
+     */
+    'templateId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OutputNotificationWithCompiledMessageAndNotificationTaskDto
+     */
+    'templateData': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OutputNotificationWithCompiledMessageAndNotificationTaskDto
+     */
+    'priority': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OutputNotificationWithCompiledMessageAndNotificationTaskDto
+     */
+    'createdAt': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OutputNotificationWithCompiledMessageAndNotificationTaskDto
+     */
+    'updatedAt': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof OutputNotificationWithCompiledMessageAndNotificationTaskDto
+     */
+    'id': number;
+}
+/**
+ * 
+ * @export
+ * @interface PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDto
+ */
+export interface PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDto {
+    /**
+     * 
+     * @type {Array<OutputNotificationWithCompiledMessageAndNotificationTaskDto>}
+     * @memberof PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDto
+     */
+    'data'?: Array<OutputNotificationWithCompiledMessageAndNotificationTaskDto>;
+    /**
+     * 
+     * @type {PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta}
+     * @memberof PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDto
+     */
+    'meta'?: PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta;
+}
+/**
+ * 
+ * @export
+ * @interface PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta
+ */
+export interface PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta {
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta
+     */
+    'total'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta
+     */
+    'lastPage'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta
+     */
+    'currentPage'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta
+     */
+    'perPage'?: number;
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta
+     */
+    'prev'?: number | null;
+    /**
+     * 
+     * @type {number}
+     * @memberof PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta
+     */
+    'next'?: number | null;
+}
+/**
+ * 
+ * @export
+ * @interface PickTypeClass
+ */
+export interface PickTypeClass {
+    /**
+     * 
+     * @type {string}
+     * @memberof PickTypeClass
+     */
+    'name': string;
 }
 /**
  * 
@@ -2115,6 +2397,94 @@ export const NotificationModuleApiAxiosParamCreator = function (configuration?: 
         },
         /**
          * 
+         * @param {string} userId 
+         * @param {number} notificationId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        mNotificationControllerGetNotificationsForUserById: async (userId: string, notificationId: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('mNotificationControllerGetNotificationsForUserById', 'userId', userId)
+            // verify required parameter 'notificationId' is not null or undefined
+            assertParamExists('mNotificationControllerGetNotificationsForUserById', 'notificationId', notificationId)
+            const localVarPath = `/m-notification/users/{userId}/notifications/{notificationId}`
+                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)))
+                .replace(`{${"notificationId"}}`, encodeURIComponent(String(notificationId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Access_Token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} userId 
+         * @param {number} [page] 
+         * @param {number} [perPage] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        mNotificationControllerGetPaginatedNotificationsByUserId: async (userId: string, page?: number, perPage?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('mNotificationControllerGetPaginatedNotificationsByUserId', 'userId', userId)
+            const localVarPath = `/m-notification/users/{userId}/notifications`
+                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Access_Token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (page !== undefined) {
+                localVarQueryParameter['page'] = page;
+            }
+
+            if (perPage !== undefined) {
+                localVarQueryParameter['perPage'] = perPage;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @param {string} templateId 
          * @param {MNotificationControllerPreviewTemplateMessageTypeEnum} messageType 
          * @param {GetPreviewTemplateDto} getPreviewTemplateDto 
@@ -2316,6 +2686,33 @@ export const NotificationModuleApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {string} userId 
+         * @param {number} notificationId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async mNotificationControllerGetNotificationsForUserById(userId: string, notificationId: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OutputNotificationWithCompiledMessageAndNotificationTaskDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.mNotificationControllerGetNotificationsForUserById(userId, notificationId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['NotificationModuleApi.mNotificationControllerGetNotificationsForUserById']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} userId 
+         * @param {number} [page] 
+         * @param {number} [perPage] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async mNotificationControllerGetPaginatedNotificationsByUserId(userId: string, page?: number, perPage?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.mNotificationControllerGetPaginatedNotificationsByUserId(userId, page, perPage, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['NotificationModuleApi.mNotificationControllerGetPaginatedNotificationsByUserId']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @param {string} templateId 
          * @param {MNotificationControllerPreviewTemplateMessageTypeEnum} messageType 
          * @param {GetPreviewTemplateDto} getPreviewTemplateDto 
@@ -2432,6 +2829,27 @@ export const NotificationModuleApiFactory = function (configuration?: Configurat
          */
         mNotificationControllerFindOneTemplate(templateId: string, options?: RawAxiosRequestConfig): AxiosPromise<Template> {
             return localVarFp.mNotificationControllerFindOneTemplate(templateId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} userId 
+         * @param {number} notificationId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        mNotificationControllerGetNotificationsForUserById(userId: string, notificationId: number, options?: RawAxiosRequestConfig): AxiosPromise<OutputNotificationWithCompiledMessageAndNotificationTaskDto> {
+            return localVarFp.mNotificationControllerGetNotificationsForUserById(userId, notificationId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} userId 
+         * @param {number} [page] 
+         * @param {number} [perPage] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        mNotificationControllerGetPaginatedNotificationsByUserId(userId: string, page?: number, perPage?: number, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDto> {
+            return localVarFp.mNotificationControllerGetPaginatedNotificationsByUserId(userId, page, perPage, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -2562,6 +2980,31 @@ export class NotificationModuleApi extends BaseAPI {
      */
     public mNotificationControllerFindOneTemplate(templateId: string, options?: RawAxiosRequestConfig) {
         return NotificationModuleApiFp(this.configuration).mNotificationControllerFindOneTemplate(templateId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} userId 
+     * @param {number} notificationId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof NotificationModuleApi
+     */
+    public mNotificationControllerGetNotificationsForUserById(userId: string, notificationId: number, options?: RawAxiosRequestConfig) {
+        return NotificationModuleApiFp(this.configuration).mNotificationControllerGetNotificationsForUserById(userId, notificationId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} userId 
+     * @param {number} [page] 
+     * @param {number} [perPage] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof NotificationModuleApi
+     */
+    public mNotificationControllerGetPaginatedNotificationsByUserId(userId: string, page?: number, perPage?: number, options?: RawAxiosRequestConfig) {
+        return NotificationModuleApiFp(this.configuration).mNotificationControllerGetPaginatedNotificationsByUserId(userId, page, perPage, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

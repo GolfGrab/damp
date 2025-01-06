@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import { useClient } from "../../common/useClient";
-import NotificationList from "./components/NotificationList";
 import NotificationCenterHomeLayout from "../../layout/NotificationCenterHomeLayout";
+import NotificationList from "./components/NotificationList";
 
 const NotificationsHome = () => {
   const { isClientLoaded } = useClient();
