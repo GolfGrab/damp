@@ -6,7 +6,6 @@ import {
   Typography,
 } from "@mui/material";
 import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
 import { useNavigate } from "react-router-dom";
 import { type NotificationPreviewContent } from "./types";
 
@@ -15,9 +14,8 @@ type NotificationListCardProps = {
 };
 
 const NotificationListCard = ({
-  content: { applicationName, image, message, createdTime, id },
+  content: { applicationName, image, createdAt, id, title },
 }: NotificationListCardProps) => {
-  dayjs.extend(relativeTime);
   const navigate = useNavigate();
 
   return (
@@ -31,7 +29,7 @@ const NotificationListCard = ({
         <Avatar alt={applicationName + "icon"} src={image} />
       </ListItemAvatar>
       <ListItemText
-        primary={message}
+        primary={title}
         secondary={
           <>
             <Typography
@@ -41,7 +39,7 @@ const NotificationListCard = ({
             >
               {applicationName + " — "}
             </Typography>
-            {dayjs(createdTime).fromNow()}
+            {dayjs(createdAt).fromNow()}
           </>
         }
       />

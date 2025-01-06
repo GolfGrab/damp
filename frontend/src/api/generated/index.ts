@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* eslint-disable */
+ 
 /**
  * NestJS Prisma Example
  * The NestJS Prisma Example API description

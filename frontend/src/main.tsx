@@ -5,6 +5,7 @@ import "@fontsource/roboto/700.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
+import "./common/dayjsConfig";
 import appRouter from "./routers/app-router";
 
 createRoot(document.getElementById("root")!).render(

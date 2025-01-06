@@ -41,7 +41,7 @@ const appRouter = createBrowserRouter([
                 Component: () => (
                   <NotificationCenterGenericLayout
                     title="Preferences Settings"
-                    parentPath={`/notifications`}
+                    parentPath="/notifications"
                   >
                     <Applications />
                   </NotificationCenterGenericLayout>

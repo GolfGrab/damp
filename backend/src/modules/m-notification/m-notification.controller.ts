@@ -1,4 +1,4 @@
-import { GetApplication, GetUser, KeyAuth } from '@/auth/auth.decorator';
+import { Auth, GetApplication, GetUser, KeyAuth } from '@/auth/auth.decorator';
 import {
   Body,
   Controller,
@@ -11,7 +11,11 @@ import {
 } from '@nestjs/common';
 import { ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Application, MessageType, User } from '@prisma/client';
+import { ApiPaginatedResponse } from '../../utils/paginator/pagination.decorator';
+import { PaginatedResult } from '../../utils/paginator/pagination.type';
+import { PaginationQueryDto } from '../../utils/paginator/paginationQuery.dto';
 import { CreateNotificationDto } from './notifications/dto/create-notification.dto';
+import { OutputNotificationWithCompiledMessageAndNotificationTaskDto } from './notifications/dto/output-notification-with-compiled-message-and-notification-task.dto';
 import { Notification } from './notifications/entities/notification.entity';
 import { NotificationsService } from './notifications/notifications.service';
 import { CreateTemplateDto } from './templates/dto/create-template.dto';
@@ -19,9 +23,6 @@ import { GetPreviewTemplateDto } from './templates/dto/get-preview-template.dto'
 import { UpdateTemplateDto } from './templates/dto/update-template.dto';
 import { Template } from './templates/entities/template.entity';
 import { TemplatesService } from './templates/templates.service';
-import { ApiPaginatedResponse } from '../../utils/paginator/pagination.decorator';
-import { PaginatedResult } from '../../utils/paginator/pagination.type';
-import { PaginationQueryDto } from '../../utils/paginator/paginationQuery.dto';
 
 @ApiTags('Notification Module')
 @Controller('m-notification')
@@ -138,15 +139,34 @@ export class MNotificationController {
     return this.notificationsService.findOne(notificationId);
   }
 
+  @Auth()
+  @ApiPaginatedResponse(
+    OutputNotificationWithCompiledMessageAndNotificationTaskDto,
+  )
   @Get('users/:userId/notifications')
-  @ApiPaginatedResponse(Notification)
   getPaginatedNotificationsByUserId(
     @Query() paginateQuery: PaginationQueryDto,
     @Param('userId') userId: string,
-  ): Promise<PaginatedResult<Notification>> {
+    @GetUser() user: User,
+  ): Promise<
+    PaginatedResult<OutputNotificationWithCompiledMessageAndNotificationTaskDto>
+  > {
     return this.notificationsService.getPaginatedNotificationsByUser(
-      userId,
+      user.id,
       paginateQuery,
     );
+  }
+
+  @Auth()
+  @ApiResponse({
+    type: OutputNotificationWithCompiledMessageAndNotificationTaskDto,
+  })
+  @Get('users/:userId/notifications/:notificationId')
+  getNotificationsForUserById(
+    @GetUser() user: User,
+    @Param('userId') userId: string,
+    @Param('notificationId') notificationId: number,
+  ): Promise<OutputNotificationWithCompiledMessageAndNotificationTaskDto> {
+    return this.notificationsService.findOneByUser(user.id, notificationId);
   }
 }

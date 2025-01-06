@@ -106,7 +106,7 @@ const ConfigureAccount = () => {
   return (
     <Stack spacing={2}>
       <Divider>
-        <Stack spacing={2} direction={"row"} alignItems={"center"}>
+        <Stack spacing={2} direction="row" alignItems="center">
           <ChannelIcon color="primary" />
           <Typography variant="h6">{userAccount.channelToken}</Typography>
         </Stack>
