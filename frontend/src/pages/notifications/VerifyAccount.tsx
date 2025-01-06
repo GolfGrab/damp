@@ -79,10 +79,8 @@ const VerifyAccount = () => {
       async onError(error) {
         setOtpCode("");
         await dialogs.alert("Error: " + error.message, {
-          okText: "Send OTP Again",
+          okText: "OK",
         });
-
-        upsertAccount();
       },
     });
 
