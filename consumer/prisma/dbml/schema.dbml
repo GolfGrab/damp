@@ -27,8 +27,8 @@ Table Otp {
   createdAt DateTime [default: `now()`, not null]
   expiredAt DateTime [not null]
   verifiedAt DateTime
-  userId String [not null]
-  channelType ChannelType [not null]
+  userId String
+  channelType ChannelType
 }
 
 Table Channel {
@@ -179,11 +179,11 @@ Ref: Account.userId > User.id
 
 Ref: Account.channelType > Channel.channelType
 
-Ref: Otp.userId > User.id
+Ref: Otp.userId > User.id [delete: No Action]
 
-Ref: Otp.channelType > Channel.channelType
+Ref: Otp.channelType > Channel.channelType [delete: No Action]
 
-Ref: Otp.(userId, channelType) > Account.(userId, channelType)
+Ref: Otp.(userId, channelType) > Account.(userId, channelType) [delete: Set Null]
 
 Ref: Application.createdByUserId > User.id
 

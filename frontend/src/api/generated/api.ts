@@ -3025,6 +3025,47 @@ export type MNotificationControllerPreviewTemplateMessageTypeEnum = typeof MNoti
 export const UserModuleApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
+         * 
+         * @param {string} userId 
+         * @param {MUserControllerCreateNewOtpChannelTypeEnum} channelType 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        mUserControllerCreateNewOtp: async (userId: string, channelType: MUserControllerCreateNewOtpChannelTypeEnum, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('mUserControllerCreateNewOtp', 'userId', userId)
+            // verify required parameter 'channelType' is not null or undefined
+            assertParamExists('mUserControllerCreateNewOtp', 'channelType', channelType)
+            const localVarPath = `/m-user/users/{userId}/channel/{channelType}/accounts/otp`
+                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)))
+                .replace(`{${"channelType"}}`, encodeURIComponent(String(channelType)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Access_Token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Users
          * @summary 
          * @param {CreateUserDto} createUserDto 
@@ -3442,6 +3483,19 @@ export const UserModuleApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = UserModuleApiAxiosParamCreator(configuration)
     return {
         /**
+         * 
+         * @param {string} userId 
+         * @param {MUserControllerCreateNewOtpChannelTypeEnum} channelType 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async mUserControllerCreateNewOtp(userId: string, channelType: MUserControllerCreateNewOtpChannelTypeEnum, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.mUserControllerCreateNewOtp(userId, channelType, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserModuleApi.mUserControllerCreateNewOtp']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
          * Users
          * @summary 
          * @param {CreateUserDto} createUserDto 
@@ -3584,6 +3638,16 @@ export const UserModuleApiFactory = function (configuration?: Configuration, bas
     const localVarFp = UserModuleApiFp(configuration)
     return {
         /**
+         * 
+         * @param {string} userId 
+         * @param {MUserControllerCreateNewOtpChannelTypeEnum} channelType 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        mUserControllerCreateNewOtp(userId: string, channelType: MUserControllerCreateNewOtpChannelTypeEnum, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.mUserControllerCreateNewOtp(userId, channelType, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Users
          * @summary 
          * @param {CreateUserDto} createUserDto 
@@ -3695,6 +3759,18 @@ export const UserModuleApiFactory = function (configuration?: Configuration, bas
  * @extends {BaseAPI}
  */
 export class UserModuleApi extends BaseAPI {
+    /**
+     * 
+     * @param {string} userId 
+     * @param {MUserControllerCreateNewOtpChannelTypeEnum} channelType 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UserModuleApi
+     */
+    public mUserControllerCreateNewOtp(userId: string, channelType: MUserControllerCreateNewOtpChannelTypeEnum, options?: RawAxiosRequestConfig) {
+        return UserModuleApiFp(this.configuration).mUserControllerCreateNewOtp(userId, channelType, options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * Users
      * @summary 
@@ -3818,6 +3894,16 @@ export class UserModuleApi extends BaseAPI {
     }
 }
 
+/**
+ * @export
+ */
+export const MUserControllerCreateNewOtpChannelTypeEnum = {
+    Email: 'EMAIL',
+    Sms: 'SMS',
+    WebPush: 'WEB_PUSH',
+    Slack: 'SLACK'
+} as const;
+export type MUserControllerCreateNewOtpChannelTypeEnum = typeof MUserControllerCreateNewOtpChannelTypeEnum[keyof typeof MUserControllerCreateNewOtpChannelTypeEnum];
 /**
  * @export
  */

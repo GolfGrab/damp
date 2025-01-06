@@ -36,20 +36,17 @@ const VerifyAccount = () => {
     (account) => account.channelType === channelType
   );
 
-  const { mutate: upsertAccount, isPending: isUpsertAccountPending } =
+  const { mutate: createNewOtp, isPending: isCreateNewOtpPending } =
     useMutation({
-      mutationKey: [apiClient.UserModuleApi.mUserControllerUpsertAccount.name],
+      mutationKey: [apiClient.UserModuleApi.mUserControllerCreateNewOtp.name],
       mutationFn: async () => {
         if (!auth.user?.profile.email || !channelType || !userAccount) {
           throw new Error("Invalid request");
         }
 
-        await apiClient.UserModuleApi.mUserControllerUpsertAccount(
+        await apiClient.UserModuleApi.mUserControllerCreateNewOtp(
           auth.user!.profile.email!,
-          channelType as AccountChannelTypeEnum,
-          {
-            channelToken: userAccount?.channelToken,
-          }
+          channelType as AccountChannelTypeEnum
         );
       },
       onSuccess() {
@@ -115,8 +112,8 @@ const VerifyAccount = () => {
         <Typography variant="body2">Didn't receive the code?</Typography>
         <Button
           onClick={() => {
-            if (!isUpsertAccountPending && !isVerifyAccountPending) {
-              upsertAccount();
+            if (!isCreateNewOtpPending && !isVerifyAccountPending) {
+              createNewOtp();
             }
           }}
         >

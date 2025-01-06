@@ -18,6 +18,10 @@ export class AccountsService {
     private readonly userPreferencesService: UserPreferencesService,
   ) {}
 
+  generateOtp() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  }
+
   async upsert(
     userId: string,
     channelType: prisma.$Enums.ChannelType,
@@ -72,8 +76,58 @@ export class AccountsService {
     return account;
   }
 
-  generateOtp() {
-    return Math.floor(100000 + Math.random() * 900000).toString();
+  async createNewOtp(userId: string, channelType: prisma.$Enums.ChannelType) {
+    const account = await this.prisma.account.findUnique({
+      where: {
+        userId_channelType: {
+          userId,
+          channelType,
+        },
+      },
+    });
+
+    if (!account) {
+      throw new NotFoundException('Account not found');
+    }
+
+    if (account.verifiedAt) {
+      throw new ForbiddenException('Account has been verified');
+    }
+
+    const otpCode = this.generateOtp();
+    const expiredAt = new Date(
+      new Date().getTime() + 1000 * 60 * 5, // 5 minutes
+    );
+
+    await this.prisma.account.update({
+      where: {
+        userId_channelType: {
+          userId,
+          channelType,
+        },
+      },
+      data: {
+        otp: {
+          create: {
+            otpCode,
+            expiredAt,
+          },
+        },
+      },
+    });
+
+    // send otp code to user
+    await this.notificationService.create('System-application', {
+      recipientIds: [userId],
+      notificationCategoryId: `System_${channelType}_OTP`,
+      priority: prisma.Priority.HIGH,
+      templateId: `System_${channelType}_OTP`,
+      templateData: {
+        otpCode,
+      },
+    });
+
+    return account;
   }
 
   async verify(

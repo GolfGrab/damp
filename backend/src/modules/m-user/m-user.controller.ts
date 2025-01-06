@@ -72,6 +72,23 @@ export class MUserController {
     return this.accountsService.upsert(userId, channelType, upsertAccountDto);
   }
 
+  @ApiParam({
+    name: 'channelType',
+    enum: prisma.$Enums.ChannelType,
+  })
+  @Auth()
+  @Post('users/:userId/channel/:channelType/accounts/otp')
+  createNewOtp(
+    @GetUser() user: User,
+    @Param('userId') userId: string,
+    @Param('channelType') channelType: prisma.$Enums.ChannelType,
+  ) {
+    if (user.id !== userId) {
+      throw new ForbiddenException();
+    }
+    return this.accountsService.createNewOtp(userId, channelType);
+  }
+
   @Auth()
   @Get('users/:userId/accounts')
   findAllUserAccountsByUserId(
