@@ -15,11 +15,6 @@ export class Template implements prisma.Template {
   @ApiProperty({
     type: String,
   })
-  description: string;
-
-  @ApiProperty({
-    type: String,
-  })
   template: string;
 
   @ApiProperty({
@@ -43,4 +38,15 @@ export class Template implements prisma.Template {
     type: String,
   })
   updatedByUserId: string;
+
+  @ApiProperty({
+    type: String,
+    format: 'date-time',
+  })
+  deletedAt: Date | null;
+
+  @ApiProperty({
+    type: String,
+  })
+  deletedByUserId: string | null;
 }

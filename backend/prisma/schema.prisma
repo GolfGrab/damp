@@ -174,14 +174,15 @@ model NotificationTask {
 }
 
 model Template {
-  id              String   @id
+  id              String    @id
   name            String
-  description     String
   template        String
-  createdAt       DateTime @default(now())
+  createdAt       DateTime  @default(now())
   createdByUserId String
-  updatedAt       DateTime @updatedAt
+  updatedAt       DateTime  @updatedAt
   updatedByUserId String
+  deletedAt       DateTime?
+  deletedByUserId String?
 
   compiledTemplates   CompiledTemplate[]
   notification        Notification[]

@@ -2,6 +2,7 @@ import { Auth, GetApplication, GetUser, KeyAuth } from '@/auth/auth.decorator';
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -9,7 +10,7 @@ import {
   Query,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Application, MessageType, User } from '@prisma/client';
 import { ApiPaginatedResponse } from '../../utils/paginator/pagination.decorator';
 import { PaginatedResult } from '../../utils/paginator/pagination.type';
@@ -39,13 +40,28 @@ export class MNotificationController {
   @Post('templates')
   createTemplate(
     @Body() createTemplateDto: CreateTemplateDto,
+    @GetUser() user: User,
   ): Promise<Template> {
-    return this.templatesService.create(createTemplateDto);
+    return this.templatesService.create(createTemplateDto, user);
   }
 
+  @ApiQuery({
+    name: 'templateName',
+    required: false,
+    type: String,
+  })
+  @ApiPaginatedResponse(Template)
   @Get('templates')
-  findAllTemplates(): Promise<Template[]> {
-    return this.templatesService.findAll();
+  findAllTemplatesPaginated(
+    @Query() paginateQuery: PaginationQueryDto,
+    @Query('templateName') search?: string,
+  ): Promise<PaginatedResult<Template>> {
+    return this.templatesService.findPaginated(
+      {
+        templateName: search,
+      },
+      paginateQuery,
+    );
   }
 
   @Get('templates/:templateId')
@@ -57,8 +73,17 @@ export class MNotificationController {
   updateTemplate(
     @Param('templateId') templateId: string,
     @Body() updateTemplateDto: UpdateTemplateDto,
+    @GetUser() user: User,
   ): Promise<Template> {
-    return this.templatesService.update(templateId, updateTemplateDto);
+    return this.templatesService.update(templateId, updateTemplateDto, user);
+  }
+
+  @Delete('templates/:templateId')
+  deleteTemplate(
+    @Param('templateId') templateId: string,
+    @GetUser() user: User,
+  ): Promise<Template> {
+    return this.templatesService.delete(templateId, user);
   }
 
   @ApiParam({

@@ -1,6 +1,4 @@
-import { OmitType, PartialType } from '@nestjs/swagger';
+import { PartialType } from '@nestjs/swagger';
 import { CreateTemplateDto } from './create-template.dto';
 
-export class UpdateTemplateDto extends PartialType(
-  OmitType(CreateTemplateDto, ['id']),
-) {}
+export class UpdateTemplateDto extends PartialType(CreateTemplateDto) {}

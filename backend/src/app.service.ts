@@ -130,7 +130,6 @@ export class AppService implements OnModuleInit {
           id: `System_${channelType}_OTP`,
           name:
             '[Do not edit] System OTP Verification Template for ' + channelType,
-          description: 'System OTP Verification Template for ' + channelType,
           template: template,
           createdByUserId: 'System-user',
           updatedByUserId: 'System-user',

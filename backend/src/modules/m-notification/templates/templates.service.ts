@@ -1,9 +1,14 @@
+import { paginate } from '@/utils/paginator/pagination.function';
+import { PaginationQueryDto } from '@/utils/paginator/paginationQuery.dto';
 import { Injectable } from '@nestjs/common';
-import { $Enums, MessageType } from '@prisma/client';
+import { $Enums, MessageType, Prisma, User } from '@prisma/client';
+import _ from 'lodash';
 import { PrismaService } from 'nestjs-prisma';
 import { CreateTemplateDto } from './dto/create-template.dto';
 import { GetPreviewTemplateDto } from './dto/get-preview-template.dto';
 import { UpdateTemplateDto } from './dto/update-template.dto';
+import { UpsertTemplateDto } from './dto/upsert-template.dto';
+import { Template } from './entities/template.entity';
 import { TemplatesParserService } from './template-parser.service';
 import { TemplatesRendererService } from './template-renderer.service';
 
@@ -15,18 +20,18 @@ export class TemplatesService {
     private readonly templatesRendererService: TemplatesRendererService,
   ) {}
 
-  upsert(createTemplateDto: CreateTemplateDto) {
+  upsert(upsertTemplateDto: UpsertTemplateDto) {
     const compiledTemplates =
       this.templatesParserService.parseJSONToCompiledTemplates(
-        createTemplateDto.template,
+        upsertTemplateDto.template,
       );
     return this.prisma.template.upsert({
       where: {
-        id: createTemplateDto.id,
+        id: upsertTemplateDto.id,
       },
       create: {
-        ...createTemplateDto,
-        template: JSON.stringify(createTemplateDto.template),
+        ...upsertTemplateDto,
+        template: JSON.stringify(upsertTemplateDto.template),
         compiledTemplates: {
           createMany: {
             data: Object.values($Enums.MessageType).map((messageType) => ({
@@ -37,14 +42,14 @@ export class TemplatesService {
         },
       },
       update: {
-        ...createTemplateDto,
-        template: JSON.stringify(createTemplateDto.template),
+        ...upsertTemplateDto,
+        template: JSON.stringify(upsertTemplateDto.template),
         compiledTemplates: {
           upsert: Object.values($Enums.MessageType).map((messageType) => ({
             where: {
               templateId_messageType: {
                 messageType,
-                templateId: createTemplateDto.id,
+                templateId: upsertTemplateDto.id,
               },
             },
             create: {
@@ -60,7 +65,7 @@ export class TemplatesService {
     });
   }
 
-  create(createTemplateDto: CreateTemplateDto) {
+  create(createTemplateDto: CreateTemplateDto, user: User) {
     const compiledTemplates =
       this.templatesParserService.parseJSONToCompiledTemplates(
         createTemplateDto.template,
@@ -68,6 +73,9 @@ export class TemplatesService {
     return this.prisma.template.create({
       data: {
         ...createTemplateDto,
+        id: _.kebabCase(createTemplateDto.name),
+        createdByUserId: user.id,
+        updatedByUserId: user.id,
         template: JSON.stringify(createTemplateDto.template),
         compiledTemplates: {
           createMany: {
@@ -91,8 +99,26 @@ export class TemplatesService {
     });
   }
 
-  findAll() {
-    return this.prisma.template.findMany();
+  findPaginated(
+    search: {
+      templateName?: string;
+    },
+    paginateQuery: PaginationQueryDto,
+  ) {
+    return paginate<Template, Prisma.TemplateFindManyArgs>({
+      prismaQueryModel: this.prisma.template,
+      findManyArgs: {
+        where: {
+          name: {
+            contains: search.templateName,
+            mode: 'insensitive',
+          },
+          deletedAt: null,
+          // Todo filter system templates
+        },
+      },
+      paginateOptions: paginateQuery,
+    });
   }
 
   findOne(id: string) {
@@ -106,7 +132,7 @@ export class TemplatesService {
     });
   }
 
-  update(id: string, updateTemplateDto: UpdateTemplateDto) {
+  update(id: string, updateTemplateDto: UpdateTemplateDto, user: User) {
     const compiledTemplates = updateTemplateDto.template
       ? this.templatesParserService.parseJSONToCompiledTemplates(
           updateTemplateDto.template,
@@ -117,6 +143,8 @@ export class TemplatesService {
         id,
       },
       data: {
+        name: updateTemplateDto.name,
+        updatedByUserId: user.id,
         compiledTemplates: {
           update: [
             {
@@ -154,6 +182,18 @@ export class TemplatesService {
             },
           ],
         },
+      },
+    });
+  }
+
+  delete(id: string, user: User) {
+    return this.prisma.template.update({
+      where: {
+        id,
+      },
+      data: {
+        deletedAt: new Date(),
+        deletedByUserId: user.id,
       },
     });
   }
