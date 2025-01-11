@@ -18,7 +18,7 @@ import { apiClient } from "../../api";
 import { UserPreferenceChannelTypeEnum } from "../../api/generated";
 import { allChannels } from "./constants/allChannels";
 
-const ApplicationUserPreferences = () => {
+const NotificationApplicationUserPreferences = () => {
   const auth = useAuth();
   const queryClient = useQueryClient();
   const { applicationId } = useParams();
@@ -201,4 +201,4 @@ const ApplicationUserPreferences = () => {
   );
 };
 
-export default ApplicationUserPreferences;
+export default NotificationApplicationUserPreferences;

@@ -7,10 +7,10 @@ import NotificationCenterGenericLayout from "../layout/NotificationCenterGeneric
 import Callback from "../pages/auth/LoginCallback";
 import Home from "../pages/home/Home";
 import Accounts from "../pages/notifications/Accounts";
-import Applications from "../pages/notifications/Applications";
-import ApplicationUserPreferences from "../pages/notifications/ApplicationUserPreferences";
 import ConfigureAccount from "../pages/notifications/ConfigureAccount";
 import ConnectAccount from "../pages/notifications/ConnectAccount";
+import NotificationApplications from "../pages/notifications/NotificationApplications";
+import NotificationApplicationUserPreferences from "../pages/notifications/NotificationApplicationUserPreferences";
 import NotificationDetails from "../pages/notifications/NotificationDetails";
 import NotificationsHome from "../pages/notifications/NotificationsHome";
 import VerifyAccount from "../pages/notifications/VerifyAccount";
@@ -44,7 +44,7 @@ const appRouter = createBrowserRouter([
                     title="Preferences Settings"
                     parentPath="/notifications"
                   >
-                    <Applications />
+                    <NotificationApplications />
                   </NotificationCenterGenericLayout>
                 ),
                 path: "applications",
@@ -59,7 +59,7 @@ const appRouter = createBrowserRouter([
                     title="User Preferences"
                     parentPath="/notifications/applications"
                   >
-                    <ApplicationUserPreferences />
+                    <NotificationApplicationUserPreferences />
                   </NotificationCenterGenericLayout>
                 ),
                 path: "applications/:applicationId/user-preferences",

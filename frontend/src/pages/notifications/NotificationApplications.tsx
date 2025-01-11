@@ -10,7 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { apiClient } from "../../api";
 
-const Applications = () => {
+const NotificationApplications = () => {
   const navigation = useNavigate();
   const {
     data: applications,
@@ -115,4 +115,4 @@ const Applications = () => {
   );
 };
 
-export default Applications;
+export default NotificationApplications;
