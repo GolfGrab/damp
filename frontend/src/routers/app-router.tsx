@@ -121,64 +121,69 @@ const appRouter = createBrowserRouter([
           },
           // Notification Back Office
           {
-            path: "applications",
+            path: "notifications-back-office",
             children: [
               {
+                path: "applications",
+                children: [
+                  {
+                    Component: () => (
+                      <BackOfficeGenericLayout title="Applications">
+                        applications
+                      </BackOfficeGenericLayout>
+                    ),
+                    index: true,
+                  },
+                  {
+                    Component: () => {
+                      const { applicationId } = useParams();
+                      return (
+                        <BackOfficeGenericLayout
+                          title={"Application Details" + applicationId}
+                        >
+                          application details {applicationId}
+                        </BackOfficeGenericLayout>
+                      );
+                    },
+                    path: ":applicationId",
+                  },
+                ],
+              },
+              {
+                path: "templates",
+                children: [
+                  {
+                    Component: () => (
+                      <BackOfficeGenericLayout title="Templates">
+                        templates
+                      </BackOfficeGenericLayout>
+                    ),
+                    index: true,
+                  },
+                  {
+                    Component: () => {
+                      const { templateId } = useParams();
+                      return (
+                        <BackOfficeGenericLayout
+                          title={"Template Details" + templateId}
+                        >
+                          template details {templateId}
+                        </BackOfficeGenericLayout>
+                      );
+                    },
+                    path: ":templateId",
+                  },
+                ],
+              },
+              {
                 Component: () => (
-                  <BackOfficeGenericLayout title="Applications">
-                    applications
+                  <BackOfficeGenericLayout title="Analytics">
+                    analytics
                   </BackOfficeGenericLayout>
                 ),
-                index: true,
-              },
-              {
-                Component: () => {
-                  const { applicationId } = useParams();
-                  return (
-                    <BackOfficeGenericLayout
-                      title={"Application Details" + applicationId}
-                    >
-                      application details {applicationId}
-                    </BackOfficeGenericLayout>
-                  );
-                },
-                path: ":applicationId",
+                path: "analytics",
               },
             ],
-          },
-          {
-            path: "templates",
-            children: [
-              {
-                Component: () => (
-                  <BackOfficeGenericLayout title="Templates">
-                    templates
-                  </BackOfficeGenericLayout>
-                ),
-                index: true,
-              },
-              {
-                Component: () => {
-                  const { templateId } = useParams();
-                  return (
-                    <BackOfficeGenericLayout
-                      title={"Template Details" + templateId}
-                    >
-                      template details {templateId}
-                    </BackOfficeGenericLayout>
-                  );
-                },
-                path: ":templateId",
-              },
-            ],
-          },
-          {
-            Component: () => (
-              <BackOfficeGenericLayout title="Analytics">
-                analytics
-              </BackOfficeGenericLayout>
-            ),
-            path: "analytics",
           },
         ],
       },

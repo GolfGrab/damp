@@ -13,19 +13,19 @@ export const backOfficeNavigation: Navigation = [
   },
   {
     title: "Applications",
-    segment: "applications",
+    segment: "notifications-back-office/applications",
     icon: <WidgetsOutlined />,
-    pattern: "applications{/:applicationId}*",
+    pattern: "notifications-back-office/applications{/:applicationId}*",
   },
   {
     title: "Templates",
-    segment: "templates",
+    segment: "notifications-back-office/templates",
     icon: <DocumentScannerOutlined />,
-    pattern: "templates{/:templateId}*",
+    pattern: "notifications-back-office/templates{/:templateId}*",
   },
   {
     title: "Analytics",
-    segment: "analytics",
+    segment: "notifications-back-office/analytics",
     icon: <QueryStatsOutlined />,
   },
 ];
