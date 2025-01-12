@@ -6,6 +6,7 @@ import { axiosInstance } from "../api";
 const SecuredRoute = () => {
   const auth = useAuth();
   const [hasTriedSignin, setHasTriedSignin] = useState(false);
+  const [hasTriedAfterError, setHasTriedAfterError] = useState(false);
 
   // automatically sign-in
   useEffect(() => {
@@ -24,6 +25,23 @@ const SecuredRoute = () => {
       setHasTriedSignin(true);
     }
   }, [auth, hasTriedSignin]);
+
+  // retry after error
+  useEffect(() => {
+    const allowedRetryErrors = ["Invalid refresh token state"];
+    if (
+      auth.error &&
+      !hasTriedAfterError &&
+      allowedRetryErrors.includes(auth.error.message)
+    ) {
+      auth.signinRedirect({
+        state: {
+          returnTo: window.location,
+        },
+      });
+      setHasTriedAfterError(true);
+    }
+  }, [auth, hasTriedAfterError]);
 
   switch (auth.activeNavigator) {
     case "signinSilent":
