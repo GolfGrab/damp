@@ -147,6 +147,7 @@ export class TemplatesService {
       data: {
         name: updateTemplateDto.name,
         updatedByUserId: user.id,
+        template: JSON.stringify(updateTemplateDto.template),
         compiledTemplates: {
           update: [
             {

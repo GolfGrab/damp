@@ -46,6 +46,7 @@ export class MNotificationController {
     return this.templatesService.create(createTemplateDto, user);
   }
 
+  @Auth()
   @ApiQuery({
     name: 'templateName',
     required: false,
@@ -71,6 +72,7 @@ export class MNotificationController {
   }
 
   @Patch('templates/:templateId')
+  @Auth()
   updateTemplate(
     @Param('templateId') templateId: string,
     @Body() updateTemplateDto: UpdateTemplateDto,
@@ -93,6 +95,7 @@ export class MNotificationController {
     required: true,
     enum: MessageType,
   })
+  @Auth()
   @Post('templates/:templateId/messageType/:messageType/preview')
   previewTemplate(
     @Param('templateId') templateId: string,

@@ -1,3 +1,4 @@
+import { useMutation } from "@tanstack/react-query";
 import { Blockquote } from "@tiptap/extension-blockquote";
 import { Bold } from "@tiptap/extension-bold";
 import { BulletList } from "@tiptap/extension-bullet-list";
@@ -19,28 +20,51 @@ import { Strike } from "@tiptap/extension-strike";
 import { Text } from "@tiptap/extension-text";
 import { TextAlign } from "@tiptap/extension-text-align";
 import { TextStyle } from "@tiptap/extension-text-style";
-import { useEditor as useTiptapEditor } from "@tiptap/react";
+import { Editor, useEditor as useTiptapEditor } from "@tiptap/react";
 import { HeadingWithAnchor, LinkBubbleMenuHandler } from "mui-tiptap";
 import { useEffect, useRef, useState } from "react";
+import { apiClient } from "../../../api";
 
 const debounceTime = 2000;
 const maxTime = 10000;
 
-export default function useRichTextEditor() {
+const useUpdateTemplateMutation = () =>
+  useMutation({
+    mutationFn: ({
+      templateId,
+      content,
+    }: {
+      templateId: string;
+      content: object;
+    }) =>
+      apiClient.NotificationModuleApi.mNotificationControllerUpdateTemplate(
+        templateId,
+        {
+          template: content,
+        }
+      ),
+  });
+
+export default function useRichTextEditor({
+  templateId,
+}: {
+  templateId: string;
+}) {
   const [isSaved, setIsSaved] = useState<boolean>(true);
-  const [error, setError] = useState<boolean>(false);
   const [content, setContent] = useState<object>({});
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
   const maxTimer = useRef<NodeJS.Timeout | null>(null);
+  const { mutate, error, isPending } = useUpdateTemplateMutation();
 
   const saveContent = (content: object) => {
     console.log("Content saved:", JSON.stringify(content));
     // Your API call or save logic goes here
+    mutate({ templateId, content });
     setIsSaved(true);
   };
 
-  const handleContentChange = (content: object) => {
-    setContent(content);
+  const handleContentChange = (editor: Editor) => {
+    setContent(editor.getJSON());
     setIsSaved(false);
 
     // Set new debounce timer
@@ -134,11 +158,12 @@ export default function useRichTextEditor() {
     editor: useTiptapEditor({
       extensions: extensions,
       onUpdate: ({ editor }) => {
-        handleContentChange(editor.getJSON());
+        handleContentChange(editor);
       },
     }),
     isSaved,
     content,
     error,
+    isPending,
   };
 }
