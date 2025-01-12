@@ -10,7 +10,7 @@ export const App = () => {
   const queryClient = new QueryClient();
 
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <CssBaseline enableColorScheme />
       <AppProvider
         session={
@@ -35,11 +35,9 @@ export const App = () => {
           signOut: () => void auth.signoutRedirect(),
         }}
       >
-        <QueryClientProvider client={queryClient}>
-          <Outlet />
-        </QueryClientProvider>
+        <Outlet />
       </AppProvider>
-    </>
+    </QueryClientProvider>
   );
 };
 

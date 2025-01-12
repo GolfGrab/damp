@@ -38,6 +38,7 @@ export class MNotificationController {
    **/
 
   @Post('templates')
+  @Auth()
   createTemplate(
     @Body() createTemplateDto: CreateTemplateDto,
     @GetUser() user: User,
@@ -79,6 +80,7 @@ export class MNotificationController {
   }
 
   @Delete('templates/:templateId')
+  @Auth()
   deleteTemplate(
     @Param('templateId') templateId: string,
     @GetUser() user: User,

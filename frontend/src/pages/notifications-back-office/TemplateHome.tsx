@@ -1,5 +1,6 @@
 import { Search } from "@mui/icons-material";
 import AddIcon from "@mui/icons-material/Add";
+import LoadingButton from "@mui/lab/LoadingButton";
 import {
   Button,
   Dialog,
@@ -10,10 +11,16 @@ import {
   TextField,
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { DialogProps, useDialogs } from "@toolpad/core";
 import dayjs from "dayjs";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { apiClient } from "../../api";
 
 const useTemplatePaginationQuery = (
@@ -26,11 +33,16 @@ const useTemplatePaginationQuery = (
   }
 ) =>
   useQuery({
-    queryKey: ["template", paginationOption, search],
+    queryKey: [
+      apiClient.NotificationModuleApi
+        .mNotificationControllerFindAllTemplatesPaginated.name,
+      paginationOption,
+      search,
+    ],
     queryFn: () => {
       console.log("paginationOption", paginationOption, search);
       return apiClient.NotificationModuleApi.mNotificationControllerFindAllTemplatesPaginated(
-        paginationOption.page,
+        paginationOption.page + 1,
         paginationOption.perPage,
         search.templateName
       );
@@ -38,45 +50,90 @@ const useTemplatePaginationQuery = (
     placeholderData: keepPreviousData,
   });
 
-// const useCreateTemplateMutation = () =>
-//   useMutation({
-//     mutationFn: (templateName: string) =>
-//       apiClient.NotificationModuleApi.mNotificationControllerCreateTemplate({
-//         name: templateName,
-//       }),
-//   });
+const useDeleteTemplateMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (templateId: string) =>
+      apiClient.NotificationModuleApi.mNotificationControllerDeleteTemplate(
+        templateId
+      ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [
+          apiClient.NotificationModuleApi
+            .mNotificationControllerFindAllTemplatesPaginated.name,
+        ],
+      });
+    },
+  });
+};
+
+const useCreateTemplateMutation = () => {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  return useMutation({
+    mutationFn: (templateName: string) =>
+      apiClient.NotificationModuleApi.mNotificationControllerCreateTemplate({
+        name: templateName,
+        template: {
+          type: "doc",
+          content: [],
+        },
+      }),
+    onSuccess: ({ data }) => {
+      queryClient.invalidateQueries({
+        queryKey: [
+          apiClient.NotificationModuleApi
+            .mNotificationControllerFindAllTemplatesPaginated.name,
+        ],
+      });
+      navigate("/notifications-back-office/templates/" + data.id);
+    },
+  });
+};
 
 function TemplateCreationDialog({
   open,
   onClose,
 }: DialogProps<undefined, string | null>) {
-  const [result, setResult] = useState<string>();
-  const [error, setError] = useState(false);
+  const [isOpen, setIsOpen] = useState(open);
+  const [templateName, setTemplateName] = useState<string>();
+  const [isTemplateNameError, setIsTemplateNameError] = useState(false);
   const [helperText, setHelperText] = useState("");
-  const handleOk = (value: string | undefined) => {
+  const { mutate: createTemplate, isPending } = useCreateTemplateMutation();
+  const handleOk = async (value: string | undefined) => {
     if (!value) {
-      setError(true);
+      setIsTemplateNameError(true);
       setHelperText("Template name is required");
     } else {
-      onClose(value);
+      createTemplate(value, {
+        onSettled: () => {
+          setIsOpen(false);
+        },
+      });
     }
   };
   return (
-    <Dialog fullWidth open={open} onClose={() => onClose(null)}>
+    <Dialog fullWidth open={isOpen} onClose={() => onClose(null)}>
       <DialogTitle>Create New Template</DialogTitle>
       <DialogContent>
         <TextField
           label="Template Name"
           fullWidth
-          value={result}
+          value={templateName}
           margin="normal"
-          onChange={(event) => setResult(event.currentTarget.value)}
-          error={error}
+          onChange={(event) => setTemplateName(event.currentTarget.value)}
+          error={isTemplateNameError}
           helperText={helperText}
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => handleOk(result)}>Ok</Button>
+        <LoadingButton
+          loading={isPending}
+          onClick={() => handleOk(templateName)}
+        >
+          Ok
+        </LoadingButton>
       </DialogActions>
     </Dialog>
   );
@@ -85,10 +142,11 @@ function TemplateCreationDialog({
 const TemplateHome = () => {
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 5,
-    page: 1,
+    page: 0,
   });
   const [templateNameSearch, setTemplateNameSearch] = useState<string>("");
   const dialogs = useDialogs();
+  const { mutate: deleteTemplate } = useDeleteTemplateMutation();
 
   const columns: GridColDef[] = [
     { field: "name", headerName: "Template Name", flex: 3 },
@@ -123,7 +181,7 @@ const TemplateHome = () => {
                 }
               );
               if (confirmed) {
-                await dialogs.alert("Then let's do it!");
+                await deleteTemplate(row.id);
               }
             }}
           >
@@ -176,6 +234,8 @@ const TemplateHome = () => {
         onPaginationModelChange={setPaginationModel}
         pageSizeOptions={[5, 10]}
         disableColumnMenu
+        paginationMode="server"
+        rowCount={data?.data.meta?.total}
         disableColumnSorting
         onRowDoubleClick={(row) => {
           alert(row.row.id);
