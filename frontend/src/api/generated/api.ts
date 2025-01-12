@@ -360,37 +360,13 @@ export interface CreateTemplateDto {
      * @type {string}
      * @memberof CreateTemplateDto
      */
-    'id': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateTemplateDto
-     */
     'name': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateTemplateDto
-     */
-    'description': string;
     /**
      * 
      * @type {object}
      * @memberof CreateTemplateDto
      */
     'template': object;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateTemplateDto
-     */
-    'createdByUserId': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateTemplateDto
-     */
-    'updatedByUserId': string;
 }
 /**
  * 
@@ -700,51 +676,70 @@ export interface PaginatedResponseOfOutputNotificationWithCompiledMessageAndNoti
     'data'?: Array<OutputNotificationWithCompiledMessageAndNotificationTaskDto>;
     /**
      * 
-     * @type {PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta}
+     * @type {PaginatedResponseOfTemplateAllOfMeta}
      * @memberof PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDto
      */
-    'meta'?: PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta;
+    'meta'?: PaginatedResponseOfTemplateAllOfMeta;
 }
 /**
  * 
  * @export
- * @interface PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta
+ * @interface PaginatedResponseOfTemplate
  */
-export interface PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta {
+export interface PaginatedResponseOfTemplate {
+    /**
+     * 
+     * @type {Array<Template>}
+     * @memberof PaginatedResponseOfTemplate
+     */
+    'data'?: Array<Template>;
+    /**
+     * 
+     * @type {PaginatedResponseOfTemplateAllOfMeta}
+     * @memberof PaginatedResponseOfTemplate
+     */
+    'meta'?: PaginatedResponseOfTemplateAllOfMeta;
+}
+/**
+ * 
+ * @export
+ * @interface PaginatedResponseOfTemplateAllOfMeta
+ */
+export interface PaginatedResponseOfTemplateAllOfMeta {
     /**
      * 
      * @type {number}
-     * @memberof PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta
+     * @memberof PaginatedResponseOfTemplateAllOfMeta
      */
     'total'?: number;
     /**
      * 
      * @type {number}
-     * @memberof PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta
+     * @memberof PaginatedResponseOfTemplateAllOfMeta
      */
     'lastPage'?: number;
     /**
      * 
      * @type {number}
-     * @memberof PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta
+     * @memberof PaginatedResponseOfTemplateAllOfMeta
      */
     'currentPage'?: number;
     /**
      * 
      * @type {number}
-     * @memberof PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta
+     * @memberof PaginatedResponseOfTemplateAllOfMeta
      */
     'perPage'?: number;
     /**
      * 
      * @type {number}
-     * @memberof PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta
+     * @memberof PaginatedResponseOfTemplateAllOfMeta
      */
     'prev'?: number | null;
     /**
      * 
      * @type {number}
-     * @memberof PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDtoAllOfMeta
+     * @memberof PaginatedResponseOfTemplateAllOfMeta
      */
     'next'?: number | null;
 }
@@ -784,12 +779,6 @@ export interface Template {
      * @type {string}
      * @memberof Template
      */
-    'description': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Template
-     */
     'template': string;
     /**
      * 
@@ -815,6 +804,18 @@ export interface Template {
      * @memberof Template
      */
     'updatedByUserId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof Template
+     */
+    'deletedAt': string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof Template
+     */
+    'deletedByUserId': string | null;
 }
 /**
  * 
@@ -886,28 +887,10 @@ export interface UpdateTemplateDto {
     'name'?: string;
     /**
      * 
-     * @type {string}
-     * @memberof UpdateTemplateDto
-     */
-    'description'?: string;
-    /**
-     * 
      * @type {object}
      * @memberof UpdateTemplateDto
      */
     'template'?: object;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateTemplateDto
-     */
-    'createdByUserId'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateTemplateDto
-     */
-    'updatedByUserId'?: string;
 }
 /**
  * 
@@ -2148,6 +2131,39 @@ export const NotificationModuleApiAxiosParamCreator = function (configuration?: 
         },
         /**
          * 
+         * @param {string} templateId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        mNotificationControllerDeleteTemplate: async (templateId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'templateId' is not null or undefined
+            assertParamExists('mNotificationControllerDeleteTemplate', 'templateId', templateId)
+            const localVarPath = `/m-notification/templates/{templateId}`
+                .replace(`{${"templateId"}}`, encodeURIComponent(String(templateId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2276,10 +2292,13 @@ export const NotificationModuleApiAxiosParamCreator = function (configuration?: 
         },
         /**
          * 
+         * @param {number} [page] 
+         * @param {number} [perPage] 
+         * @param {string} [templateName] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        mNotificationControllerFindAllTemplates: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        mNotificationControllerFindAllTemplatesPaginated: async (page?: number, perPage?: number, templateName?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/m-notification/templates`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2291,6 +2310,18 @@ export const NotificationModuleApiAxiosParamCreator = function (configuration?: 
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            if (page !== undefined) {
+                localVarQueryParameter['page'] = page;
+            }
+
+            if (perPage !== undefined) {
+                localVarQueryParameter['perPage'] = perPage;
+            }
+
+            if (templateName !== undefined) {
+                localVarQueryParameter['templateName'] = templateName;
+            }
 
 
     
@@ -2578,6 +2609,18 @@ export const NotificationModuleApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {string} templateId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async mNotificationControllerDeleteTemplate(templateId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Template>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.mNotificationControllerDeleteTemplate(templateId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['NotificationModuleApi.mNotificationControllerDeleteTemplate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2625,13 +2668,16 @@ export const NotificationModuleApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {number} [page] 
+         * @param {number} [perPage] 
+         * @param {string} [templateName] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async mNotificationControllerFindAllTemplates(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Template>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.mNotificationControllerFindAllTemplates(options);
+        async mNotificationControllerFindAllTemplatesPaginated(page?: number, perPage?: number, templateName?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResponseOfTemplate>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.mNotificationControllerFindAllTemplatesPaginated(page, perPage, templateName, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['NotificationModuleApi.mNotificationControllerFindAllTemplates']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['NotificationModuleApi.mNotificationControllerFindAllTemplatesPaginated']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -2745,6 +2791,15 @@ export const NotificationModuleApiFactory = function (configuration?: Configurat
         },
         /**
          * 
+         * @param {string} templateId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        mNotificationControllerDeleteTemplate(templateId: string, options?: RawAxiosRequestConfig): AxiosPromise<Template> {
+            return localVarFp.mNotificationControllerDeleteTemplate(templateId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2780,11 +2835,14 @@ export const NotificationModuleApiFactory = function (configuration?: Configurat
         },
         /**
          * 
+         * @param {number} [page] 
+         * @param {number} [perPage] 
+         * @param {string} [templateName] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        mNotificationControllerFindAllTemplates(options?: RawAxiosRequestConfig): AxiosPromise<Array<Template>> {
-            return localVarFp.mNotificationControllerFindAllTemplates(options).then((request) => request(axios, basePath));
+        mNotificationControllerFindAllTemplatesPaginated(page?: number, perPage?: number, templateName?: string, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedResponseOfTemplate> {
+            return localVarFp.mNotificationControllerFindAllTemplatesPaginated(page, perPage, templateName, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -2883,6 +2941,17 @@ export class NotificationModuleApi extends BaseAPI {
 
     /**
      * 
+     * @param {string} templateId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof NotificationModuleApi
+     */
+    public mNotificationControllerDeleteTemplate(templateId: string, options?: RawAxiosRequestConfig) {
+        return NotificationModuleApiFp(this.configuration).mNotificationControllerDeleteTemplate(templateId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof NotificationModuleApi
@@ -2926,12 +2995,15 @@ export class NotificationModuleApi extends BaseAPI {
 
     /**
      * 
+     * @param {number} [page] 
+     * @param {number} [perPage] 
+     * @param {string} [templateName] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof NotificationModuleApi
      */
-    public mNotificationControllerFindAllTemplates(options?: RawAxiosRequestConfig) {
-        return NotificationModuleApiFp(this.configuration).mNotificationControllerFindAllTemplates(options).then((request) => request(this.axios, this.basePath));
+    public mNotificationControllerFindAllTemplatesPaginated(page?: number, perPage?: number, templateName?: string, options?: RawAxiosRequestConfig) {
+        return NotificationModuleApiFp(this.configuration).mNotificationControllerFindAllTemplatesPaginated(page, perPage, templateName, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
