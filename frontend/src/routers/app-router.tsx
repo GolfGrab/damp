@@ -6,6 +6,7 @@ import BackOfficeGenericLayout from "../layout/BackOfficeGenericLayout";
 import NotificationCenterGenericLayout from "../layout/NotificationCenterGenericLayout";
 import Callback from "../pages/auth/LoginCallback";
 import Home from "../pages/home/Home";
+import TemplateEdit from "../pages/notifications-back-office/TemplateEdit";
 import TemplateHome from "../pages/notifications-back-office/TemplateHome";
 import Accounts from "../pages/notifications/Accounts";
 import ConfigureAccount from "../pages/notifications/ConfigureAccount";
@@ -168,7 +169,7 @@ const appRouter = createBrowserRouter([
                         <BackOfficeGenericLayout
                           title={"Template Details" + templateId}
                         >
-                          template details {templateId}
+                          <TemplateEdit />
                         </BackOfficeGenericLayout>
                       );
                     },
