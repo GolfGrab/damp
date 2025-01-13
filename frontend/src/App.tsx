@@ -5,12 +5,18 @@ import { AuthProvider, useAuth } from "react-oidc-context";
 import { Outlet, useNavigate } from "react-router-dom";
 import { getOidcConfig } from "./auth/config";
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
 export const App = () => {
   const auth = useAuth();
-  const queryClient = new QueryClient();
-
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <CssBaseline enableColorScheme />
       <AppProvider
         session={
@@ -35,11 +41,9 @@ export const App = () => {
           signOut: () => void auth.signoutRedirect(),
         }}
       >
-        <QueryClientProvider client={queryClient}>
-          <Outlet />
-        </QueryClientProvider>
+        <Outlet />
       </AppProvider>
-    </>
+    </QueryClientProvider>
   );
 };
 

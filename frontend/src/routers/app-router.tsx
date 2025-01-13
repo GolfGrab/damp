@@ -6,6 +6,11 @@ import BackOfficeGenericLayout from "../layout/BackOfficeGenericLayout";
 import NotificationCenterGenericLayout from "../layout/NotificationCenterGenericLayout";
 import Callback from "../pages/auth/LoginCallback";
 import Home from "../pages/home/Home";
+import ApplicationDetailsTabsLayout from "../pages/notifications-back-office/ApplicationDetailsTabsLayout";
+import ApplicationInfo from "../pages/notifications-back-office/ApplicationInfo";
+import ApplicationNotificationCategories from "../pages/notifications-back-office/ApplicationNotificationCategories";
+import ServerSideGridWithReactQuery from "../pages/notifications-back-office/ApplicationNotificationTasks";
+import Applications from "../pages/notifications-back-office/Applications";
 import Accounts from "../pages/notifications/Accounts";
 import ConfigureAccount from "../pages/notifications/ConfigureAccount";
 import ConnectAccount from "../pages/notifications/ConnectAccount";
@@ -129,23 +134,35 @@ const appRouter = createBrowserRouter([
                   {
                     Component: () => (
                       <BackOfficeGenericLayout title="Applications">
-                        applications
+                        <Applications />
                       </BackOfficeGenericLayout>
                     ),
                     index: true,
                   },
                   {
+                    path: ":applicationId/:tab",
                     Component: () => {
-                      const { applicationId } = useParams();
-                      return (
-                        <BackOfficeGenericLayout
-                          title={"Application Details" + applicationId}
-                        >
-                          application details {applicationId}
-                        </BackOfficeGenericLayout>
-                      );
+                      return <ApplicationDetailsTabsLayout />;
                     },
-                    path: ":applicationId",
+                    children: [
+                      {
+                        Component: () => {
+                          const { tab } = useParams();
+
+                          switch (tab) {
+                            case "info":
+                              return <ApplicationInfo />;
+                            case "notification-categories":
+                              return <ApplicationNotificationCategories />;
+                            case "notification-logs":
+                              return <ServerSideGridWithReactQuery />;
+                            default:
+                              return null;
+                          }
+                        },
+                        index: true,
+                      },
+                    ],
                   },
                 ],
               },
