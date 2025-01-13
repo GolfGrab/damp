@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import * as prisma from '@prisma/client';
 
 export class NotificationTask implements prisma.NotificationTask {
@@ -9,6 +9,7 @@ export class NotificationTask implements prisma.NotificationTask {
 
   @ApiProperty({
     type: String,
+    enum: prisma.Priority,
   })
   priority: prisma.Priority;
 
@@ -26,6 +27,7 @@ export class NotificationTask implements prisma.NotificationTask {
 
   @ApiProperty({
     type: String,
+    enum: prisma.ChannelType,
   })
   channelType: prisma.ChannelType;
 
@@ -41,23 +43,27 @@ export class NotificationTask implements prisma.NotificationTask {
 
   @ApiProperty({
     type: String,
+    enum: prisma.MessageType,
   })
   messageType: prisma.MessageType;
 
   @ApiProperty({
     type: String,
+    enum: prisma.SentStatus,
   })
   sentStatus: prisma.SentStatus;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     type: String,
     format: 'date-time',
+    nullable: true,
   })
   sentTimestamp: Date | null;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     type: String,
     format: 'date-time',
+    nullable: true,
   })
   failedTimestamp: Date | null;
 

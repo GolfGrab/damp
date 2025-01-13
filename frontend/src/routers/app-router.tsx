@@ -1,3 +1,5 @@
+import { OpenInNew } from "@mui/icons-material";
+import { Button } from "@mui/material";
 import { createBrowserRouter, useParams } from "react-router-dom";
 import { AppWithAuth } from "../App";
 import SecuredRoute from "../auth/SecuredRoute";
@@ -6,6 +8,11 @@ import BackOfficeGenericLayout from "../layout/BackOfficeGenericLayout";
 import NotificationCenterGenericLayout from "../layout/NotificationCenterGenericLayout";
 import Callback from "../pages/auth/LoginCallback";
 import Home from "../pages/home/Home";
+import ApplicationDetailsTabsLayout from "../pages/notifications-back-office/ApplicationDetailsTabsLayout";
+import ApplicationInfo from "../pages/notifications-back-office/ApplicationInfo";
+import ApplicationNotificationCategories from "../pages/notifications-back-office/ApplicationNotificationCategories";
+import ServerSideGridWithReactQuery from "../pages/notifications-back-office/ApplicationNotificationTasks";
+import Applications from "../pages/notifications-back-office/Applications";
 import Accounts from "../pages/notifications/Accounts";
 import ConfigureAccount from "../pages/notifications/ConfigureAccount";
 import ConnectAccount from "../pages/notifications/ConnectAccount";
@@ -129,23 +136,35 @@ const appRouter = createBrowserRouter([
                   {
                     Component: () => (
                       <BackOfficeGenericLayout title="Applications">
-                        applications
+                        <Applications />
                       </BackOfficeGenericLayout>
                     ),
                     index: true,
                   },
                   {
+                    path: ":applicationId/:tab",
                     Component: () => {
-                      const { applicationId } = useParams();
-                      return (
-                        <BackOfficeGenericLayout
-                          title={"Application Details" + applicationId}
-                        >
-                          application details {applicationId}
-                        </BackOfficeGenericLayout>
-                      );
+                      return <ApplicationDetailsTabsLayout />;
                     },
-                    path: ":applicationId",
+                    children: [
+                      {
+                        Component: () => {
+                          const { tab } = useParams();
+
+                          switch (tab) {
+                            case "info":
+                              return <ApplicationInfo />;
+                            case "notification-categories":
+                              return <ApplicationNotificationCategories />;
+                            case "notification-logs":
+                              return <ServerSideGridWithReactQuery />;
+                            default:
+                              return null;
+                          }
+                        },
+                        index: true,
+                      },
+                    ],
                   },
                 ],
               },
@@ -182,6 +201,53 @@ const appRouter = createBrowserRouter([
                   </BackOfficeGenericLayout>
                 ),
                 path: "analytics",
+              },
+              {
+                path: "api-documentation",
+                children: [
+                  {
+                    Component: () => (
+                      <BackOfficeGenericLayout title="Swagger API Documentation">
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          href={import.meta.env.VITE_API_SWAGGER_DOCS_URL}
+                          target="_blank"
+                          endIcon={<OpenInNew />}
+                        >
+                          Open in new tab
+                        </Button>
+                        <iframe
+                          src={import.meta.env.VITE_API_SWAGGER_DOCS_URL}
+                          style={{ width: "100%", height: "100%" }}
+                          title="Swagger"
+                        />
+                      </BackOfficeGenericLayout>
+                    ),
+                    path: "swagger",
+                  },
+                  {
+                    Component: () => (
+                      <BackOfficeGenericLayout title="Stoplight API Documentation">
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          href={import.meta.env.VITE_API_STOPLIGHT_DOCS_URL}
+                          target="_blank"
+                          endIcon={<OpenInNew />}
+                        >
+                          Open in new tab
+                        </Button>
+                        <iframe
+                          src={import.meta.env.VITE_API_STOPLIGHT_DOCS_URL}
+                          style={{ width: "100%", height: "100%" }}
+                          title="Stoplight"
+                        />
+                      </BackOfficeGenericLayout>
+                    ),
+                    path: "stoplight",
+                  },
+                ],
               },
             ],
           },

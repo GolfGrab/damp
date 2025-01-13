@@ -1,7 +1,9 @@
 import {
   DocumentScannerOutlined,
   HomeOutlined,
+  IntegrationInstructionsOutlined,
   QueryStatsOutlined,
+  SmartToyOutlined,
   WidgetsOutlined,
 } from "@mui/icons-material";
 import { Navigation } from "@toolpad/core";
@@ -27,5 +29,16 @@ export const backOfficeNavigation: Navigation = [
     title: "Analytics",
     segment: "notifications-back-office/analytics",
     icon: <QueryStatsOutlined />,
+  },
+
+  {
+    title: "Api Documentation Swagger",
+    segment: "notifications-back-office/api-documentation/swagger",
+    icon: <IntegrationInstructionsOutlined />,
+  },
+  {
+    title: "Api Documentation Stoplight",
+    segment: "notifications-back-office/api-documentation/stoplight",
+    icon: <SmartToyOutlined />,
   },
 ];

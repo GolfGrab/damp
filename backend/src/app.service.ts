@@ -142,7 +142,7 @@ export class AppService implements OnModuleInit {
     return 'Hello World!';
   }
 
-  getSwaggerStopLight(): string {
+  getSwaggerStoplight(): string {
     return `
     <!doctype html>
 <html lang="en">
