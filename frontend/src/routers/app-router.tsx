@@ -1,3 +1,5 @@
+import { OpenInNew } from "@mui/icons-material";
+import { Button } from "@mui/material";
 import { createBrowserRouter, useParams } from "react-router-dom";
 import { AppWithAuth } from "../App";
 import SecuredRoute from "../auth/SecuredRoute";
@@ -199,6 +201,53 @@ const appRouter = createBrowserRouter([
                   </BackOfficeGenericLayout>
                 ),
                 path: "analytics",
+              },
+              {
+                path: "api-documentation",
+                children: [
+                  {
+                    Component: () => (
+                      <BackOfficeGenericLayout title="Swagger API Documentation">
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          href={import.meta.env.VITE_API_SWAGGER_DOCS_URL}
+                          target="_blank"
+                          endIcon={<OpenInNew />}
+                        >
+                          Open in new tab
+                        </Button>
+                        <iframe
+                          src={import.meta.env.VITE_API_SWAGGER_DOCS_URL}
+                          style={{ width: "100%", height: "100%" }}
+                          title="Swagger"
+                        />
+                      </BackOfficeGenericLayout>
+                    ),
+                    path: "swagger",
+                  },
+                  {
+                    Component: () => (
+                      <BackOfficeGenericLayout title="Stoplight API Documentation">
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          href={import.meta.env.VITE_API_STOPLIGHT_DOCS_URL}
+                          target="_blank"
+                          endIcon={<OpenInNew />}
+                        >
+                          Open in new tab
+                        </Button>
+                        <iframe
+                          src={import.meta.env.VITE_API_STOPLIGHT_DOCS_URL}
+                          style={{ width: "100%", height: "100%" }}
+                          title="Stoplight"
+                        />
+                      </BackOfficeGenericLayout>
+                    ),
+                    path: "stoplight",
+                  },
+                ],
               },
             ],
           },

@@ -1,5 +1,5 @@
 import { DashboardLayout, PageContainer } from "@toolpad/core";
-import { backOfficeNavigation } from "./constans/backOfficeNavigation";
+import { backOfficeNavigation } from "./constant/backOfficeNavigation";
 
 type BackOfficeGenericLayoutProps = {
   title: string;
@@ -19,7 +19,7 @@ const BackOfficeGenericLayout = ({
       }}
       navigation={backOfficeNavigation}
     >
-      <PageContainer title={title} >{children}</PageContainer>
+      <PageContainer title={title}>{children}</PageContainer>
     </DashboardLayout>
   );
 };

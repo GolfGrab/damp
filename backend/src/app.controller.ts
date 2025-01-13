@@ -12,9 +12,9 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Get('docs-stop-light')
+  @Get('docs-stoplight')
   @Header('Content-Type', 'text/html')
   getSwaggerStopLight(): string {
-    return this.appService.getSwaggerStopLight();
+    return this.appService.getSwaggerStoplight();
   }
 }
