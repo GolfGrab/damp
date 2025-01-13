@@ -8,7 +8,9 @@ import { paginate } from '../../../utils/paginator/pagination.function';
 import { PaginationQueryDto } from '../../../utils/paginator/paginationQuery.dto';
 import { TemplatesService } from '../templates/templates.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
+import { NotificationTasksOrderDto } from './dto/notification-tasks-order.dto';
 import { OutputNotificationWithCompiledMessageAndNotificationTaskDto } from './dto/output-notification-with-compiled-message-and-notification-task.dto';
+import { NotificationTask } from './entities/notification-task.entity';
 
 const priorityMap = {
   [$Enums.Priority.LOW]: 1,
@@ -338,6 +340,33 @@ export class NotificationsService {
           },
         },
       },
+    });
+  }
+
+  findAllNotificationTasksByApplicationIdPaginated(
+    applicationId: string,
+    paginateQuery: PaginationQueryDto,
+    notificationTasksOrderDto: NotificationTasksOrderDto,
+  ) {
+    return paginate<NotificationTask, Prisma.NotificationTaskFindManyArgs>({
+      prismaQueryModel: this.prisma.notificationTask,
+      findManyArgs: {
+        where: {
+          notification: {
+            applicationId,
+          },
+        },
+        orderBy: {
+          ...(notificationTasksOrderDto.sortField &&
+          notificationTasksOrderDto.sortOrder
+            ? {
+                [notificationTasksOrderDto.sortField]:
+                  notificationTasksOrderDto.sortOrder,
+              }
+            : {}),
+        },
+      },
+      paginateOptions: paginateQuery,
     });
   }
 }
