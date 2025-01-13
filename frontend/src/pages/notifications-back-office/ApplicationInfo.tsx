@@ -284,7 +284,7 @@ const ApplicationInfo = () => {
                       <IconButton
                         size="small"
                         onClick={() => {
-                          navigator.clipboard.writeText(application?.id || "");
+                          navigator.clipboard.writeText(application?.apiKey || "");
                           notifications.show("API key copied to clipboard", {
                             severity: "success",
                             autoHideDuration: 2000,
