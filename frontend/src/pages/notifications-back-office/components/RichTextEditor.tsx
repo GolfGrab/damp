@@ -1,3 +1,5 @@
+import { CloudDone } from "@mui/icons-material";
+import { CircularProgress, Stack, Typography } from "@mui/material";
 import { type Editor } from "@tiptap/react";
 import {
   LinkBubbleMenu,
@@ -26,9 +28,13 @@ import {
 
 type RichTextEditorProps = {
   editor: Editor;
+  isSaved: boolean;
 };
 
-export default function RichTextEditor({ editor }: RichTextEditorProps) {
+export default function RichTextEditor({
+  editor,
+  isSaved,
+}: RichTextEditorProps) {
   return (
     <RichTextEditorProvider editor={editor}>
       <RichTextField
@@ -85,6 +91,25 @@ export default function RichTextEditor({ editor }: RichTextEditorProps) {
             <MenuButtonUndo />
             <MenuButtonRedo />
             <LinkBubbleMenu />
+            <Stack
+              direction="row"
+              flex={1}
+              justifyContent="flex-end"
+              spacing={1}
+              alignItems="center"
+            >
+              {isSaved ? (
+                <>
+                  <CloudDone />
+                  <Typography width={60}>Saved</Typography>
+                </>
+              ) : (
+                <>
+                  <CircularProgress size={20} />
+                  <Typography width={60}>Saving...</Typography>
+                </>
+              )}
+            </Stack>
           </MenuControlsContainer>
         }
       />

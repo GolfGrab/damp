@@ -166,5 +166,6 @@ export default function useRichTextEditor({
     content,
     error,
     isPending,
+    saveContent,
   };
 }
