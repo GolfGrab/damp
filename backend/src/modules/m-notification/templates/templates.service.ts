@@ -2,7 +2,7 @@ import { paginate } from '@/utils/paginator/pagination.function';
 import { PaginationQueryDto } from '@/utils/paginator/paginationQuery.dto';
 import { Injectable } from '@nestjs/common';
 import { $Enums, MessageType, Prisma, User } from '@prisma/client';
-import _ from 'lodash';
+import * as _ from 'lodash';
 import { PrismaService } from 'nestjs-prisma';
 import { CreateTemplateDto } from './dto/create-template.dto';
 import { GetPreviewTemplateDto } from './dto/get-preview-template.dto';
@@ -70,10 +70,12 @@ export class TemplatesService {
       this.templatesParserService.parseJSONToCompiledTemplates(
         createTemplateDto.template,
       );
+    const templateName =
+      _.kebabCase(createTemplateDto.name) + '-' + new Date().getTime();
     return this.prisma.template.create({
       data: {
         ...createTemplateDto,
-        id: _.kebabCase(createTemplateDto.name),
+        id: templateName,
         createdByUserId: user.id,
         updatedByUserId: user.id,
         template: JSON.stringify(createTemplateDto.template),
@@ -145,6 +147,7 @@ export class TemplatesService {
       data: {
         name: updateTemplateDto.name,
         updatedByUserId: user.id,
+        template: JSON.stringify(updateTemplateDto.template),
         compiledTemplates: {
           update: [
             {

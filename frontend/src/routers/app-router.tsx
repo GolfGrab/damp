@@ -8,6 +8,8 @@ import BackOfficeGenericLayout from "../layout/BackOfficeGenericLayout";
 import NotificationCenterGenericLayout from "../layout/NotificationCenterGenericLayout";
 import Callback from "../pages/auth/LoginCallback";
 import Home from "../pages/home/Home";
+import TemplateEdit from "../pages/notifications-back-office/TemplateEdit";
+import TemplateHome from "../pages/notifications-back-office/TemplateHome";
 import ApplicationDetailsTabsLayout from "../pages/notifications-back-office/ApplicationDetailsTabsLayout";
 import ApplicationInfo from "../pages/notifications-back-office/ApplicationInfo";
 import ApplicationNotificationCategories from "../pages/notifications-back-office/ApplicationNotificationCategories";
@@ -174,7 +176,7 @@ const appRouter = createBrowserRouter([
                   {
                     Component: () => (
                       <BackOfficeGenericLayout title="Templates">
-                        templates
+                        <TemplateHome />
                       </BackOfficeGenericLayout>
                     ),
                     index: true,
@@ -184,9 +186,9 @@ const appRouter = createBrowserRouter([
                       const { templateId } = useParams();
                       return (
                         <BackOfficeGenericLayout
-                          title={"Template Details" + templateId}
+                          title={"Template: " + templateId}
                         >
-                          template details {templateId}
+                          <TemplateEdit />
                         </BackOfficeGenericLayout>
                       );
                     },
