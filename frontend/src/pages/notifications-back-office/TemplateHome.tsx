@@ -92,6 +92,7 @@ const useCreateTemplateMutation = () => {
   });
 };
 
+// TODO move to a separate file
 function TemplateCreationDialog({
   open,
   onClose,
@@ -197,10 +198,9 @@ const TemplateHome = () => {
     { page: paginationModel.page, perPage: paginationModel.pageSize },
     { templateName: templateNameSearch }
   );
+
+  const navigate = useNavigate();
   return (
-    // id, Template name, owner, last edit, last edit by, Actions(delete, edit)
-    // Search by name
-    // (Optional) Sort by name, last edit
     <Stack spacing={2}>
       <Stack direction="row" justifyContent="space-between">
         {/* search */}
@@ -238,7 +238,7 @@ const TemplateHome = () => {
         rowCount={data?.data.meta?.total}
         disableColumnSorting
         onRowDoubleClick={(row) => {
-          alert(row.row.id);
+          navigate(`/notifications-back-office/templates/${row.id}`);
         }}
         sx={{ border: 0 }}
       />

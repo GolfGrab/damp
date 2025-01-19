@@ -64,7 +64,8 @@ export default function useRichTextEditor({
   };
 
   const handleContentChange = (editor: Editor) => {
-    setContent(editor.getJSON());
+    const currentContent = editor.getJSON();
+    setContent(currentContent);
     setIsSaved(false);
 
     // Set new debounce timer
@@ -72,13 +73,13 @@ export default function useRichTextEditor({
       clearTimeout(debounceTimer.current);
     }
     debounceTimer.current = setTimeout(() => {
-      saveContent(content);
+      saveContent(currentContent);
     }, debounceTime);
 
     // Set up a max timer if it's not already set
     if (!maxTimer.current) {
       maxTimer.current = setTimeout(() => {
-        saveContent(content);
+        saveContent(currentContent);
         // Clear debounce timer if max timer triggers
         if (debounceTimer.current) {
           clearTimeout(debounceTimer.current);
