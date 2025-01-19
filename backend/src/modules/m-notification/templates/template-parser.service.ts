@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AnyExtension, generateText, JSONContent } from '@tiptap/core';
+import { AnyExtension, JSONContent } from '@tiptap/core';
 import { Blockquote } from '@tiptap/extension-blockquote';
 import { Bold } from '@tiptap/extension-bold';
 import { BulletList } from '@tiptap/extension-bullet-list';
@@ -22,6 +22,7 @@ import { TextAlign } from '@tiptap/extension-text-align';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { generateHTML } from '@tiptap/html';
 import htmlToMrkdwn from 'html-to-mrkdwn-ts';
+import { convert } from 'html-to-text';
 
 @Injectable()
 export class TemplatesParserService {
@@ -64,14 +65,44 @@ export class TemplatesParserService {
   }
 
   parseJSONToText(json: JSONContent) {
-    return generateText(json, this.tiptapConfig, {
-      blockSeparator: '\n',
+    const htmlString = this.parseJSONToHTML(json);
+    return convert(htmlString, {
+      selectors: [
+        {
+          selector: 'h1',
+          options: { leadingLineBreaks: 1, trailingLineBreaks: 1 },
+        },
+        {
+          selector: 'h2',
+          options: { leadingLineBreaks: 1, trailingLineBreaks: 1 },
+        },
+        {
+          selector: 'h3',
+          options: { leadingLineBreaks: 1, trailingLineBreaks: 1 },
+        },
+        {
+          selector: 'h4',
+          options: { leadingLineBreaks: 1, trailingLineBreaks: 1 },
+        },
+        {
+          selector: 'h5',
+          options: { leadingLineBreaks: 1, trailingLineBreaks: 1 },
+        },
+        {
+          selector: 'h6',
+          options: { leadingLineBreaks: 1, trailingLineBreaks: 1 },
+        },
+      ],
     });
   }
 
   parseJSONToMarkdown(json: JSONContent) {
     const htmlString = this.parseJSONToHTML(json);
-    return htmlToMrkdwn(htmlString).text;
+    return htmlToMrkdwn(htmlString, {
+      strongDelimiter: '*',
+      strikeDelimiter: '~',
+      bulletMarker: '•',
+    }).text;
   }
 
   parseJSONToCompiledTemplates(json: JSONContent) {
