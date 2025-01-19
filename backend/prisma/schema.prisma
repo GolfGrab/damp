@@ -29,6 +29,7 @@ model User {
   updatedTemplates              Template[]              @relation("templateupdatedByUserIdUser")
   createdNotificationCategories NotificationCategory[]  @relation("notificationCategoryCreatedUser")
   updatedNotificationCategories NotificationCategory[]  @relation("notificationCategoryUpdatedUser")
+  deletedNotificationCategories NotificationCategory[]  @relation("notificationCategoryDeletedUser")
   otp                           Otp[]
 }
 
@@ -89,16 +90,19 @@ model Application {
 }
 
 model NotificationCategory {
-  id              String   @id
+  id              String    @id
   applicationId   String
-  name            String   @unique
-  createdAt       DateTime @default(now())
+  name            String    @unique
+  createdAt       DateTime  @default(now())
   createdByUserId String
-  updatedAt       DateTime @updatedAt
+  updatedAt       DateTime  @updatedAt
   updatedByUserId String
+  deletedAt       DateTime?
+  deletedByUserId String?
 
   createdUser     User             @relation(fields: [createdByUserId], references: [id], name: "notificationCategoryCreatedUser", onUpdate: Cascade)
   updatedUser     User             @relation(fields: [updatedByUserId], references: [id], name: "notificationCategoryUpdatedUser", onUpdate: Cascade)
+  deletedByUser   User?            @relation(fields: [deletedByUserId], references: [id], name: "notificationCategoryDeletedUser", onUpdate: Cascade)
   application     Application      @relation(fields: [applicationId], references: [id])
   userPreferences UserPreference[]
   notifications   Notification[]

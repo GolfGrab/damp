@@ -5,10 +5,16 @@ import { AuthProvider, useAuth } from "react-oidc-context";
 import { Outlet, useNavigate } from "react-router-dom";
 import { getOidcConfig } from "./auth/config";
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
 export const App = () => {
   const auth = useAuth();
-  const queryClient = new QueryClient();
-
   return (
     <QueryClientProvider client={queryClient}>
       <CssBaseline enableColorScheme />

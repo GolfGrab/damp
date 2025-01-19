@@ -17,6 +17,7 @@ import { PaginatedResult } from '../../utils/paginator/pagination.type';
 import { PaginationQueryDto } from '../../utils/paginator/paginationQuery.dto';
 import { CreateNotificationDto } from './notifications/dto/create-notification.dto';
 import { OutputNotificationWithCompiledMessageAndNotificationTaskDto } from './notifications/dto/output-notification-with-compiled-message-and-notification-task.dto';
+import { NotificationTask } from './notifications/entities/notification-task.entity';
 import { Notification } from './notifications/entities/notification.entity';
 import { NotificationsService } from './notifications/notifications.service';
 import { CreateTemplateDto } from './templates/dto/create-template.dto';
@@ -24,6 +25,7 @@ import { GetPreviewTemplateDto } from './templates/dto/get-preview-template.dto'
 import { UpdateTemplateDto } from './templates/dto/update-template.dto';
 import { Template } from './templates/entities/template.entity';
 import { TemplatesService } from './templates/templates.service';
+import { NotificationTasksOrderDto } from './notifications/dto/notification-tasks-order.dto';
 
 @ApiTags('Notification Module')
 @Controller('m-notification')
@@ -198,5 +200,20 @@ export class MNotificationController {
     @Param('notificationId') notificationId: number,
   ): Promise<OutputNotificationWithCompiledMessageAndNotificationTaskDto> {
     return this.notificationsService.findOneByUser(user.id, notificationId);
+  }
+
+  @Auth()
+  @ApiPaginatedResponse(NotificationTask)
+  @Get('applications/:applicationId/notification-tasks')
+  findAllNotificationTasksByApplicationIdPaginated(
+    @Param('applicationId') applicationId: string,
+    @Query() paginateQuery: PaginationQueryDto,
+    @Query() notificationTasksOrderDto: NotificationTasksOrderDto,
+  ): Promise<PaginatedResult<NotificationTask>> {
+    return this.notificationsService.findAllNotificationTasksByApplicationIdPaginated(
+      applicationId,
+      paginateQuery,
+      notificationTasksOrderDto,
+    );
   }
 }

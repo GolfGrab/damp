@@ -38,4 +38,17 @@ export class NotificationCategory implements prisma.NotificationCategory {
     type: String,
   })
   updatedByUserId: string;
+
+  @ApiProperty({
+    type: String,
+    format: 'date-time',
+    nullable: true,
+  })
+  deletedAt: Date | null;
+
+  @ApiProperty({
+    type: String,
+    nullable: true,
+  })
+  deletedByUserId: string | null;
 }

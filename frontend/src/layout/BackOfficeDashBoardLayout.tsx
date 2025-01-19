@@ -1,5 +1,5 @@
 import { DashboardLayout, PageContainer } from "@toolpad/core";
-import { backOfficeNavigation } from "./constans/backOfficeNavigation";
+import { backOfficeNavigation } from "./constant/backOfficeNavigation";
 
 type BackOfficeDashBoardLayoutProps = {
   children: React.ReactNode;

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
+import { kebabCase } from 'lodash';
 import { PrismaService } from 'nestjs-prisma';
 import { CreateApplicationDto } from './dto/create-application.dto';
 import { UpdateApplicationDto } from './dto/update-application.dto';
@@ -19,10 +20,17 @@ export class ApplicationsService {
 
   create(
     createApplicationDto: CreateApplicationDto,
+    user: User,
   ): Promise<ApplicationWithApiKey> {
+    const id =
+      kebabCase(createApplicationDto.name) + '-' + new Date().getTime();
+
     return this.prisma.application.create({
       data: {
         ...createApplicationDto,
+        id,
+        createdByUserId: user.id,
+        updatedByUserId: user.id,
         apiKey: crypto.randomUUID(),
       },
       select: this.selectAllFieldsIncludingApiKey,
@@ -41,33 +49,43 @@ export class ApplicationsService {
     });
   }
 
-  findOne(applicationId: string): Promise<Application> {
+  findOne(applicationId: string): Promise<ApplicationWithApiKey> {
     return this.prisma.application.findUniqueOrThrow({
       where: {
         id: applicationId,
       },
+      select: this.selectAllFieldsIncludingApiKey,
     });
   }
 
   update(
     applicationId: string,
     updateApplicationDto: UpdateApplicationDto,
-  ): Promise<Application> {
+    user: User,
+  ): Promise<ApplicationWithApiKey> {
     return this.prisma.application.update({
       where: {
         id: applicationId,
       },
-      data: updateApplicationDto,
+      data: {
+        ...updateApplicationDto,
+        updatedByUserId: user.id,
+      },
+      select: this.selectAllFieldsIncludingApiKey,
     });
   }
 
-  rotateApiKey(applicationId: string): Promise<ApplicationWithApiKey> {
+  rotateApiKey(
+    applicationId: string,
+    user: User,
+  ): Promise<ApplicationWithApiKey> {
     return this.prisma.application.update({
       where: {
         id: applicationId,
       },
       data: {
         apiKey: crypto.randomUUID(),
+        updatedByUserId: user.id,
       },
       select: this.selectAllFieldsIncludingApiKey,
     });

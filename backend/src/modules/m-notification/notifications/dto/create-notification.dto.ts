@@ -22,7 +22,7 @@ export class CreateNotificationDto {
   @IsNotEmpty()
   templateData: Record<string, any>;
 
-  @IsNumber()
+  @IsString()
   @ApiProperty({
     type: String,
   })

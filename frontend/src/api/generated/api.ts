@@ -246,12 +246,6 @@ export interface CreateApplicationDto {
      * @type {string}
      * @memberof CreateApplicationDto
      */
-    'id': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateApplicationDto
-     */
     'name': string;
     /**
      * 
@@ -259,18 +253,6 @@ export interface CreateApplicationDto {
      * @memberof CreateApplicationDto
      */
     'description': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateApplicationDto
-     */
-    'createdByUserId': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateApplicationDto
-     */
-    'updatedByUserId': string;
 }
 /**
  * 
@@ -283,25 +265,7 @@ export interface CreateNotificationCategoryDto {
      * @type {string}
      * @memberof CreateNotificationCategoryDto
      */
-    'id': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateNotificationCategoryDto
-     */
     'name': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateNotificationCategoryDto
-     */
-    'createdByUserId': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateNotificationCategoryDto
-     */
-    'updatedByUserId': string;
 }
 /**
  * 
@@ -497,6 +461,18 @@ export interface NotificationCategory {
      * @memberof NotificationCategory
      */
     'updatedByUserId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationCategory
+     */
+    'deletedAt': string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationCategory
+     */
+    'deletedByUserId': string | null;
 }
 /**
  * 
@@ -515,7 +491,7 @@ export interface NotificationTask {
      * @type {string}
      * @memberof NotificationTask
      */
-    'priority': string;
+    'priority': NotificationTaskPriorityEnum;
     /**
      * 
      * @type {string}
@@ -533,7 +509,7 @@ export interface NotificationTask {
      * @type {string}
      * @memberof NotificationTask
      */
-    'channelType': string;
+    'channelType': NotificationTaskChannelTypeEnum;
     /**
      * 
      * @type {string}
@@ -551,25 +527,25 @@ export interface NotificationTask {
      * @type {string}
      * @memberof NotificationTask
      */
-    'messageType': string;
+    'messageType': NotificationTaskMessageTypeEnum;
     /**
      * 
      * @type {string}
      * @memberof NotificationTask
      */
-    'sentStatus': string;
+    'sentStatus': NotificationTaskSentStatusEnum;
     /**
      * 
      * @type {string}
      * @memberof NotificationTask
      */
-    'sentTimestamp'?: string | null;
+    'sentTimestamp': string | null;
     /**
      * 
      * @type {string}
      * @memberof NotificationTask
      */
-    'failedTimestamp'?: string | null;
+    'failedTimestamp': string | null;
     /**
      * 
      * @type {number}
@@ -583,6 +559,38 @@ export interface NotificationTask {
      */
     'retryLimit': number;
 }
+
+export const NotificationTaskPriorityEnum = {
+    Low: 'LOW',
+    Medium: 'MEDIUM',
+    High: 'HIGH'
+} as const;
+
+export type NotificationTaskPriorityEnum = typeof NotificationTaskPriorityEnum[keyof typeof NotificationTaskPriorityEnum];
+export const NotificationTaskChannelTypeEnum = {
+    Email: 'EMAIL',
+    Sms: 'SMS',
+    WebPush: 'WEB_PUSH',
+    Slack: 'SLACK'
+} as const;
+
+export type NotificationTaskChannelTypeEnum = typeof NotificationTaskChannelTypeEnum[keyof typeof NotificationTaskChannelTypeEnum];
+export const NotificationTaskMessageTypeEnum = {
+    Html: 'HTML',
+    Markdown: 'MARKDOWN',
+    Text: 'TEXT'
+} as const;
+
+export type NotificationTaskMessageTypeEnum = typeof NotificationTaskMessageTypeEnum[keyof typeof NotificationTaskMessageTypeEnum];
+export const NotificationTaskSentStatusEnum = {
+    Pending: 'PENDING',
+    Retry: 'RETRY',
+    Sent: 'SENT',
+    Failed: 'FAILED'
+} as const;
+
+export type NotificationTaskSentStatusEnum = typeof NotificationTaskSentStatusEnum[keyof typeof NotificationTaskSentStatusEnum];
+
 /**
  * 
  * @export
@@ -661,6 +669,25 @@ export interface OutputNotificationWithCompiledMessageAndNotificationTaskDto {
      * @memberof OutputNotificationWithCompiledMessageAndNotificationTaskDto
      */
     'id': number;
+}
+/**
+ * 
+ * @export
+ * @interface PaginatedResponseOfNotificationTask
+ */
+export interface PaginatedResponseOfNotificationTask {
+    /**
+     * 
+     * @type {Array<NotificationTask>}
+     * @memberof PaginatedResponseOfNotificationTask
+     */
+    'data'?: Array<NotificationTask>;
+    /**
+     * 
+     * @type {PaginatedResponseOfTemplateAllOfMeta}
+     * @memberof PaginatedResponseOfNotificationTask
+     */
+    'meta'?: PaginatedResponseOfTemplateAllOfMeta;
 }
 /**
  * 
@@ -835,18 +862,6 @@ export interface UpdateApplicationDto {
      * @memberof UpdateApplicationDto
      */
     'description'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateApplicationDto
-     */
-    'createdByUserId'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateApplicationDto
-     */
-    'updatedByUserId'?: string;
 }
 /**
  * 
@@ -860,18 +875,6 @@ export interface UpdateNotificationCategoryDto {
      * @memberof UpdateNotificationCategoryDto
      */
     'name'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateNotificationCategoryDto
-     */
-    'createdByUserId'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UpdateNotificationCategoryDto
-     */
-    'updatedByUserId'?: string;
 }
 /**
  * 
@@ -1038,6 +1041,10 @@ export const ApplicationModuleApiAxiosParamCreator = function (configuration?: C
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication Access_Token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -1078,6 +1085,10 @@ export const ApplicationModuleApiAxiosParamCreator = function (configuration?: C
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication Access_Token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -1109,6 +1120,10 @@ export const ApplicationModuleApiAxiosParamCreator = function (configuration?: C
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication Access_Token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
     
@@ -1143,6 +1158,10 @@ export const ApplicationModuleApiAxiosParamCreator = function (configuration?: C
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication Access_Token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -1171,6 +1190,10 @@ export const ApplicationModuleApiAxiosParamCreator = function (configuration?: C
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication Access_Token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
     
@@ -1205,6 +1228,10 @@ export const ApplicationModuleApiAxiosParamCreator = function (configuration?: C
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication Access_Token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -1237,6 +1264,10 @@ export const ApplicationModuleApiAxiosParamCreator = function (configuration?: C
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication Access_Token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
     
@@ -1304,6 +1335,10 @@ export const ApplicationModuleApiAxiosParamCreator = function (configuration?: C
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication Access_Token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -1339,6 +1374,10 @@ export const ApplicationModuleApiAxiosParamCreator = function (configuration?: C
             const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication Access_Token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
     
@@ -1378,6 +1417,10 @@ export const ApplicationModuleApiAxiosParamCreator = function (configuration?: C
             const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication Access_Token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
     
@@ -1482,7 +1525,7 @@ export const ApplicationModuleApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async mApplicationControllerFindOneApplication(applicationId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Application>> {
+        async mApplicationControllerFindOneApplication(applicationId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ApplicationWithApiKey>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.mApplicationControllerFindOneApplication(applicationId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['ApplicationModuleApi.mApplicationControllerFindOneApplication']?.[localVarOperationServerIndex]?.url;
@@ -1519,7 +1562,7 @@ export const ApplicationModuleApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async mApplicationControllerUpdateApplication(applicationId: string, updateApplicationDto: UpdateApplicationDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Application>> {
+        async mApplicationControllerUpdateApplication(applicationId: string, updateApplicationDto: UpdateApplicationDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ApplicationWithApiKey>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.mApplicationControllerUpdateApplication(applicationId, updateApplicationDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['ApplicationModuleApi.mApplicationControllerUpdateApplication']?.[localVarOperationServerIndex]?.url;
@@ -1609,7 +1652,7 @@ export const ApplicationModuleApiFactory = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        mApplicationControllerFindOneApplication(applicationId: string, options?: RawAxiosRequestConfig): AxiosPromise<Application> {
+        mApplicationControllerFindOneApplication(applicationId: string, options?: RawAxiosRequestConfig): AxiosPromise<ApplicationWithApiKey> {
             return localVarFp.mApplicationControllerFindOneApplication(applicationId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1637,7 +1680,7 @@ export const ApplicationModuleApiFactory = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        mApplicationControllerUpdateApplication(applicationId: string, updateApplicationDto: UpdateApplicationDto, options?: RawAxiosRequestConfig): AxiosPromise<Application> {
+        mApplicationControllerUpdateApplication(applicationId: string, updateApplicationDto: UpdateApplicationDto, options?: RawAxiosRequestConfig): AxiosPromise<ApplicationWithApiKey> {
             return localVarFp.mApplicationControllerUpdateApplication(applicationId, updateApplicationDto, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2164,6 +2207,63 @@ export const NotificationModuleApiAxiosParamCreator = function (configuration?: 
         },
         /**
          * 
+         * @param {string} applicationId 
+         * @param {number} [page] 
+         * @param {number} [perPage] 
+         * @param {MNotificationControllerFindAllNotificationTasksByApplicationIdPaginatedSortFieldEnum} [sortField] 
+         * @param {MNotificationControllerFindAllNotificationTasksByApplicationIdPaginatedSortOrderEnum} [sortOrder] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        mNotificationControllerFindAllNotificationTasksByApplicationIdPaginated: async (applicationId: string, page?: number, perPage?: number, sortField?: MNotificationControllerFindAllNotificationTasksByApplicationIdPaginatedSortFieldEnum, sortOrder?: MNotificationControllerFindAllNotificationTasksByApplicationIdPaginatedSortOrderEnum, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'applicationId' is not null or undefined
+            assertParamExists('mNotificationControllerFindAllNotificationTasksByApplicationIdPaginated', 'applicationId', applicationId)
+            const localVarPath = `/m-notification/applications/{applicationId}/notification-tasks`
+                .replace(`{${"applicationId"}}`, encodeURIComponent(String(applicationId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Access_Token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (page !== undefined) {
+                localVarQueryParameter['page'] = page;
+            }
+
+            if (perPage !== undefined) {
+                localVarQueryParameter['perPage'] = perPage;
+            }
+
+            if (sortField !== undefined) {
+                localVarQueryParameter['sortField'] = sortField;
+            }
+
+            if (sortOrder !== undefined) {
+                localVarQueryParameter['sortOrder'] = sortOrder;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2621,6 +2721,22 @@ export const NotificationModuleApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {string} applicationId 
+         * @param {number} [page] 
+         * @param {number} [perPage] 
+         * @param {MNotificationControllerFindAllNotificationTasksByApplicationIdPaginatedSortFieldEnum} [sortField] 
+         * @param {MNotificationControllerFindAllNotificationTasksByApplicationIdPaginatedSortOrderEnum} [sortOrder] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async mNotificationControllerFindAllNotificationTasksByApplicationIdPaginated(applicationId: string, page?: number, perPage?: number, sortField?: MNotificationControllerFindAllNotificationTasksByApplicationIdPaginatedSortFieldEnum, sortOrder?: MNotificationControllerFindAllNotificationTasksByApplicationIdPaginatedSortOrderEnum, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResponseOfNotificationTask>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.mNotificationControllerFindAllNotificationTasksByApplicationIdPaginated(applicationId, page, perPage, sortField, sortOrder, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['NotificationModuleApi.mNotificationControllerFindAllNotificationTasksByApplicationIdPaginated']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2800,6 +2916,19 @@ export const NotificationModuleApiFactory = function (configuration?: Configurat
         },
         /**
          * 
+         * @param {string} applicationId 
+         * @param {number} [page] 
+         * @param {number} [perPage] 
+         * @param {MNotificationControllerFindAllNotificationTasksByApplicationIdPaginatedSortFieldEnum} [sortField] 
+         * @param {MNotificationControllerFindAllNotificationTasksByApplicationIdPaginatedSortOrderEnum} [sortOrder] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        mNotificationControllerFindAllNotificationTasksByApplicationIdPaginated(applicationId: string, page?: number, perPage?: number, sortField?: MNotificationControllerFindAllNotificationTasksByApplicationIdPaginatedSortFieldEnum, sortOrder?: MNotificationControllerFindAllNotificationTasksByApplicationIdPaginatedSortOrderEnum, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedResponseOfNotificationTask> {
+            return localVarFp.mNotificationControllerFindAllNotificationTasksByApplicationIdPaginated(applicationId, page, perPage, sortField, sortOrder, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2952,6 +3081,21 @@ export class NotificationModuleApi extends BaseAPI {
 
     /**
      * 
+     * @param {string} applicationId 
+     * @param {number} [page] 
+     * @param {number} [perPage] 
+     * @param {MNotificationControllerFindAllNotificationTasksByApplicationIdPaginatedSortFieldEnum} [sortField] 
+     * @param {MNotificationControllerFindAllNotificationTasksByApplicationIdPaginatedSortOrderEnum} [sortOrder] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof NotificationModuleApi
+     */
+    public mNotificationControllerFindAllNotificationTasksByApplicationIdPaginated(applicationId: string, page?: number, perPage?: number, sortField?: MNotificationControllerFindAllNotificationTasksByApplicationIdPaginatedSortFieldEnum, sortOrder?: MNotificationControllerFindAllNotificationTasksByApplicationIdPaginatedSortOrderEnum, options?: RawAxiosRequestConfig) {
+        return NotificationModuleApiFp(this.configuration).mNotificationControllerFindAllNotificationTasksByApplicationIdPaginated(applicationId, page, perPage, sortField, sortOrder, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof NotificationModuleApi
@@ -3079,6 +3223,33 @@ export class NotificationModuleApi extends BaseAPI {
     }
 }
 
+/**
+ * @export
+ */
+export const MNotificationControllerFindAllNotificationTasksByApplicationIdPaginatedSortFieldEnum = {
+    ChannelType: 'channelType',
+    UserId: 'userId',
+    NotificationId: 'notificationId',
+    TemplateId: 'templateId',
+    MessageType: 'messageType',
+    Priority: 'priority',
+    SentStatus: 'sentStatus',
+    SentTimestamp: 'sentTimestamp',
+    FailedTimestamp: 'failedTimestamp',
+    RetryCount: 'retryCount',
+    RetryLimit: 'retryLimit',
+    CreatedAt: 'createdAt',
+    UpdatedAt: 'updatedAt'
+} as const;
+export type MNotificationControllerFindAllNotificationTasksByApplicationIdPaginatedSortFieldEnum = typeof MNotificationControllerFindAllNotificationTasksByApplicationIdPaginatedSortFieldEnum[keyof typeof MNotificationControllerFindAllNotificationTasksByApplicationIdPaginatedSortFieldEnum];
+/**
+ * @export
+ */
+export const MNotificationControllerFindAllNotificationTasksByApplicationIdPaginatedSortOrderEnum = {
+    Asc: 'asc',
+    Desc: 'desc'
+} as const;
+export type MNotificationControllerFindAllNotificationTasksByApplicationIdPaginatedSortOrderEnum = typeof MNotificationControllerFindAllNotificationTasksByApplicationIdPaginatedSortOrderEnum[keyof typeof MNotificationControllerFindAllNotificationTasksByApplicationIdPaginatedSortOrderEnum];
 /**
  * @export
  */
