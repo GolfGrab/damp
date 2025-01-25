@@ -91,6 +91,23 @@ export default function useRichTextEditor({
 
   // Cleanup timers on component unmount
   useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      const message =
+        "You have unsaved changes. Please wait a moment before leaving the page.";
+      if (!isSaved) {
+        event.preventDefault();
+        event.returnValue = message; // Standard for most browsers
+        return message; // Fallback for older browsers
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [isSaved]);
+
+  useEffect(() => {
     return () => {
       if (debounceTimer.current) {
         clearTimeout(debounceTimer.current);

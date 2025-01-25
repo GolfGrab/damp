@@ -2,7 +2,7 @@ import { DashboardLayout, PageContainer } from "@toolpad/core";
 import { backOfficeNavigation } from "./constant/backOfficeNavigation";
 
 type BackOfficeGenericLayoutProps = {
-  title: string;
+  title?: string;
   children: React.ReactNode;
 };
 

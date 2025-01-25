@@ -150,7 +150,7 @@ const TemplateHome = () => {
   const { mutate: deleteTemplate } = useDeleteTemplateMutation();
 
   const columns: GridColDef[] = [
-    { field: "name", headerName: "Template Name", flex: 3 },
+    { field: "id", headerName: "Template ID", flex: 3 },
     { field: "createdByUserId", headerName: "Created by", flex: 1 },
     {
       field: "updatedByUserId",
@@ -164,7 +164,7 @@ const TemplateHome = () => {
       flex: 1,
     },
     {
-      field: "id",
+      field: "",
       headerName: "Actions",
       description: "This column has a value getter and is not sortable.",
       renderCell: ({ row }) => (
