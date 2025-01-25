@@ -10,6 +10,7 @@ export class UsersService {
     return this.prisma.user.create({
       data: {
         id: createUserDto.id,
+        email: createUserDto.email,
       },
     });
   }

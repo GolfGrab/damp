@@ -16,6 +16,7 @@ datasource db {
 
 model User {
   id        String   @id
+  email     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -25,8 +26,8 @@ model User {
   notificationTask              NotificationTask[]
   createdApplications           Application[]           @relation("applicationCreatedUser")
   updatedApplications           Application[]           @relation("applicationUpdatedUser")
-  createdTemplates              Template[]              @relation("templatecreatedByUserIdUser")
-  updatedTemplates              Template[]              @relation("templateupdatedByUserIdUser")
+  createdTemplates              Template[]              @relation("templateCreatedByUserIdUser")
+  updatedTemplates              Template[]              @relation("templateUpdatedByUserIdUser")
   createdNotificationCategories NotificationCategory[]  @relation("notificationCategoryCreatedUser")
   updatedNotificationCategories NotificationCategory[]  @relation("notificationCategoryUpdatedUser")
   deletedNotificationCategories NotificationCategory[]  @relation("notificationCategoryDeletedUser")
@@ -191,8 +192,8 @@ model Template {
   compiledTemplates   CompiledTemplate[]
   notification        Notification[]
   notificationTask    NotificationTask[]
-  createdByUserIdUser User               @relation(fields: [createdByUserId], references: [id], name: "templatecreatedByUserIdUser", onUpdate: Cascade)
-  updatedByUserIdUser User               @relation(fields: [updatedByUserId], references: [id], name: "templateupdatedByUserIdUser", onUpdate: Cascade)
+  createdByUserIdUser User               @relation(fields: [createdByUserId], references: [id], name: "templateCreatedByUserIdUser", onUpdate: Cascade)
+  updatedByUserIdUser User               @relation(fields: [updatedByUserId], references: [id], name: "templateUpdatedByUserIdUser", onUpdate: Cascade)
 }
 
 model CompiledTemplate {

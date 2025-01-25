@@ -18,7 +18,10 @@ import { AuthService } from './auth.service';
     {
       provide: AuthService,
       inject: [Config, PrismaService],
-      useFactory: async (config: Config, prisma: PrismaService) => {
+      useFactory: async (
+        config: Config,
+        prisma: PrismaService,
+      ) => {
         const issuer = await Issuer.discover(config.OAUTH_ISSUER_URL);
         const client = new issuer.Client({
           client_id: config.OAUTH_CLIENT_ID,

@@ -9,6 +9,12 @@ export class User implements prisma.User {
 
   @ApiProperty({
     type: String,
+    format: 'email',
+  })
+  email: string;
+
+  @ApiProperty({
+    type: String,
     format: 'date-time',
   })
   createdAt: Date;

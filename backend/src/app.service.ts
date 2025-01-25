@@ -54,6 +54,7 @@ export class AppService implements OnModuleInit {
       },
       create: {
         id: 'System-user',
+        email: 'system@email.com',
       },
       update: {},
     });

@@ -2,6 +2,7 @@ import { Config } from '@/utils/config/config-dto';
 import {
   Injectable,
   InternalServerErrorException,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { FastifyRequest } from 'fastify';
@@ -15,6 +16,8 @@ export class AuthService {
     private prisma: PrismaService,
     private config: Config,
   ) {}
+
+  private readonly logger = new Logger(AuthService.name);
 
   extractTokenFromHeader(request: FastifyRequest): string {
     if (!request.headers?.authorization) {
@@ -51,6 +54,7 @@ export class AuthService {
     if (result.client_id !== this.config.OAUTH_ALLOWED_CLIENT_ID) {
       throw new UnauthorizedException("Client ID doesn't match");
     }
+
     const user = await this.client.userinfo(token).then((userinfo) => {
       if (!userinfo.email) {
         throw new InternalServerErrorException("Userinfo doesn't have email");
@@ -61,6 +65,7 @@ export class AuthService {
         },
         create: {
           id: userinfo.email,
+          email: userinfo.email,
         },
         update: {},
       });
