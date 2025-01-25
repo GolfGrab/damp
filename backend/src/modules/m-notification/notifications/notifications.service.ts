@@ -31,9 +31,6 @@ export class NotificationsService {
     @Inject(`NotificationQueueClient${$Enums.ChannelType.SMS}`)
     private notificationQueueClientSMS: ClientProxy,
 
-    @Inject(`NotificationQueueClient${$Enums.ChannelType.WEB_PUSH}`)
-    private notificationQueueClientWEB_PUSH: ClientProxy,
-
     @Inject(`NotificationQueueClient${$Enums.ChannelType.SLACK}`)
     private notificationQueueClientSLACK: ClientProxy,
 
@@ -59,7 +56,10 @@ export class NotificationsService {
     const userPreferences = Object.values($Enums.ChannelType)
       .map((channelType) => `System_${channelType}_OTP`)
       .includes(createNotificationDto.notificationCategoryId)
-      ? (
+      ? createNotificationDto.recipientIds.map((userId) => ({
+          userId,
+        }))
+      : (
           await this.prisma.notificationCategory.findUniqueOrThrow({
             where: {
               id: createNotificationDto.notificationCategoryId,
@@ -75,10 +75,7 @@ export class NotificationsService {
               },
             },
           })
-        ).userPreferences
-      : createNotificationDto.recipientIds.map((userId) => ({
-          userId,
-        }));
+        ).userPreferences;
 
     if (userPreferences.length === 0) {
       this.logger.log('No user preferences to send notification');

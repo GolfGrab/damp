@@ -1,4 +1,4 @@
-import { Email, Notifications, Sms } from "@mui/icons-material";
+import { Email, Sms } from "@mui/icons-material";
 import {
   Avatar,
   Chip,
@@ -136,7 +136,6 @@ const NotificationDetails = () => {
                 [AccountChannelTypeEnum.Slack]: (
                   <SvgIcon component={SlackLogo} inheritViewBox />
                 ),
-                [AccountChannelTypeEnum.WebPush]: <Notifications />,
               }[channelType]
             }
           />

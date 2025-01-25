@@ -24,7 +24,6 @@ export class AppService implements OnModuleInit {
     const channelTypeMessageTypeMap = {
       [Prisma.ChannelType.EMAIL]: Prisma.MessageType.HTML,
       [Prisma.ChannelType.SMS]: Prisma.MessageType.TEXT,
-      [Prisma.ChannelType.WEB_PUSH]: Prisma.MessageType.TEXT,
       [Prisma.ChannelType.SLACK]: Prisma.MessageType.MARKDOWN,
     } as const;
 

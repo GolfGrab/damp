@@ -29,8 +29,5 @@ export class Config {
   readonly SMS_RETRY_LIMIT: string;
 
   @IsNumberString()
-  readonly WEB_PUSH_RETRY_LIMIT: string;
-
-  @IsNumberString()
   readonly SLACK_RETRY_LIMIT: string;
 }

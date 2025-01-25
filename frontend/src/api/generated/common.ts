@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * NestJS Prisma Example
- * The NestJS Prisma Example API description
+ * DAMP Notification Infrastructure
+ * API Documentation for DAMP Notification Infrastructure
  *
  * The version of the OpenAPI document: 0.0.1
  * 

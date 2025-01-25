@@ -27,8 +27,6 @@
     "start:email:prod": "cross-env CHANNEL_TYPE=EMAIL node dist/main",
     "start:sms:dev": "cross-env CHANNEL_TYPE=SMS nest start --watch",
     "start:sms:prod": "cross-env CHANNEL_TYPE=SMS node dist/main",
-    "start:web-push:dev": "cross-env CHANNEL_TYPE=WEB_PUSH nest start --watch",
-    "start:web-push:prod": "cross-env CHANNEL_TYPE=WEB_PUSH node dist/main",
     "start:slack:dev": "cross-env CHANNEL_TYPE=SLACK nest start --watch",
     "start:slack:prod": "cross-env CHANNEL_TYPE=SLACK node dist/main",
     "start:all:dev": "concurrently -n email,sms,web-push,slack -c yellow,green,blue,magenta \"npm run start:email:dev\" \"npm run start:sms:dev\" \"npm run start:web-push:dev\" \"npm run start:slack:dev\"",

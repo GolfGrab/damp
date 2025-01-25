@@ -28,7 +28,6 @@ describe('NotificationsService', () => {
     notificationQueueClients = {
       [$Enums.ChannelType.EMAIL]: mockDeep<ClientProxy>(),
       [$Enums.ChannelType.SMS]: mockDeep<ClientProxy>(),
-      [$Enums.ChannelType.WEB_PUSH]: mockDeep<ClientProxy>(),
       [$Enums.ChannelType.SLACK]: mockDeep<ClientProxy>(),
     };
 
@@ -44,7 +43,6 @@ describe('NotificationsService', () => {
           useValue: {
             EMAIL_RETRY_LIMIT: 3,
             SMS_RETRY_LIMIT: 5,
-            WEB_PUSH_RETRY_LIMIT: 2,
             SLACK_RETRY_LIMIT: 1,
           },
         },

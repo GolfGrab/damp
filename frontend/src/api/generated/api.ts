@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- * NestJS Prisma Example
- * The NestJS Prisma Example API description
+ * DAMP Notification Infrastructure
+ * API Documentation for DAMP Notification Infrastructure
  *
  * The version of the OpenAPI document: 0.0.1
  * 
@@ -70,7 +70,6 @@ export interface Account {
 export const AccountChannelTypeEnum = {
     Email: 'EMAIL',
     Sms: 'SMS',
-    WebPush: 'WEB_PUSH',
     Slack: 'SLACK'
 } as const;
 
@@ -570,7 +569,6 @@ export type NotificationTaskPriorityEnum = typeof NotificationTaskPriorityEnum[k
 export const NotificationTaskChannelTypeEnum = {
     Email: 'EMAIL',
     Sms: 'SMS',
-    WebPush: 'WEB_PUSH',
     Slack: 'SLACK'
 } as const;
 
@@ -993,7 +991,6 @@ export interface UserPreference {
 export const UserPreferenceChannelTypeEnum = {
     Email: 'EMAIL',
     Sms: 'SMS',
-    WebPush: 'WEB_PUSH',
     Slack: 'SLACK'
 } as const;
 
@@ -1972,7 +1969,7 @@ export const MainModuleApiAxiosParamCreator = function (configuration?: Configur
          * @throws {RequiredError}
          */
         appControllerGetSwaggerStopLight: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/docs-stop-light`;
+            const localVarPath = `/docs-stoplight`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2158,6 +2155,10 @@ export const NotificationModuleApiAxiosParamCreator = function (configuration?: 
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication Access_Token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -2193,6 +2194,10 @@ export const NotificationModuleApiAxiosParamCreator = function (configuration?: 
             const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication Access_Token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
     
@@ -2411,6 +2416,10 @@ export const NotificationModuleApiAxiosParamCreator = function (configuration?: 
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication Access_Token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
             if (page !== undefined) {
                 localVarQueryParameter['page'] = page;
             }
@@ -2617,6 +2626,10 @@ export const NotificationModuleApiAxiosParamCreator = function (configuration?: 
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication Access_Token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -2655,6 +2668,10 @@ export const NotificationModuleApiAxiosParamCreator = function (configuration?: 
             const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication Access_Token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
     
@@ -4143,7 +4160,6 @@ export class UserModuleApi extends BaseAPI {
 export const MUserControllerCreateNewOtpChannelTypeEnum = {
     Email: 'EMAIL',
     Sms: 'SMS',
-    WebPush: 'WEB_PUSH',
     Slack: 'SLACK'
 } as const;
 export type MUserControllerCreateNewOtpChannelTypeEnum = typeof MUserControllerCreateNewOtpChannelTypeEnum[keyof typeof MUserControllerCreateNewOtpChannelTypeEnum];
@@ -4153,7 +4169,6 @@ export type MUserControllerCreateNewOtpChannelTypeEnum = typeof MUserControllerC
 export const MUserControllerRemoveAccountChannelTypeEnum = {
     Email: 'EMAIL',
     Sms: 'SMS',
-    WebPush: 'WEB_PUSH',
     Slack: 'SLACK'
 } as const;
 export type MUserControllerRemoveAccountChannelTypeEnum = typeof MUserControllerRemoveAccountChannelTypeEnum[keyof typeof MUserControllerRemoveAccountChannelTypeEnum];
@@ -4163,7 +4178,6 @@ export type MUserControllerRemoveAccountChannelTypeEnum = typeof MUserController
 export const MUserControllerUpdateManyUserPreferencesChannelTypeEnum = {
     Email: 'EMAIL',
     Sms: 'SMS',
-    WebPush: 'WEB_PUSH',
     Slack: 'SLACK'
 } as const;
 export type MUserControllerUpdateManyUserPreferencesChannelTypeEnum = typeof MUserControllerUpdateManyUserPreferencesChannelTypeEnum[keyof typeof MUserControllerUpdateManyUserPreferencesChannelTypeEnum];
@@ -4173,7 +4187,6 @@ export type MUserControllerUpdateManyUserPreferencesChannelTypeEnum = typeof MUs
 export const MUserControllerUpsertAccountChannelTypeEnum = {
     Email: 'EMAIL',
     Sms: 'SMS',
-    WebPush: 'WEB_PUSH',
     Slack: 'SLACK'
 } as const;
 export type MUserControllerUpsertAccountChannelTypeEnum = typeof MUserControllerUpsertAccountChannelTypeEnum[keyof typeof MUserControllerUpsertAccountChannelTypeEnum];
@@ -4183,7 +4196,6 @@ export type MUserControllerUpsertAccountChannelTypeEnum = typeof MUserController
 export const MUserControllerUpsertUserPreferenceChannelTypeEnum = {
     Email: 'EMAIL',
     Sms: 'SMS',
-    WebPush: 'WEB_PUSH',
     Slack: 'SLACK'
 } as const;
 export type MUserControllerUpsertUserPreferenceChannelTypeEnum = typeof MUserControllerUpsertUserPreferenceChannelTypeEnum[keyof typeof MUserControllerUpsertUserPreferenceChannelTypeEnum];
@@ -4193,7 +4205,6 @@ export type MUserControllerUpsertUserPreferenceChannelTypeEnum = typeof MUserCon
 export const MUserControllerVerifyAccountChannelTypeEnum = {
     Email: 'EMAIL',
     Sms: 'SMS',
-    WebPush: 'WEB_PUSH',
     Slack: 'SLACK'
 } as const;
 export type MUserControllerVerifyAccountChannelTypeEnum = typeof MUserControllerVerifyAccountChannelTypeEnum[keyof typeof MUserControllerVerifyAccountChannelTypeEnum];

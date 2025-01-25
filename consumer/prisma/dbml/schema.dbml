@@ -174,7 +174,6 @@ Enum SentStatus {
 Enum ChannelType {
   EMAIL
   SMS
-  WEB_PUSH
   SLACK
 }
 
