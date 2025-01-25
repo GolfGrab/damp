@@ -117,7 +117,7 @@ const VerifyAccount = () => {
             }
           }}
         >
-          Send OTP Again
+          {isCreateNewOtpPending ? "Sending OTP..." : "Send OTP Again"}
         </Button>
       </Stack>
     </Stack>
