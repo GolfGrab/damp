@@ -1,3 +1,4 @@
+import { Config } from '@/utils/config/config-dto';
 import { paginate } from '@/utils/paginator/pagination.function';
 import { PaginationQueryDto } from '@/utils/paginator/paginationQuery.dto';
 import { Injectable } from '@nestjs/common';
@@ -15,11 +16,13 @@ import { TemplatesRendererService } from './template-renderer.service';
 @Injectable()
 export class TemplatesService {
   constructor(
+    private readonly config: Config,
     private readonly prisma: PrismaService,
     private readonly templatesParserService: TemplatesParserService,
     private readonly templatesRendererService: TemplatesRendererService,
   ) {}
 
+  // Only for system templates
   upsert(upsertTemplateDto: UpsertTemplateDto) {
     const compiledTemplates =
       this.templatesParserService.parseJSONToCompiledTemplates(
@@ -116,7 +119,9 @@ export class TemplatesService {
             mode: 'insensitive',
           },
           deletedAt: null,
-          // Todo filter system templates
+          createdByUserId: {
+            not: this.config.SYSTEM_USER_ID,
+          },
         },
       },
       paginateOptions: paginateQuery,
@@ -127,6 +132,9 @@ export class TemplatesService {
     return this.prisma.template.findUniqueOrThrow({
       where: {
         id,
+        createdByUserId: {
+          not: this.config.SYSTEM_USER_ID,
+        },
       },
       include: {
         compiledTemplates: true,
@@ -143,6 +151,9 @@ export class TemplatesService {
     return this.prisma.template.update({
       where: {
         id,
+        createdByUserId: {
+          not: this.config.SYSTEM_USER_ID,
+        },
       },
       data: {
         name: updateTemplateDto.name,
@@ -193,6 +204,9 @@ export class TemplatesService {
     return this.prisma.template.update({
       where: {
         id,
+        createdByUserId: {
+          not: this.config.SYSTEM_USER_ID,
+        },
       },
       data: {
         deletedAt: new Date(),

@@ -1,3 +1,4 @@
+import { Config } from '@/utils/config/config-dto';
 import { Injectable } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { kebabCase } from 'lodash';
@@ -9,7 +10,10 @@ import { Application } from './entities/application.entity';
 
 @Injectable()
 export class ApplicationsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly config: Config,
+  ) {}
 
   selectAllFieldsIncludingApiKey = Object.fromEntries(
     Object.values(Prisma.ApplicationScalarFieldEnum).map((field) => [
@@ -38,12 +42,21 @@ export class ApplicationsService {
   }
 
   findAll(): Promise<Application[]> {
-    return this.prisma.application.findMany();
+    return this.prisma.application.findMany({
+      where: {
+        id: {
+          not: this.config.SYSTEM_APPLICATION_ID,
+        },
+      },
+    });
   }
 
   findAllByCreatedByUserId(createdByUserId: string): Promise<Application[]> {
     return this.prisma.application.findMany({
       where: {
+        id: {
+          not: this.config.SYSTEM_APPLICATION_ID,
+        },
         createdByUserId,
       },
     });
@@ -53,6 +66,9 @@ export class ApplicationsService {
     return this.prisma.application.findUniqueOrThrow({
       where: {
         id: applicationId,
+        createdByUserId: {
+          not: this.config.SYSTEM_USER_ID,
+        },
       },
       select: this.selectAllFieldsIncludingApiKey,
     });
@@ -66,6 +82,9 @@ export class ApplicationsService {
     return this.prisma.application.update({
       where: {
         id: applicationId,
+        createdByUserId: {
+          not: this.config.SYSTEM_USER_ID,
+        },
       },
       data: {
         ...updateApplicationDto,
@@ -82,6 +101,9 @@ export class ApplicationsService {
     return this.prisma.application.update({
       where: {
         id: applicationId,
+        createdByUserId: {
+          not: this.config.SYSTEM_USER_ID,
+        },
       },
       data: {
         apiKey: crypto.randomUUID(),

@@ -30,4 +30,10 @@ export class Config {
 
   @IsNumberString()
   readonly SLACK_RETRY_LIMIT: string;
+
+  @IsString()
+  readonly SYSTEM_APPLICATION_ID: string;
+
+  @IsString()
+  readonly SYSTEM_USER_ID: string;
 }
