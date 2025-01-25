@@ -47,15 +47,13 @@ export class NotificationsService {
     this.logger.log('applicationId ' + applicationId);
 
     this.logger.log('get userPreferences');
-    this.logger.log(
-      'Is it OTP? ' +
-        Object.values($Enums.ChannelType)
-          .map((channelType) => `System_${channelType}_OTP`)
-          .includes(createNotificationDto.notificationCategoryId),
-    );
-    const userPreferences = Object.values($Enums.ChannelType)
+
+    const isOTPNotification = Object.values($Enums.ChannelType)
       .map((channelType) => `System_${channelType}_OTP`)
-      .includes(createNotificationDto.notificationCategoryId)
+      .includes(createNotificationDto.notificationCategoryId);
+
+    this.logger.log('Is it OTP? ' + isOTPNotification);
+    const userPreferences = isOTPNotification
       ? createNotificationDto.recipientIds.map((userId) => ({
           userId,
         }))
@@ -86,17 +84,6 @@ export class NotificationsService {
 
     this.logger.log('get channels');
     const channels = await this.prisma.channel.findMany({
-      where: {
-        accounts: {
-          some: {
-            userId: {
-              in: userPreferences.map(
-                (userPreference) => userPreference.userId,
-              ),
-            },
-          },
-        },
-      },
       include: {
         accounts: {
           where: {
@@ -124,6 +111,45 @@ export class NotificationsService {
       },
     });
 
+    const organizationDefaultEmailAccounts = await this.prisma.user.findMany({
+      where: {
+        id: {
+          in: userPreferences.map((userPreference) => userPreference.userId),
+        },
+      },
+    });
+
+    // merge organization default email accounts with user accounts
+    const mergedChannels = channels.map((channel) => {
+      if (
+        channel.channelType === $Enums.ChannelType.EMAIL &&
+        !isOTPNotification
+      ) {
+        return {
+          ...channel,
+          accounts: [
+            ...channel.accounts,
+            ...organizationDefaultEmailAccounts.map(
+              (organizationDefaultEmailAccount) => ({
+                userId: organizationDefaultEmailAccount.id,
+                channelType: channel.channelType,
+                priority: createNotificationDto.priority,
+              }),
+            ),
+          ].filter(
+            (account, index, self) =>
+              index ===
+              self.findIndex(
+                (t) =>
+                  t.userId === account.userId &&
+                  t.channelType === account.channelType,
+              ),
+          ),
+        };
+      }
+      return channel;
+    });
+
     this.logger.log('get compiledTemplates');
     const compiledTemplates = (
       await this.prisma.template.findUniqueOrThrow({
@@ -136,7 +162,6 @@ export class NotificationsService {
       })
     ).compiledTemplates;
 
-    this.logger.log('compiledTemplates ' + inspect(compiledTemplates));
     this.logger.log('create compiledMessages');
     const compiledMessages = await Promise.all(
       compiledTemplates.map(async (compiledTemplate) => {
@@ -174,13 +199,13 @@ export class NotificationsService {
               },
               notificationTasks: {
                 createMany: {
-                  data: channels
+                  data: mergedChannels
                     .filter(
                       (channel) =>
                         channel.messageType === compiledMessage.messageType,
                     )
-                    .flatMap((channel) =>
-                      channel.accounts.map((account) => ({
+                    .flatMap((channel) => {
+                      return channel.accounts.map((account) => ({
                         userId: account.userId,
                         channelType: account.channelType,
                         priority: createNotificationDto.priority,
@@ -188,8 +213,8 @@ export class NotificationsService {
                           this.config[`${account.channelType}_RETRY_LIMIT`],
                         ),
                         retryCount: 0,
-                      })),
-                    ),
+                      }));
+                    }),
                 },
               },
             };
