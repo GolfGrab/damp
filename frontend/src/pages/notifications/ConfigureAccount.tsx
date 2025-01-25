@@ -1,7 +1,14 @@
 import { LinkOff } from "@mui/icons-material";
-import { Button, Divider, Skeleton, Stack, Typography } from "@mui/material";
+import {
+  Alert,
+  Button,
+  Divider,
+  Skeleton,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useNotifications } from "@toolpad/core";
+import { useDialogs, useNotifications } from "@toolpad/core";
 import { useAuth } from "react-oidc-context";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiClient } from "../../api";
@@ -13,10 +20,12 @@ const ConfigureAccount = () => {
   const auth = useAuth();
   const navigate = useNavigate();
   const notifications = useNotifications();
+  const dialogs = useDialogs();
   const {
     data: userAccounts,
     isLoading: isUserAccountsLoading,
     isError: isUserAccountsError,
+    refetch: refetchUserAccounts,
   } = useQuery({
     queryKey: [
       apiClient.UserModuleApi.mUserControllerFindAllUserAccountsByUserId.name,
@@ -81,6 +90,15 @@ const ConfigureAccount = () => {
         }
       );
     },
+    onError() {
+      notifications.show(
+        "Error while unsuscribing from all notifications from this channel, please try again",
+        {
+          severity: "error",
+          autoHideDuration: 5000,
+        }
+      );
+    },
   });
 
   const userAccount = userAccounts?.find(
@@ -98,7 +116,19 @@ const ConfigureAccount = () => {
   }
 
   if (isUserAccountsError) {
-    return <Typography variant="body1">Error loading user accounts</Typography>;
+    return (
+      <Stack spacing={4} width="100%">
+        <Alert severity="error">Error loading user account</Alert>
+        <Stack spacing={2}>
+          <Button variant="contained" onClick={() => refetchUserAccounts()}>
+            Try Again
+          </Button>
+          <Button variant="outlined" onClick={() => navigate(0)}>
+            Refresh This Page
+          </Button>
+        </Stack>
+      </Stack>
+    );
   }
 
   const ChannelIcon = allChannels[channelType as keyof typeof allChannels].icon;
@@ -115,8 +145,18 @@ const ConfigureAccount = () => {
         color="error"
         variant="outlined"
         endIcon={<LinkOff />}
-        onClick={() => {
-          removeAccount();
+        onClick={async () => {
+          const res = await dialogs.confirm(
+            "Are you sure you want to unlink this account?",
+            {
+              cancelText: "Cancel",
+              okText: "Unlink",
+              severity: "error",
+            }
+          );
+          if (res) {
+            removeAccount();
+          }
         }}
       >
         Unlink Account
@@ -125,8 +165,19 @@ const ConfigureAccount = () => {
         color="error"
         variant="outlined"
         disabled={isUpdatePreferredToFalsePending}
-        onClick={() => {
-          updatePreferredToFalse();
+        onClick={async () => {
+          const res = await dialogs.confirm(
+            "Are you sure you want to unsubscribe from all notifications from this channel?",
+            {
+              cancelText: "Cancel",
+              okText: "Unsubscribe",
+              severity: "error",
+            }
+          );
+
+          if (res) {
+            updatePreferredToFalse();
+          }
         }}
       >
         Unsubscribe from all notifications

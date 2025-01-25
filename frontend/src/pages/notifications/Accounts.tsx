@@ -1,4 +1,4 @@
-import { Button, Divider, Skeleton, Stack } from "@mui/material";
+import { Alert, Button, Divider, Skeleton, Stack } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +13,7 @@ const Accounts = () => {
     data: userAccounts,
     isLoading: isUserAccountsLoading,
     isError: isUserAccountsError,
+    refetch: refetchUserAccounts,
   } = useQuery({
     queryKey: [
       apiClient.UserModuleApi.mUserControllerFindAllUserAccountsByUserId.name,
@@ -55,7 +56,19 @@ const Accounts = () => {
   }
 
   if (isUserAccountsError) {
-    return <div>Error loading user accounts</div>;
+    return (
+      <Stack spacing={4} width="100%">
+        <Alert severity="error">Error loading user accounts</Alert>
+        <Stack spacing={2}>
+          <Button variant="contained" onClick={() => refetchUserAccounts()}>
+            Try Again
+          </Button>
+          <Button variant="outlined" onClick={() => navigate(0)}>
+            Refresh This Page
+          </Button>
+        </Stack>
+      </Stack>
+    );
   }
 
   return (

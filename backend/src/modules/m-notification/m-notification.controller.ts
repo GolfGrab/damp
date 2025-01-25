@@ -16,6 +16,7 @@ import { ApiPaginatedResponse } from '../../utils/paginator/pagination.decorator
 import { PaginatedResult } from '../../utils/paginator/pagination.type';
 import { PaginationQueryDto } from '../../utils/paginator/paginationQuery.dto';
 import { CreateNotificationDto } from './notifications/dto/create-notification.dto';
+import { NotificationTasksOrderDto } from './notifications/dto/notification-tasks-order.dto';
 import { OutputNotificationWithCompiledMessageAndNotificationTaskDto } from './notifications/dto/output-notification-with-compiled-message-and-notification-task.dto';
 import { NotificationTask } from './notifications/entities/notification-task.entity';
 import { Notification } from './notifications/entities/notification.entity';
@@ -25,7 +26,6 @@ import { GetPreviewTemplateDto } from './templates/dto/get-preview-template.dto'
 import { UpdateTemplateDto } from './templates/dto/update-template.dto';
 import { Template } from './templates/entities/template.entity';
 import { TemplatesService } from './templates/templates.service';
-import { NotificationTasksOrderDto } from './notifications/dto/notification-tasks-order.dto';
 
 @ApiTags('Notification Module')
 @Controller('m-notification')
@@ -183,6 +183,10 @@ export class MNotificationController {
   ): Promise<
     PaginatedResult<OutputNotificationWithCompiledMessageAndNotificationTaskDto>
   > {
+    if (user.id !== userId) {
+      throw new UnauthorizedException('Invalid user access');
+    }
+
     return this.notificationsService.getPaginatedNotificationsByUser(
       user.id,
       paginateQuery,

@@ -1,4 +1,4 @@
-import { Box, Tab, Tabs } from "@mui/material";
+import { Alert, Box, Button, Skeleton, Stack, Tab, Tabs } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { apiClient } from "../../api";
@@ -12,6 +12,7 @@ const ApplicationDetailsTabsLayout = () => {
     data: application,
     isLoading: isApplicationLoading,
     isError: isApplicationError,
+    refetch: refetchApplication,
   } = useQuery({
     queryKey: [
       apiClient.ApplicationModuleApi.mApplicationControllerFindOneApplication
@@ -27,12 +28,32 @@ const ApplicationDetailsTabsLayout = () => {
 
   if (isApplicationLoading) {
     return (
-      <BackOfficeGenericLayout title="">Loading...</BackOfficeGenericLayout>
+      <BackOfficeGenericLayout title="">
+        <Stack spacing={4} width="100%">
+          <Skeleton height={40} />
+          <Skeleton height={40} />
+          <Skeleton height={40} />
+        </Stack>
+      </BackOfficeGenericLayout>
     );
   }
 
   if (isApplicationError) {
-    return <BackOfficeGenericLayout title="">Error</BackOfficeGenericLayout>;
+    return (
+      <BackOfficeGenericLayout title="">
+        <Stack spacing={4} width="100%">
+          <Alert severity="error">Error loading application</Alert>
+          <Stack spacing={2}>
+            <Button variant="contained" onClick={() => refetchApplication()}>
+              Try Again
+            </Button>
+            <Button variant="outlined" onClick={() => navigate(0)}>
+              Refresh This Page
+            </Button>
+          </Stack>
+        </Stack>
+      </BackOfficeGenericLayout>
+    );
   }
 
   return (

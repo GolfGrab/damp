@@ -1,5 +1,6 @@
 import { Button, Stack, TextField, Typography } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
+import { useNotifications } from "@toolpad/core";
 import { MuiTelInput } from "mui-tel-input";
 import { useState } from "react";
 import { useAuth } from "react-oidc-context";
@@ -11,6 +12,7 @@ const ConnectAccount = () => {
   const { channelType } = useParams();
   const auth = useAuth();
   const navigate = useNavigate();
+  const notifications = useNotifications();
 
   const [channelToken, setChannelToken] = useState<string>("");
   const [channelTokenError, setChannelTokenError] = useState<string>();
@@ -28,6 +30,12 @@ const ConnectAccount = () => {
         ),
       onSuccess() {
         navigate(`/notifications/accounts/verify/${channelType}`);
+      },
+      onError() {
+        notifications.show("Failed to connect account, please try again", {
+          severity: "error",
+          autoHideDuration: 5000,
+        });
       },
     });
 

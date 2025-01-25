@@ -21,6 +21,7 @@ import { Text } from "@tiptap/extension-text";
 import { TextAlign } from "@tiptap/extension-text-align";
 import { TextStyle } from "@tiptap/extension-text-style";
 import { Editor, useEditor as useTiptapEditor } from "@tiptap/react";
+import { useNotifications } from "@toolpad/core";
 import { HeadingWithAnchor, LinkBubbleMenuHandler } from "mui-tiptap";
 import { useEffect, useRef, useState } from "react";
 import { apiClient } from "../../../api";
@@ -28,8 +29,9 @@ import { apiClient } from "../../../api";
 const debounceTime = 2000;
 const maxTime = 10000;
 
-const useUpdateTemplateMutation = () =>
-  useMutation({
+const useUpdateTemplateMutation = () => {
+  const notifications = useNotifications();
+  return useMutation({
     mutationFn: ({
       templateId,
       content,
@@ -43,7 +45,17 @@ const useUpdateTemplateMutation = () =>
           template: content,
         }
       ),
+    onError: () => {
+      notifications.show(
+        "Error updating template, please copy your content to safe place and refresh the page if the issue persists",
+        {
+          severity: "error",
+          autoHideDuration: 5000,
+        }
+      );
+    },
   });
+};
 
 export default function useRichTextEditor({
   templateId,

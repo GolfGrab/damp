@@ -62,6 +62,15 @@ const UpdateNotificationCategoryDialog: DialogComponent<
       });
       onClose(undefined);
     },
+    onError: () => {
+      notifications.show(
+        "Error updating notification category, please try again",
+        {
+          severity: "error",
+          autoHideDuration: 5000,
+        }
+      );
+    },
   });
 
   const handleUpdateNotificationCategory = () => {

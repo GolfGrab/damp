@@ -1,4 +1,4 @@
-import { Button, Stack, Typography } from "@mui/material";
+import { Alert, Button, Skeleton, Stack, Typography } from "@mui/material";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useDialogs } from "@toolpad/core";
 import { MuiOtpInput } from "mui-one-time-password-input";
@@ -18,6 +18,7 @@ const VerifyAccount = () => {
     data: userAccounts,
     isLoading: isUserAccountsLoading,
     isError: isUserAccountsError,
+    refetch: refetchUserAccounts,
   } = useQuery({
     queryKey: [
       apiClient.UserModuleApi.mUserControllerFindAllUserAccountsByUserId.name,
@@ -54,6 +55,14 @@ const VerifyAccount = () => {
           okText: "OK",
         });
       },
+      onError() {
+        dialogs.alert(
+          "An error occurred while sending new OTP, please try again",
+          {
+            okText: "OK",
+          }
+        );
+      },
     });
 
   const { mutate: verifyAccount, isPending: isVerifyAccountPending } =
@@ -82,11 +91,28 @@ const VerifyAccount = () => {
     });
 
   if (isUserAccountsLoading) {
-    return <div>Loading...</div>;
+    return (
+      <Stack spacing={4} width="100%">
+        <Skeleton height={40} />
+        <Skeleton height={40} />
+      </Stack>
+    );
   }
 
   if (isUserAccountsError) {
-    return <div>Error loading user accounts</div>;
+    return (
+      <Stack spacing={4} width="100%">
+        <Alert severity="error">Error loading user account</Alert>
+        <Stack spacing={2}>
+          <Button variant="contained" onClick={() => refetchUserAccounts()}>
+            Try Again
+          </Button>
+          <Button variant="outlined" onClick={() => navigate(0)}>
+            Refresh This Page
+          </Button>
+        </Stack>
+      </Stack>
+    );
   }
 
   return (

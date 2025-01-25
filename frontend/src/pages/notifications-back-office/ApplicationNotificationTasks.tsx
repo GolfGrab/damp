@@ -1,4 +1,4 @@
-import { Chip } from "@mui/material";
+import { Alert, Button, Chip, Stack } from "@mui/material";
 import {
   DataGrid,
   GridSortModel,
@@ -8,7 +8,7 @@ import {
 } from "@mui/x-data-grid";
 import { useQuery } from "@tanstack/react-query"; // Ensure you have react-query installed
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { apiClient } from "../../api";
 import {
   NotificationTask,
@@ -26,6 +26,8 @@ const CustomToolbar = () => (
 
 const ServerSideGridWithReactQuery = () => {
   const { applicationId } = useParams();
+  const navigate = useNavigate();
+
   // State for pagination and sorting
   const [page, setPage] = useState(0); // 0-based index for DataGrid
   const [pageSize, setPageSize] = useState(5);
@@ -41,6 +43,7 @@ const ServerSideGridWithReactQuery = () => {
     data: notificationTasks,
     isLoading: isNotificationTasksLoading,
     isError: isNotificationTasksError,
+    refetch: refetchNotificationTasks,
   } = useQuery({
     queryKey: [
       apiClient.NotificationModuleApi
@@ -65,7 +68,22 @@ const ServerSideGridWithReactQuery = () => {
   });
 
   if (isNotificationTasksError) {
-    return <div>Error</div>;
+    return (
+      <Stack spacing={4} width="100%">
+        <Alert severity="error">Error loading notification logs</Alert>
+        <Stack spacing={2}>
+          <Button
+            variant="contained"
+            onClick={() => refetchNotificationTasks()}
+          >
+            Try Again
+          </Button>
+          <Button variant="outlined" onClick={() => navigate(0)}>
+            Refresh This Page
+          </Button>
+        </Stack>
+      </Stack>
+    );
   }
 
   return (

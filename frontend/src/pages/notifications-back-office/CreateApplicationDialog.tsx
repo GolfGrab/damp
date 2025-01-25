@@ -54,6 +54,12 @@ const CreateApplicationDialog: DialogComponent<undefined, undefined> = ({
         });
         onClose(undefined);
       },
+      onError: () => {
+        notifications.show("Error creating application, please try again", {
+          severity: "error",
+          autoHideDuration: 5000,
+        });
+      },
     });
 
   const handleCreateApplication = () => {

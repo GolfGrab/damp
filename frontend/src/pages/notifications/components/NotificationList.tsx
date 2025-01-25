@@ -1,15 +1,21 @@
 import {
+  Alert,
+  Button,
   CircularProgress,
   Divider,
   Grid2,
   List,
   ListSubheader,
+  Skeleton,
+  Stack,
   Typography,
 } from "@mui/material";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { groupBy, sortBy } from "lodash";
 import { Fragment, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
+import { useAuth } from "react-oidc-context";
+import { useNavigate } from "react-router-dom";
 import { apiClient } from "../../../api";
 import {
   AccountChannelTypeEnum,
@@ -66,12 +72,12 @@ const groupSortAndTransformNotifications = (
   return sortedGroupedNotifications;
 };
 
-const useNotificationsInfiniteQuery = () =>
+const useNotificationsInfiniteQuery = (userId: string) =>
   useInfiniteQuery({
-    queryKey: ["projects"],
+    queryKey: ["notifications", userId],
     queryFn: ({ pageParam }) =>
       apiClient.NotificationModuleApi.mNotificationControllerGetPaginatedNotificationsByUserId(
-        "test",
+        userId,
         pageParam,
         10
       ),
@@ -82,9 +88,17 @@ const useNotificationsInfiniteQuery = () =>
 
 const NotificationList = () => {
   const { ref, inView } = useInView();
+  const auth = useAuth();
+  const navigate = useNavigate();
 
-  const { data, isError, isFetchingNextPage, fetchNextPage, isLoading } =
-    useNotificationsInfiniteQuery();
+  const {
+    data,
+    isError,
+    isFetchingNextPage,
+    fetchNextPage,
+    isLoading,
+    refetch,
+  } = useNotificationsInfiniteQuery(auth.user?.profile.email ?? "");
 
   // Assume bff send notifications in date descending order
   const groupedAndSortedNotifications = groupSortAndTransformNotifications(
@@ -99,11 +113,27 @@ const NotificationList = () => {
 
   if (isError) {
     return (
-      <Typography>Something went wrong, please try again later.</Typography>
+      <Stack spacing={4} width="100%">
+        <Alert severity="error">Error loading notifications</Alert>
+        <Stack spacing={2}>
+          <Button variant="contained" onClick={() => refetch()}>
+            Try Again
+          </Button>
+          <Button variant="outlined" onClick={() => navigate(0)}>
+            Refresh This Page
+          </Button>
+        </Stack>
+      </Stack>
     );
   }
   if (isLoading) {
-    return <CircularProgress />;
+    return (
+      <Stack spacing={4} width="100%">
+        <Skeleton height={40} />
+        <Skeleton height={40} />
+        <Skeleton height={40} />
+      </Stack>
+    );
   }
   return (
     <>

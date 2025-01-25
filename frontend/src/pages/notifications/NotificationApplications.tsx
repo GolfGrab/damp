@@ -1,4 +1,6 @@
 import {
+  Alert,
+  Button,
   ListItemText,
   MenuItem,
   MenuList,
@@ -11,11 +13,12 @@ import { useNavigate } from "react-router-dom";
 import { apiClient } from "../../api";
 
 const NotificationApplications = () => {
-  const navigation = useNavigate();
+  const navigate = useNavigate();
   const {
     data: applications,
     isLoading: isApplicationsLoading,
     isError: isApplicationsError,
+    refetch: refetchApplications,
   } = useQuery({
     queryKey: [
       apiClient.ApplicationModuleApi.mApplicationControllerFindAllApplications,
@@ -29,7 +32,7 @@ const NotificationApplications = () => {
 
   if (isApplicationsLoading) {
     return (
-      <Stack spacing={4}>
+      <Stack spacing={4}  width="100%">
         <Skeleton height={40} />
         <Skeleton height={40} />
         <Skeleton height={40} />
@@ -39,78 +42,48 @@ const NotificationApplications = () => {
 
   if (isApplicationsError) {
     return (
-      <Typography variant="body1">
-        Error loading applications. Please try again later.
-      </Typography>
+      <Stack spacing={4} width="100%">
+        <Alert severity="error">Error loading applications</Alert>
+        <Stack spacing={2}>
+          <Button variant="contained" onClick={() => refetchApplications()}>
+            Try Again
+          </Button>
+          <Button variant="outlined" onClick={() => navigate(0)}>
+            Refresh This Page
+          </Button>
+        </Stack>
+      </Stack>
     );
   }
 
   return (
-    <Stack>
+    <Stack spacing={2}>
       <Typography variant="body1">
         Select the applications to configure your notification preferences.
       </Typography>
-      <MenuList>
-        {[
-          ...(applications ?? []),
-          {
-            id: "1",
-            name: "Apple",
-          },
-          {
-            id: "2",
-            name: "Banana",
-          },
-          {
-            id: "3",
-            name: "Cherry",
-          },
-          {
-            id: "4",
-            name: "Durian",
-          },
-          {
-            id: "5",
-            name: "Eggplant",
-          },
-          {
-            id: "6",
-            name: "Fig",
-          },
-          {
-            id: "7",
-            name: "Grape",
-          },
-          {
-            id: "8",
-            name: "Honeydew",
-          },
-          {
-            id: "9",
-            name: "Ice Cream",
-          },
-          {
-            id: "10",
-            name: "Jalapeno",
-          },
-        ]?.map((application) => (
-          <MenuItem
-            key={application.id}
-            sx={{
-              border: "1px solid #e0e0e0",
-              borderRadius: 1,
-              my: 1,
-            }}
-            onClick={() =>
-              navigation(
-                `/notifications/applications/${application.id}/user-preferences`
-              )
-            }
-          >
-            <ListItemText>{application.name}</ListItemText>
-          </MenuItem>
-        ))}
-      </MenuList>
+      {applications && applications.length > 0 ? (
+        <MenuList>
+          {applications.map((application) => (
+            <MenuItem
+              key={application.id}
+              sx={{
+                border: "1px solid #e0e0e0",
+                borderRadius: 1,
+                my: 1,
+              }}
+              onClick={() =>
+                navigate(
+                  `/notifications/applications/${application.id}/user-preferences`
+                )
+              }
+            >
+              <ListItemText>{application.name}</ListItemText>
+            </MenuItem>
+          ))}
+        </MenuList>
+      ) : (
+        <Alert severity="warning">No application found</Alert>
+      )}
     </Stack>
   );
 };

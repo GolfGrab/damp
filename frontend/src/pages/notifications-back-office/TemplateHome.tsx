@@ -2,6 +2,7 @@ import { Search } from "@mui/icons-material";
 import AddIcon from "@mui/icons-material/Add";
 import LoadingButton from "@mui/lab/LoadingButton";
 import {
+  Alert,
   Button,
   Dialog,
   DialogActions,
@@ -17,7 +18,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { DialogProps, useDialogs } from "@toolpad/core";
+import { DialogProps, useDialogs, useNotifications } from "@toolpad/core";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -52,6 +53,7 @@ const useTemplatePaginationQuery = (
 
 const useDeleteTemplateMutation = () => {
   const queryClient = useQueryClient();
+  const notifications = useNotifications();
   return useMutation({
     mutationFn: (templateId: string) =>
       apiClient.NotificationModuleApi.mNotificationControllerDeleteTemplate(
@@ -65,12 +67,19 @@ const useDeleteTemplateMutation = () => {
         ],
       });
     },
+    onError: () => {
+      notifications.show("Error deleting template, please try again", {
+        severity: "error",
+        autoHideDuration: 5000,
+      });
+    },
   });
 };
 
 const useCreateTemplateMutation = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const notifications = useNotifications();
   return useMutation({
     mutationFn: (templateName: string) =>
       apiClient.NotificationModuleApi.mNotificationControllerCreateTemplate({
@@ -88,6 +97,12 @@ const useCreateTemplateMutation = () => {
         ],
       });
       navigate("/notifications-back-office/templates/" + data.id);
+    },
+    onError: () => {
+      notifications.show("Error creating template, please try again", {
+        severity: "error",
+        autoHideDuration: 5000,
+      });
     },
   });
 };
@@ -209,12 +224,28 @@ const TemplateHome = () => {
     },
   ];
 
-  const { data, isFetching } = useTemplatePaginationQuery(
+  const { data, isFetching, isError, refetch } = useTemplatePaginationQuery(
     { page: paginationModel.page, perPage: paginationModel.pageSize },
     { templateName: templateNameSearch }
   );
 
   const navigate = useNavigate();
+
+  if (isError) {
+    return (
+      <Stack spacing={4} width="100%">
+        <Alert severity="error">Error loading templates</Alert>
+        <Stack spacing={2}>
+          <Button variant="contained" onClick={() => refetch()}>
+            Try Again
+          </Button>
+          <Button variant="outlined" onClick={() => navigate(0)}>
+            Refresh This Page
+          </Button>
+        </Stack>
+      </Stack>
+    );
+  }
   return (
     <Stack spacing={2}>
       <Stack direction="row" justifyContent="space-between">

@@ -1,7 +1,9 @@
 import { ContentCopy, Visibility, VisibilityOff } from "@mui/icons-material";
 import {
+  Alert,
   Button,
   IconButton,
+  Skeleton,
   Stack,
   TextField,
   Tooltip,
@@ -11,12 +13,13 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useDialogs, useNotifications } from "@toolpad/core";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { apiClient } from "../../api";
 import useDebounce from "../../common/useDebounce";
 
 const ApplicationInfo = () => {
   const { applicationId } = useParams();
+  const navigate = useNavigate();
 
   const theme = useTheme();
   const notifications = useNotifications();
@@ -43,6 +46,7 @@ const ApplicationInfo = () => {
     data: application,
     isLoading: isApplicationLoading,
     isError: isApplicationError,
+    refetch: refetchApplication,
   } = useQuery({
     queryKey: [
       apiClient.ApplicationModuleApi.mApplicationControllerFindOneApplication
@@ -85,6 +89,12 @@ const ApplicationInfo = () => {
         ],
       });
     },
+    onError: () => {
+      notifications.show("Error updating application, please try again", {
+        severity: "error",
+        autoHideDuration: 500,
+      });
+    },
   });
 
   const { mutate: rotateApiKey } = useMutation({
@@ -107,6 +117,12 @@ const ApplicationInfo = () => {
       notifications.show("API key regenerated successfully", {
         severity: "success",
         autoHideDuration: 5000,
+      });
+    },
+    onError: () => {
+      notifications.show("Error regenerating API key, please try again", {
+        severity: "error",
+        autoHideDuration: 500,
       });
     },
   });
@@ -157,11 +173,29 @@ const ApplicationInfo = () => {
   ]);
 
   if (isApplicationLoading) {
-    return <div>Loading...</div>;
+    return (
+      <Stack spacing={4} width="100%">
+        <Skeleton height={40} />
+        <Skeleton height={40} />
+        <Skeleton height={40} />
+      </Stack>
+    );
   }
 
   if (isApplicationError) {
-    return <div>Error</div>;
+    return (
+      <Stack spacing={4} width="100%">
+        <Alert severity="error">Error loading application</Alert>
+        <Stack spacing={2}>
+          <Button variant="contained" onClick={() => refetchApplication()}>
+            Try Again
+          </Button>
+          <Button variant="outlined" onClick={() => navigate(0)}>
+            Refresh This Page
+          </Button>
+        </Stack>
+      </Stack>
+    );
   }
 
   return (

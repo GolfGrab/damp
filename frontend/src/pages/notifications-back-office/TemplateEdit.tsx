@@ -3,11 +3,18 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
-import { Box, CircularProgress, Skeleton } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  Skeleton,
+  Stack,
+} from "@mui/material";
 import Tab from "@mui/material/Tab";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { apiClient } from "../../api";
 import {
   GetPreviewTemplateDto,
@@ -56,21 +63,32 @@ const useGetTemplatePreview = (
 
 const TemplateEdit = () => {
   const { templateId } = useParams();
+  const navigate = useNavigate();
   const [currentTab, setCurrentTab] = useState("edit");
   const client = useClient();
   const { editor, isSaved, saveContent } = useRichTextEditor({
     templateId: templateId ?? "",
   });
-  const { data: template, isLoading } = useGetTemplate(templateId ?? "");
-  const { mutate: getPreviewHtml, data: previewHtmlData } =
-    useGetTemplatePreview(
-      templateId ?? "",
-      MNotificationControllerPreviewTemplateMessageTypeEnum.Html
-    );
+  const {
+    data: template,
+    isLoading,
+    isError: isTemplateError,
+    refetch: refetchTemplate,
+  } = useGetTemplate(templateId ?? "");
+  const {
+    mutate: getPreviewHtml,
+    data: previewHtmlData,
+    isPending: isPreviewHtmlPending,
+    isError: isPreviewHtmlError,
+  } = useGetTemplatePreview(
+    templateId ?? "",
+    MNotificationControllerPreviewTemplateMessageTypeEnum.Html
+  );
   const {
     mutate: getPreviewSms,
     data: previewSmsData,
     isPending: isPreviewSmsPending,
+    isError: isPreviewSmsError,
   } = useGetTemplatePreview(
     templateId ?? "",
     MNotificationControllerPreviewTemplateMessageTypeEnum.Text
@@ -79,6 +97,7 @@ const TemplateEdit = () => {
     mutate: getPreviewSlack,
     data: previewSlackData,
     isPending: isPreviewSlackPending,
+    isError: isPreviewSlackError,
   } = useGetTemplatePreview(
     templateId ?? "",
     MNotificationControllerPreviewTemplateMessageTypeEnum.Markdown
@@ -104,6 +123,23 @@ const TemplateEdit = () => {
 
   if (!editor || !client) return null;
   if (isLoading) return <CircularProgress />;
+
+  if (isTemplateError) {
+    return (
+      <Stack spacing={4} width="100%">
+        <Alert severity="error">Error loading template</Alert>
+        <Stack spacing={2}>
+          <Button variant="contained" onClick={() => refetchTemplate()}>
+            Try Again
+          </Button>
+          <Button variant="outlined" onClick={() => navigate(0)}>
+            Refresh This Page
+          </Button>
+        </Stack>
+      </Stack>
+    );
+  }
+
   return (
     <div>
       <Box sx={{ width: "100%", typography: "body1" }}>
@@ -155,6 +191,23 @@ const TemplateEdit = () => {
             <RichTextEditor editor={editor} isSaved={isSaved} />
           </TabPanel>
           <TabPanel value="p-email">
+            {isPreviewHtmlPending && (
+              <>
+                <Skeleton animation="wave" />
+                <Skeleton animation="wave" />
+                <Skeleton animation="wave" />
+              </>
+            )}
+            {isPreviewHtmlError && (
+              <Stack spacing={4} width="100%">
+                <Alert severity="error">Error loading HTML preview</Alert>
+                <Stack spacing={2}>
+                  <Button variant="outlined" onClick={() => navigate(0)}>
+                    Refresh This Page
+                  </Button>
+                </Stack>
+              </Stack>
+            )}
             <TemplatePreviewHtml content={previewHtmlData?.data ?? ""} />
           </TabPanel>
           <TabPanel
@@ -166,16 +219,42 @@ const TemplateEdit = () => {
           >
             {isPreviewSmsPending && (
               <>
-                {" "}
                 <Skeleton animation="wave" />
                 <Skeleton animation="wave" />
                 <Skeleton animation="wave" />
               </>
             )}
 
+            {isPreviewSmsError && (
+              <Stack spacing={4} width="100%">
+                <Alert severity="error">Error loading SMS preview</Alert>
+                <Stack spacing={2}>
+                  <Button variant="outlined" onClick={() => navigate(0)}>
+                    Refresh This Page
+                  </Button>
+                </Stack>
+              </Stack>
+            )}
+
             {previewSmsData?.data}
           </TabPanel>
           <TabPanel value="p-slack">
+            {isPreviewSlackPending && (
+              <>
+                <Skeleton animation="wave" />
+              </>
+            )}
+            {isPreviewSlackError && (
+              <Stack spacing={4} width="100%">
+                <Alert severity="error">Error loading Slack preview</Alert>
+                <Stack spacing={2}>
+                  <Button variant="outlined" onClick={() => navigate(0)}>
+                    Refresh This Page
+                  </Button>
+                </Stack>
+              </Stack>
+            )}
+
             <LoadingButton
               href={`https://app.slack.com/block-kit-builder#${uriEncodedSlackPreview}`}
               target="_blank"

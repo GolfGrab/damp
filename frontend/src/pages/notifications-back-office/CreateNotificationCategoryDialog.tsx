@@ -55,6 +55,15 @@ const CreateNotificationCategoryDialog: DialogComponent<
       });
       onClose(undefined);
     },
+    onError: () => {
+      notifications.show(
+        "Error creating notification category, please try again",
+        {
+          severity: "error",
+          autoHideDuration: 5000,
+        }
+      );
+    },
   });
 
   const handleCreateNotificationCategory = () => {

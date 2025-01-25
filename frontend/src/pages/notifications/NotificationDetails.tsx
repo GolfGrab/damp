@@ -1,8 +1,10 @@
 import { Email, Sms } from "@mui/icons-material";
 import {
+  Alert,
   Avatar,
+  Button,
   Chip,
-  CircularProgress,
+  Skeleton,
   Stack,
   styled,
   SvgIcon,
@@ -11,7 +13,8 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useAuth } from "react-oidc-context";
+import { useNavigate, useParams } from "react-router-dom";
 import { apiClient } from "../../api";
 import {
   AccountChannelTypeEnum,
@@ -20,12 +23,12 @@ import {
 import NotificationCenterGenericLayout from "../../layout/NotificationCenterGenericLayout";
 import SlackLogo from "./components/SlackLogo.svg";
 
-const useNotificationQuery = (notificationId: number) =>
+const useNotificationQuery = (userId: string, notificationId: number) =>
   useQuery({
-    queryKey: ["notification", notificationId],
+    queryKey: ["notification", userId, notificationId],
     queryFn: () =>
       apiClient.NotificationModuleApi.mNotificationControllerGetNotificationsForUserById(
-        "test",
+        userId,
         notificationId
       ),
   });
@@ -50,7 +53,10 @@ const Layout = ({ children }: React.PropsWithChildren) => {
 
 const NotificationDetails = () => {
   const { notificationId } = useParams();
-  const { data, isLoading, isError } = useNotificationQuery(
+  const auth = useAuth();
+  const navigate = useNavigate();
+  const { data, isLoading, isError, refetch } = useNotificationQuery(
+    auth.user?.profile.email ?? "",
     Number(notificationId)
   );
   const notificationDetails = {
@@ -84,14 +90,28 @@ const NotificationDetails = () => {
   if (isLoading) {
     return (
       <Layout>
-        <CircularProgress />
+        <Stack spacing={4} width="100%">
+          <Skeleton height={40} />
+          <Skeleton height={40} />
+          <Skeleton height={40} />
+        </Stack>
       </Layout>
     );
   }
   if (isError) {
     return (
       <Layout>
-        <Typography variant="h6">Something went wrong</Typography>
+        <Stack spacing={4} width="100%">
+          <Alert severity="error">Error loading notification</Alert>
+          <Stack spacing={2}>
+            <Button variant="contained" onClick={() => refetch()}>
+              Try Again
+            </Button>
+            <Button variant="outlined" onClick={() => navigate(0)}>
+              Refresh This Page
+            </Button>
+          </Stack>
+        </Stack>
       </Layout>
     );
   }

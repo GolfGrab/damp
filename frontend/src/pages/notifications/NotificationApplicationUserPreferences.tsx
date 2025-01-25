@@ -1,4 +1,6 @@
 import {
+  Alert,
+  Button,
   Checkbox,
   Paper,
   Skeleton,
@@ -12,8 +14,9 @@ import {
   Typography,
 } from "@mui/material";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNotifications } from "@toolpad/core";
 import { useAuth } from "react-oidc-context";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { apiClient } from "../../api";
 import { UserPreferenceChannelTypeEnum } from "../../api/generated";
 import { allChannels } from "./constants/allChannels";
@@ -22,11 +25,14 @@ const NotificationApplicationUserPreferences = () => {
   const auth = useAuth();
   const queryClient = useQueryClient();
   const { applicationId } = useParams();
+  const navigate = useNavigate();
+  const notifications = useNotifications();
 
   const {
     data: userAccounts,
     isLoading: isUserAccountsLoading,
     isError: isUserAccountsError,
+    refetch: refetchUserAccounts,
   } = useQuery({
     queryKey: [
       apiClient.UserModuleApi.mUserControllerFindAllUserAccountsByUserId.name,
@@ -41,7 +47,11 @@ const NotificationApplicationUserPreferences = () => {
     },
   });
 
-  const { data: userPreferences, isError: isUserPreferencesError } = useQuery({
+  const {
+    data: userPreferences,
+    isError: isUserPreferencesError,
+    refetch: refetchUserPreferences,
+  } = useQuery({
     queryKey: [
       apiClient.UserModuleApi.mUserControllerFindAllUserPreferencesByUserId
         .name,
@@ -60,6 +70,7 @@ const NotificationApplicationUserPreferences = () => {
     data: notificationCategories,
     isLoading: isNotificationCategoriesLoading,
     isError: isNotificationCategoriesError,
+    refetch: refetchNotificationCategories,
   } = useQuery({
     queryKey: [
       apiClient.ApplicationModuleApi
@@ -103,6 +114,12 @@ const NotificationApplicationUserPreferences = () => {
         ],
       });
     },
+    onError() {
+      notifications.show("Error updating user preference, please try again", {
+        severity: "error",
+        autoHideDuration: 5000,
+      });
+    },
   });
 
   if (
@@ -113,7 +130,7 @@ const NotificationApplicationUserPreferences = () => {
     !notificationCategories
   ) {
     return (
-      <Stack spacing={4}>
+      <Stack spacing={4} width="100%">
         <Skeleton height={40} />
         <Skeleton height={400} variant="rectangular" />
       </Stack>
@@ -125,7 +142,26 @@ const NotificationApplicationUserPreferences = () => {
     isUserPreferencesError ||
     isNotificationCategoriesError
   ) {
-    return <div>Error loading user preferences</div>;
+    return (
+      <Stack spacing={4} width="100%">
+        <Alert severity="error">Error loading user data</Alert>
+        <Stack spacing={2}>
+          <Button
+            variant="contained"
+            onClick={() => {
+              refetchUserAccounts();
+              refetchUserPreferences();
+              refetchNotificationCategories();
+            }}
+          >
+            Try Again
+          </Button>
+          <Button variant="outlined" onClick={() => navigate(0)}>
+            Refresh This Page
+          </Button>
+        </Stack>
+      </Stack>
+    );
   }
 
   const channelsWithVerifiedAccountStatus = Object.values(allChannels).map(

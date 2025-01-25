@@ -1,11 +1,11 @@
 import { Add, Search } from "@mui/icons-material";
-import { Button, Stack, TextField } from "@mui/material";
+import { Alert, Button, Stack, TextField } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useQuery } from "@tanstack/react-query";
 import { useDialogs } from "@toolpad/core";
 import dayjs from "dayjs";
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { apiClient } from "../../api";
 import { NotificationCategory } from "../../api/generated";
 import CreateNotificationCategoryDialog from "./CreateNotificationCategoryDialog";
@@ -13,12 +13,14 @@ import UpdateNotificationCategoryDialog from "./UpdateNotificationCategoryDialog
 
 const ApplicationNotificationCategories = () => {
   const { applicationId } = useParams();
+  const navigate = useNavigate();
   const dialogs = useDialogs();
 
   const {
     data: notificationCategories,
     isLoading: isNotificationCategoriesLoading,
     isError: isNotificationCategoriesError,
+    refetch: refetchNotificationCategories,
   } = useQuery({
     queryKey: [
       apiClient.ApplicationModuleApi
@@ -86,12 +88,23 @@ const ApplicationNotificationCategories = () => {
     },
   ];
 
-  if (isNotificationCategoriesLoading) {
-    return <div>Loading...</div>;
-  }
-
   if (isNotificationCategoriesError) {
-    return <div>Error</div>;
+    return (
+      <Stack spacing={4} width="100%">
+        <Alert severity="error">Error loading notification categories</Alert>
+        <Stack spacing={2}>
+          <Button
+            variant="contained"
+            onClick={() => refetchNotificationCategories()}
+          >
+            Try Again
+          </Button>
+          <Button variant="outlined" onClick={() => navigate(0)}>
+            Refresh This Page
+          </Button>
+        </Stack>
+      </Stack>
+    );
   }
 
   return (
@@ -136,6 +149,7 @@ const ApplicationNotificationCategories = () => {
             },
           },
         }}
+        loading={isNotificationCategoriesLoading}
       />
     </Stack>
   );

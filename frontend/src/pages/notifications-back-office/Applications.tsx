@@ -1,5 +1,5 @@
 import { Add, Search } from "@mui/icons-material";
-import { Button, Stack, TextField } from "@mui/material";
+import { Alert, Button, Stack, TextField } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useQuery } from "@tanstack/react-query";
 import { useDialogs } from "@toolpad/core";
@@ -18,6 +18,7 @@ const Applications = () => {
     data: applications,
     isLoading: isApplicationsLoading,
     isError: isApplicationsError,
+    refetch: refetchApplications,
   } = useQuery({
     queryKey: [
       apiClient.ApplicationModuleApi.mApplicationControllerFindAllApplications,
@@ -36,12 +37,20 @@ const Applications = () => {
     )
   );
 
-  if (isApplicationsLoading) {
-    return <div>Loading...</div>;
-  }
-
   if (isApplicationsError) {
-    return <div>Error</div>;
+    return (
+      <Stack spacing={4} width="100%">
+        <Alert severity="error">Error loading applications</Alert>
+        <Stack spacing={2}>
+          <Button variant="contained" onClick={() => refetchApplications()}>
+            Try Again
+          </Button>
+          <Button variant="outlined" onClick={() => navigate(0)}>
+            Refresh This Page
+          </Button>
+        </Stack>
+      </Stack>
+    );
   }
 
   const columns: GridColDef<Application>[] = [
@@ -121,6 +130,7 @@ const Applications = () => {
         onRowDoubleClick={(row) => {
           navigate(`/notifications-back-office/applications/${row.id}/info`);
         }}
+        loading={isApplicationsLoading}
       />
     </Stack>
   );
