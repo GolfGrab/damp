@@ -60,4 +60,7 @@ export class Config {
 
   @IsString()
   readonly SMS_TWILIO_FROM_PHONE_NUMBER: string;
+
+  @IsString()
+  readonly SLACK_BOT_TOKEN: string;
 }

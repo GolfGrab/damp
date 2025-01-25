@@ -2,6 +2,7 @@ import { Config } from '@/utils/config/config-dto';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ClientProxy, RmqRecordBuilder } from '@nestjs/microservices';
 import { $Enums } from '@prisma/client';
+import { WebClient } from '@slack/web-api';
 import { PrismaService } from 'nestjs-prisma';
 import * as nodemailer from 'nodemailer';
 import { Twilio } from 'twilio';
@@ -88,6 +89,38 @@ export class MNotificationSendersService {
     });
 
     this.logger.log('Sms sent');
+  };
+
+  private readonly slackBotClientTransporter = new WebClient(
+    this.config.SLACK_BOT_TOKEN,
+  );
+
+  async sendSlackNotification(
+    notificationTask: NotificationTaskMessageDto,
+  ): Promise<void> {
+    this.logger.log('Processing slack task...');
+    await this.processTask(notificationTask, this.sendSlack);
+  }
+
+  private sendSlack = async ({
+    recipientAddress,
+    compiledMessage,
+  }: MessageData): Promise<void> => {
+    this.logger.log(`Sending slack to: ${recipientAddress}`);
+    this.logger.log(`Message: ${compiledMessage}`);
+
+    const receiver = await this.slackBotClientTransporter.conversations.open({
+      users: recipientAddress,
+    });
+    if (!receiver.ok || !receiver.channel?.id) {
+      throw new Error('Failed to open conversation');
+    }
+    const receiverChannelId = receiver.channel?.id;
+    await this.slackBotClientTransporter.chat.postMessage({
+      channel: receiverChannelId,
+      text: compiledMessage,
+    });
+    this.logger.log('Slack sent');
   };
 
   private async processTask(

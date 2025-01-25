@@ -59,4 +59,25 @@ export class MNotificationSendersController {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     channel.ack(originalMsg);
   }
+
+  @UseInterceptors(
+    new RateLimitInterceptor($Enums.ChannelType.SLACK, {
+      quota: 3,
+      timeWindowMs: 10000,
+    }),
+  )
+  @MessagePattern($Enums.ChannelType.SLACK)
+  async slackConsumer(
+    @Payload() data: NotificationTaskMessageDto,
+    @Ctx() context: RmqContext,
+  ) {
+    this.logger.log('Consuming slack notification task');
+    await this.mNotificationSendersService.sendSlackNotification(data);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    channel.ack(originalMsg);
+  }
 }
