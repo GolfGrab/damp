@@ -67,7 +67,6 @@ export class NotificationsService {
             include: {
               userPreferences: {
                 where: {
-                  // allow sending notification to unverified accounts for OTP
                   isPreferred: true,
                   userId: {
                     in: createNotificationDto.recipientIds,

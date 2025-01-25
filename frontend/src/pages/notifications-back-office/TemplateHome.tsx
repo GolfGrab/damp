@@ -168,7 +168,22 @@ const TemplateHome = () => {
       headerName: "Actions",
       description: "This column has a value getter and is not sortable.",
       renderCell: ({ row }) => (
-        <>
+        <Stack
+          direction="row"
+          spacing={1}
+          justifyContent="flex-start"
+          alignItems="center"
+          height="100%"
+        >
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={() => {
+              navigate(`/notifications-back-office/templates/${row.id}`);
+            }}
+          >
+            Info
+          </Button>
           <Button
             variant="outlined"
             color="error"
@@ -188,9 +203,9 @@ const TemplateHome = () => {
           >
             Delete
           </Button>
-        </>
+        </Stack>
       ),
-      flex: 1,
+      width: 150,
     },
   ];
 
@@ -232,7 +247,7 @@ const TemplateHome = () => {
         columns={columns}
         initialState={{ pagination: { paginationModel } }}
         onPaginationModelChange={setPaginationModel}
-        pageSizeOptions={[5, 10]}
+        pageSizeOptions={[5, 10, 20, 50, 100]}
         disableColumnMenu
         paginationMode="server"
         rowCount={data?.data.meta?.total}
@@ -240,7 +255,6 @@ const TemplateHome = () => {
         onRowDoubleClick={(row) => {
           navigate(`/notifications-back-office/templates/${row.id}`);
         }}
-        sx={{ border: 0 }}
       />
     </Stack>
   );

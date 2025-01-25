@@ -222,6 +222,7 @@ const ApplicationInfo = () => {
             },
             "& .MuiInputBase-input": {
               backgroundColor: theme.palette.divider,
+              borderRadius: "8px 0 0 8px",
             },
           }}
           slotProps={{
@@ -266,6 +267,7 @@ const ApplicationInfo = () => {
               },
               "& .MuiInputBase-input": {
                 backgroundColor: theme.palette.divider,
+                borderRadius: "8px 0 0 8px",
               },
             }}
             slotProps={{
@@ -284,7 +286,9 @@ const ApplicationInfo = () => {
                       <IconButton
                         size="small"
                         onClick={() => {
-                          navigator.clipboard.writeText(application?.apiKey || "");
+                          navigator.clipboard.writeText(
+                            application?.apiKey || ""
+                          );
                           notifications.show("API key copied to clipboard", {
                             severity: "success",
                             autoHideDuration: 2000,

@@ -12,7 +12,6 @@ const BackOfficeGenericLayout = ({
 }: BackOfficeGenericLayoutProps) => {
   return (
     <DashboardLayout
-      defaultSidebarCollapsed
       branding={{
         title: "Notification Back Office",
         homeUrl: "/",

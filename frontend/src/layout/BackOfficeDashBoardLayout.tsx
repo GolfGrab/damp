@@ -10,7 +10,6 @@ const BackOfficeDashBoardLayout = ({
 }: BackOfficeDashBoardLayoutProps) => {
   return (
     <DashboardLayout
-      defaultSidebarCollapsed
       branding={{
         title: "Notification Back Office",
         homeUrl: "/",

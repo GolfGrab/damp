@@ -1,93 +1,39 @@
-import { Button, List, ListItem } from "@mui/material";
-import { useEffect, useState } from "react";
+import { Button, Stack, Typography } from "@mui/material";
 import { useAuth } from "react-oidc-context";
 import { useNavigate } from "react-router-dom";
-import { apiClient } from "../../api";
-import reactLogo from "/react.svg";
-import viteLogo from "/vite.svg";
 
 function Home() {
-  const [count, setCount] = useState(0);
-  const auth = useAuth();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    apiClient.AuthApi.authControllerMe().then((res) => {
-      console.log(res);
-    });
-  }, []);
+  const auth = useAuth();
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
+    <Stack spacing={2}>
+      <img
+        loading="lazy"
+        src="small-poster.jpg"
+        alt="small poster"
+        style={{
+          objectFit: "contain",
+          height: "60dvh",
+        }}
+      />
+      <Typography variant="h5" textAlign="center">
+        Welcome {auth.user?.profile?.email}
+      </Typography>
+      <Stack
+        direction="row"
+        spacing={2}
+        alignItems="center"
+        justifyContent="center"
+      >
         <Button
           variant="contained"
-          onClick={() => setCount((count) => count + 1)}
+          onClick={() => void navigate("/notifications")}
         >
-          count is {count}
+          notifications center
         </Button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-      {auth.isAuthenticated ? (
-        <div>
-          Hello {JSON.stringify(auth.user?.profile)}{" "}
-          <div>
-            access token: {auth.user?.access_token} <br />
-          </div>
-          <Button
-            variant="contained"
-            onClick={() => void auth.signoutRedirect()}
-          >
-            Log out
-          </Button>
-        </div>
-      ) : (
-        <Button
-          variant="contained"
-          onClick={() =>
-            void auth.signinRedirect({
-              state: {
-                returnTo: window.location,
-              },
-            })
-          }
-        >
-          Log in
-        </Button>
-      )}
-      <List>
-        <ListItem>
-          <Button
-            variant="contained"
-            onClick={() => void navigate("/notifications")}
-          >
-            notifications
-          </Button>
-        </ListItem>
-        <ListItem>
-          <Button
-            variant="contained"
-            onClick={() => void navigate("/concerts/New York")}
-          >
-            Concerts in New York
-          </Button>
-        </ListItem>
-      </List>
-    </>
+      </Stack>
+    </Stack>
   );
 }
 

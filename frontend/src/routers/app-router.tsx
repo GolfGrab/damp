@@ -8,13 +8,13 @@ import BackOfficeGenericLayout from "../layout/BackOfficeGenericLayout";
 import NotificationCenterGenericLayout from "../layout/NotificationCenterGenericLayout";
 import Callback from "../pages/auth/LoginCallback";
 import Home from "../pages/home/Home";
-import TemplateEdit from "../pages/notifications-back-office/TemplateEdit";
-import TemplateHome from "../pages/notifications-back-office/TemplateHome";
 import ApplicationDetailsTabsLayout from "../pages/notifications-back-office/ApplicationDetailsTabsLayout";
 import ApplicationInfo from "../pages/notifications-back-office/ApplicationInfo";
 import ApplicationNotificationCategories from "../pages/notifications-back-office/ApplicationNotificationCategories";
 import ServerSideGridWithReactQuery from "../pages/notifications-back-office/ApplicationNotificationTasks";
 import Applications from "../pages/notifications-back-office/Applications";
+import TemplateEdit from "../pages/notifications-back-office/TemplateEdit";
+import TemplateHome from "../pages/notifications-back-office/TemplateHome";
 import Accounts from "../pages/notifications/Accounts";
 import ConfigureAccount from "../pages/notifications/ConfigureAccount";
 import ConnectAccount from "../pages/notifications/ConnectAccount";
@@ -195,14 +195,6 @@ const appRouter = createBrowserRouter([
                     path: ":templateId",
                   },
                 ],
-              },
-              {
-                Component: () => (
-                  <BackOfficeGenericLayout title="Analytics">
-                    analytics
-                  </BackOfficeGenericLayout>
-                ),
-                path: "analytics",
               },
               {
                 path: "api-documentation",

@@ -2,7 +2,6 @@ import {
   DocumentScannerOutlined,
   HomeOutlined,
   IntegrationInstructionsOutlined,
-  QueryStatsOutlined,
   SmartToyOutlined,
   WidgetsOutlined,
 } from "@mui/icons-material";
@@ -25,12 +24,6 @@ export const backOfficeNavigation: Navigation = [
     icon: <DocumentScannerOutlined />,
     pattern: "notifications-back-office/templates{/:templateId}*",
   },
-  {
-    title: "Analytics",
-    segment: "notifications-back-office/analytics",
-    icon: <QueryStatsOutlined />,
-  },
-
   {
     title: "Api Documentation Swagger",
     segment: "notifications-back-office/api-documentation/swagger",

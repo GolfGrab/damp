@@ -110,13 +110,16 @@ const Applications = () => {
         rows={filteredApplications}
         columns={columns}
         disableColumnMenu
-        pageSizeOptions={[5, 10, 20]}
+        pageSizeOptions={[5, 10, 20, 50, 100]}
         initialState={{
           pagination: {
             paginationModel: {
               pageSize: 5,
             },
           },
+        }}
+        onRowDoubleClick={(row) => {
+          navigate(`/notifications-back-office/applications/${row.id}/info`);
         }}
       />
     </Stack>
