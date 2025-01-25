@@ -61,6 +61,7 @@ export class NotificationsService {
           await this.prisma.notificationCategory.findUniqueOrThrow({
             where: {
               id: createNotificationDto.notificationCategoryId,
+              deletedAt: null,
             },
             include: {
               userPreferences: {
@@ -252,13 +253,30 @@ export class NotificationsService {
   }
 
   findAll() {
-    return this.prisma.notification.findMany();
+    return this.prisma.notification.findMany({
+      where: {
+        application: {
+          id: {
+            not: this.config.SYSTEM_APPLICATION_ID,
+          },
+        },
+      },
+    });
   }
 
   findAllByApplicationId(applicationId: string) {
     return this.prisma.notification.findMany({
       where: {
-        applicationId,
+        AND: [
+          { applicationId: applicationId },
+          {
+            application: {
+              id: {
+                not: this.config.SYSTEM_APPLICATION_ID,
+              },
+            },
+          },
+        ],
       },
     });
   }
@@ -267,6 +285,11 @@ export class NotificationsService {
     return this.prisma.notification.findMany({
       where: {
         templateId,
+        application: {
+          id: {
+            not: this.config.SYSTEM_APPLICATION_ID,
+          },
+        },
       },
     });
   }
@@ -275,6 +298,11 @@ export class NotificationsService {
     return this.prisma.notification.findMany({
       where: {
         notificationCategoryId,
+        application: {
+          id: {
+            not: this.config.SYSTEM_APPLICATION_ID,
+          },
+        },
       },
     });
   }
@@ -283,6 +311,11 @@ export class NotificationsService {
     return this.prisma.notification.findUniqueOrThrow({
       where: {
         id,
+        application: {
+          id: {
+            not: this.config.SYSTEM_APPLICATION_ID,
+          },
+        },
       },
     });
   }
@@ -291,7 +324,6 @@ export class NotificationsService {
     userId: string,
     paginateQuery: PaginationQueryDto,
   ) {
-    // TODO Omit system OPT
     return paginate<
       OutputNotificationWithCompiledMessageAndNotificationTaskDto,
       Prisma.NotificationFindManyArgs
@@ -299,6 +331,11 @@ export class NotificationsService {
       prismaQueryModel: this.prisma.notification,
       findManyArgs: {
         where: {
+          application: {
+            id: {
+              not: this.config.SYSTEM_APPLICATION_ID,
+            },
+          },
           notificationTasks: {
             some: {
               userId,
@@ -311,13 +348,7 @@ export class NotificationsService {
               userId,
             },
           },
-          compiledMessages: {
-            where: {
-              messageType: {
-                in: [$Enums.MessageType.HTML, $Enums.MessageType.TEXT],
-              },
-            },
-          },
+          compiledMessages: true,
           application: {
             select: {
               name: true,
@@ -335,9 +366,13 @@ export class NotificationsService {
   }
 
   findOneByUser(userId: string, notificationId: number) {
-    // TODO Omit system OPT
     return this.prisma.notification.findFirstOrThrow({
       where: {
+        application: {
+          id: {
+            not: this.config.SYSTEM_APPLICATION_ID,
+          },
+        },
         id: notificationId,
         notificationTasks: {
           some: {
@@ -351,13 +386,7 @@ export class NotificationsService {
             userId,
           },
         },
-        compiledMessages: {
-          where: {
-            messageType: {
-              in: [$Enums.MessageType.HTML, $Enums.MessageType.TEXT],
-            },
-          },
-        },
+        compiledMessages: true,
         application: {
           select: {
             name: true,

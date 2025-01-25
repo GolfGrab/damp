@@ -1,4 +1,5 @@
 import { NotificationsService } from '@/modules/m-notification/notifications/notifications.service';
+import { Config } from '@/utils/config/config-dto';
 import {
   ForbiddenException,
   Injectable,
@@ -16,6 +17,7 @@ export class AccountsService {
     private readonly prisma: PrismaService,
     private readonly notificationService: NotificationsService,
     private readonly userPreferencesService: UserPreferencesService,
+    private readonly config: Config,
   ) {}
 
   generateOtp() {
@@ -184,7 +186,14 @@ export class AccountsService {
   findAllByUserId(userId: string) {
     return this.prisma.account.findMany({
       where: {
-        userId,
+        AND: [
+          { userId },
+          {
+            userId: {
+              not: this.config.SYSTEM_USER_ID,
+            },
+          },
+        ],
       },
     });
   }
@@ -192,6 +201,9 @@ export class AccountsService {
   remove(userId: string, channelType: prisma.$Enums.ChannelType) {
     return this.prisma.account.delete({
       where: {
+        userId: {
+          not: this.config.SYSTEM_USER_ID,
+        },
         userId_channelType: {
           userId,
           channelType,

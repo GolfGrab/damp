@@ -1,3 +1,4 @@
+import { Config } from '@/utils/config/config-dto';
 import { Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { kebabCase } from 'lodash';
@@ -7,7 +8,10 @@ import { UpdateNotificationCategoryDto } from './dto/update-notification-categor
 
 @Injectable()
 export class NotificationCategoriesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly config: Config,
+  ) {}
 
   create(
     applicationId: string,
@@ -30,13 +34,26 @@ export class NotificationCategoriesService {
   }
 
   findAll() {
-    return this.prisma.notificationCategory.findMany();
+    return this.prisma.notificationCategory.findMany({
+      where: {
+        deletedAt: null,
+        applicationId: {
+          not: this.config.SYSTEM_APPLICATION_ID,
+        },
+      },
+    });
   }
 
   findAllByApplicationId(applicationId: string) {
     return this.prisma.notificationCategory.findMany({
       where: {
         applicationId,
+        application: {
+          id: {
+            not: this.config.SYSTEM_APPLICATION_ID,
+          },
+        },
+        deletedAt: null,
       },
     });
   }
@@ -45,6 +62,12 @@ export class NotificationCategoriesService {
     return this.prisma.notificationCategory.findUniqueOrThrow({
       where: {
         id,
+        deletedAt: null,
+        application: {
+          id: {
+            not: this.config.SYSTEM_APPLICATION_ID,
+          },
+        },
       },
     });
   }
@@ -57,6 +80,11 @@ export class NotificationCategoriesService {
     return this.prisma.notificationCategory.update({
       where: {
         id,
+        application: {
+          id: {
+            not: this.config.SYSTEM_APPLICATION_ID,
+          },
+        },
       },
       data: {
         ...updateNotificationCategoryDto,
@@ -69,6 +97,11 @@ export class NotificationCategoriesService {
     return this.prisma.notificationCategory.update({
       where: {
         id,
+        application: {
+          id: {
+            not: this.config.SYSTEM_APPLICATION_ID,
+          },
+        },
       },
       data: {
         updatedByUserId: user.id,

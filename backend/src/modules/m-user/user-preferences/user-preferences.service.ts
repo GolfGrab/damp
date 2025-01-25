@@ -1,3 +1,4 @@
+import { Config } from '@/utils/config/config-dto';
 import { Injectable } from '@nestjs/common';
 import * as prisma from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
@@ -5,7 +6,10 @@ import { UpsertUserPreferenceDto } from './dto/upsert-user-preference.dto';
 
 @Injectable()
 export class UserPreferencesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly config: Config,
+  ) {}
 
   upsert(
     userId: string,
@@ -15,6 +19,14 @@ export class UserPreferencesService {
   ) {
     return this.prisma.userPreference.upsert({
       where: {
+        userId: {
+          not: this.config.SYSTEM_USER_ID,
+        },
+        notificationCategory: {
+          createdByUserId: {
+            not: this.config.SYSTEM_USER_ID,
+          },
+        },
         userId_channelType_notificationCategoryId: {
           userId,
           channelType,
@@ -34,7 +46,19 @@ export class UserPreferencesService {
   findAllByUserId(userId: string) {
     return this.prisma.userPreference.findMany({
       where: {
-        userId,
+        AND: [
+          { userId: userId },
+          {
+            userId: {
+              not: this.config.SYSTEM_USER_ID,
+            },
+          },
+        ],
+        notificationCategory: {
+          createdByUserId: {
+            not: this.config.SYSTEM_USER_ID,
+          },
+        },
       },
     });
   }
@@ -48,6 +72,11 @@ export class UserPreferencesService {
       where: {
         userId,
         channelType,
+        notificationCategory: {
+          createdByUserId: {
+            not: this.config.SYSTEM_USER_ID,
+          },
+        },
       },
       data: {
         ...upsertUserPreferenceDto,
