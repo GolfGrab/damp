@@ -1,4 +1,4 @@
-import { OpenInNew } from "@mui/icons-material";
+import { ContentCopy, OpenInNew } from "@mui/icons-material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
@@ -8,11 +8,15 @@ import {
   Box,
   Button,
   CircularProgress,
+  IconButton,
   Skeleton,
   Stack,
+  Tooltip,
+  Typography,
 } from "@mui/material";
 import Tab from "@mui/material/Tab";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useNotifications } from "@toolpad/core";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiClient } from "../../api";
@@ -66,6 +70,7 @@ const TemplateEdit = () => {
   const navigate = useNavigate();
   const [currentTab, setCurrentTab] = useState("edit");
   const client = useClient();
+  const notifications = useNotifications();
   const { editor, isSaved, saveContent } = useRichTextEditor({
     templateId: templateId ?? "",
   });
@@ -143,6 +148,23 @@ const TemplateEdit = () => {
   return (
     <div>
       <Box sx={{ width: "100%", typography: "body1" }}>
+        <Stack direction="row" spacing={2}>
+          <Typography variant="h4">Template: {template?.data.id}</Typography>
+          <Tooltip title="Copy To Clipboard" arrow>
+            <IconButton
+              size="small"
+              onClick={() => {
+                navigator.clipboard.writeText(template?.data.id || "");
+                notifications.show("Template ID copied to clipboard", {
+                  severity: "success",
+                  autoHideDuration: 2000,
+                });
+              }}
+            >
+              <ContentCopy />
+            </IconButton>
+          </Tooltip>
+        </Stack>
         <TabContext value={currentTab}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
             <TabList

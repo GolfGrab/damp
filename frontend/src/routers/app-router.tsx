@@ -183,10 +183,8 @@ const appRouter = createBrowserRouter([
                   },
                   {
                     Component: () => {
-                      const { templateId } = useParams();
                       return (
                         <BackOfficeGenericLayout
-                          title={"Template: " + templateId}
                         >
                           <TemplateEdit />
                         </BackOfficeGenericLayout>
