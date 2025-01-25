@@ -50,28 +50,36 @@ export class NotificationsService {
     this.logger.log('applicationId ' + applicationId);
 
     this.logger.log('get userPreferences');
-    const userPreferences = (
-      await this.prisma.notificationCategory.findUniqueOrThrow({
-        where: {
-          id: createNotificationDto.notificationCategoryId,
-        },
-        include: {
-          userPreferences: {
+    this.logger.log(
+      'Is it OTP? ' +
+        Object.values($Enums.ChannelType)
+          .map((channelType) => `System_${channelType}_OTP`)
+          .includes(createNotificationDto.notificationCategoryId),
+    );
+    const userPreferences = Object.values($Enums.ChannelType)
+      .map((channelType) => `System_${channelType}_OTP`)
+      .includes(createNotificationDto.notificationCategoryId)
+      ? (
+          await this.prisma.notificationCategory.findUniqueOrThrow({
             where: {
-              // allow sending notification to unverified accounts for OTP
-              isPreferred: Object.values($Enums.ChannelType)
-                .map((channelType) => `System_${channelType}_OTP`)
-                .includes(createNotificationDto.notificationCategoryId)
-                ? undefined
-                : true,
-              userId: {
-                in: createNotificationDto.recipientIds,
+              id: createNotificationDto.notificationCategoryId,
+            },
+            include: {
+              userPreferences: {
+                where: {
+                  // allow sending notification to unverified accounts for OTP
+                  isPreferred: true,
+                  userId: {
+                    in: createNotificationDto.recipientIds,
+                  },
+                },
               },
             },
-          },
-        },
-      })
-    ).userPreferences;
+          })
+        ).userPreferences
+      : createNotificationDto.recipientIds.map((userId) => ({
+          userId,
+        }));
 
     if (userPreferences.length === 0) {
       this.logger.log('No user preferences to send notification');
