@@ -1,5 +1,11 @@
-import { CloudDone } from "@mui/icons-material";
-import { CircularProgress, Stack, Typography } from "@mui/material";
+import { CloudDone, HelpOutline } from "@mui/icons-material";
+import {
+  CircularProgress,
+  FormHelperText,
+  Link,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { type Editor } from "@tiptap/react";
 import {
   LinkBubbleMenu,
@@ -113,6 +119,27 @@ export default function RichTextEditor({
           </MenuControlsContainer>
         }
       />
+      <FormHelperText>
+        <Link
+          href="https://liquidjs.com/tutorials/intro-to-liquid.html"
+          target="_blank"
+          rel="noreferrer"
+        >
+          <Stack
+            direction="row"
+            width="100%"
+            alignContent="end"
+            justifyContent="flex-end"
+            spacing={1}
+            alignItems="center"
+          >
+            <HelpOutline fontSize="small" />
+            <Typography variant="caption">
+              Learn more about Liquid syntax
+            </Typography>
+          </Stack>
+        </Link>
+      </FormHelperText>
     </RichTextEditorProvider>
   );
 }

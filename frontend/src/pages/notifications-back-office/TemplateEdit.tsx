@@ -261,12 +261,7 @@ const TemplateEdit = () => {
             {previewSmsData?.data}
           </TabPanel>
           <TabPanel value="p-slack">
-            {isPreviewSlackPending && (
-              <>
-                <Skeleton animation="wave" />
-              </>
-            )}
-            {isPreviewSlackError && (
+            {isPreviewSlackError ? (
               <Stack spacing={4} width="100%">
                 <Alert severity="error">Error loading Slack preview</Alert>
                 <Stack spacing={2}>
@@ -275,18 +270,18 @@ const TemplateEdit = () => {
                   </Button>
                 </Stack>
               </Stack>
+            ) : (
+              <LoadingButton
+                href={`https://app.slack.com/block-kit-builder#${uriEncodedSlackPreview}`}
+                target="_blank"
+                loading={isPreviewSlackPending}
+                disabled={isPreviewSlackPending}
+                endIcon={<OpenInNew />}
+                variant="contained"
+              >
+                Preview in Slack Block Kit Builder
+              </LoadingButton>
             )}
-
-            <LoadingButton
-              href={`https://app.slack.com/block-kit-builder#${uriEncodedSlackPreview}`}
-              target="_blank"
-              loading={isPreviewSlackPending}
-              disabled={isPreviewSlackPending}
-              endIcon={<OpenInNew />}
-              variant="contained"
-            >
-              Preview in Slack Block Kit Builder
-            </LoadingButton>
           </TabPanel>
         </TabContext>
       </Box>
