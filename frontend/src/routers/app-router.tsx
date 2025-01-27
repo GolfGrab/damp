@@ -15,6 +15,7 @@ import ServerSideGridWithReactQuery from "../pages/notifications-back-office/App
 import Applications from "../pages/notifications-back-office/Applications";
 import TemplateEdit from "../pages/notifications-back-office/TemplateEdit";
 import TemplateHome from "../pages/notifications-back-office/TemplateHome";
+import Users from "../pages/notifications-back-office/Users";
 import Accounts from "../pages/notifications/Accounts";
 import ConfigureAccount from "../pages/notifications/ConfigureAccount";
 import ConnectAccount from "../pages/notifications/ConnectAccount";
@@ -133,6 +134,19 @@ const appRouter = createBrowserRouter([
             path: "notifications-back-office",
             children: [
               {
+                path: "users",
+                children: [
+                  {
+                    Component: () => (
+                      <BackOfficeGenericLayout title="Users">
+                        <Users />
+                      </BackOfficeGenericLayout>
+                    ),
+                    index: true,
+                  },
+                ],
+              },
+              {
                 path: "applications",
                 children: [
                   {
@@ -184,8 +198,7 @@ const appRouter = createBrowserRouter([
                   {
                     Component: () => {
                       return (
-                        <BackOfficeGenericLayout
-                        >
+                        <BackOfficeGenericLayout>
                           <TemplateEdit />
                         </BackOfficeGenericLayout>
                       );

@@ -13,6 +13,11 @@ export const backOfficeNavigation: Navigation = [
     icon: <HomeOutlined />,
   },
   {
+    title: "Users",
+    segment: "notifications-back-office/users",
+    icon: <WidgetsOutlined />
+  },
+  {
     title: "Applications",
     segment: "notifications-back-office/applications",
     icon: <WidgetsOutlined />,

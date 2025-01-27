@@ -15,11 +15,17 @@ datasource db {
 }
 
 model User {
-  id        String   @id
-  email     String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String   @id
+  email           String   @unique
+  createdAt       DateTime @default(now())
+  createdByUserId String?
+  updatedAt       DateTime @updatedAt
+  updatedByUserId String?
 
+  createdByUser                 User?                   @relation("createdByUser", fields: [createdByUserId], references: [id], onUpdate: Cascade)
+  updatedByUser                 User?                   @relation("updatedByUser", fields: [updatedByUserId], references: [id], onUpdate: Cascade)
+  createdUsers                  User[]                  @relation("createdByUser")
+  updatedUsers                  User[]                  @relation("updatedByUser")
   accounts                      Account[]
   userPreferences               UserPreference[]
   notificationRecipients        NotificationRecipient[]

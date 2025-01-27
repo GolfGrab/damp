@@ -411,7 +411,18 @@ export class NotificationsService {
       findManyArgs: {
         where: {
           notification: {
-            applicationId,
+            AND: [
+              {
+                applicationId,
+              },
+              {
+                application: {
+                  id: {
+                    not: this.config.SYSTEM_APPLICATION_ID,
+                  },
+                },
+              },
+            ],
           },
         },
         orderBy: {

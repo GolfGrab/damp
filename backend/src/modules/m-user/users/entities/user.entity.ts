@@ -21,7 +21,19 @@ export class User implements prisma.User {
 
   @ApiProperty({
     type: String,
+    nullable: true,
+  })
+  createdByUserId: string | null;
+
+  @ApiProperty({
+    type: String,
     format: 'date-time',
   })
   updatedAt: Date;
+
+  @ApiProperty({
+    type: String,
+    nullable: true,
+  })
+  updatedByUserId: string | null;
 }

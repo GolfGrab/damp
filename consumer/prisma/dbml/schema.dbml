@@ -6,7 +6,9 @@ Table User {
   id String [pk]
   email String [unique, not null]
   createdAt DateTime [default: `now()`, not null]
+  createdByUserId String
   updatedAt DateTime [not null]
+  updatedByUserId String
 }
 
 Table Account {
@@ -177,6 +179,10 @@ Enum ChannelType {
   SMS
   SLACK
 }
+
+Ref: User.createdByUserId - User.id
+
+Ref: User.updatedByUserId - User.id
 
 Ref: Account.userId > User.id
 

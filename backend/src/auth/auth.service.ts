@@ -66,6 +66,8 @@ export class AuthService {
         create: {
           id: userinfo.email,
           email: userinfo.email,
+          createdByUserId: this.config.SYSTEM_USER_ID,
+          updatedByUserId: this.config.SYSTEM_USER_ID,
         },
         update: {},
       });

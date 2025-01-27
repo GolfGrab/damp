@@ -256,6 +256,19 @@ export interface CreateApplicationDto {
 /**
  * 
  * @export
+ * @interface CreateManyUsersDto
+ */
+export interface CreateManyUsersDto {
+    /**
+     * 
+     * @type {Array<CreateUserDto>}
+     * @memberof CreateManyUsersDto
+     */
+    'users': Array<CreateUserDto>;
+}
+/**
+ * 
+ * @export
  * @interface CreateNotificationCategoryDto
  */
 export interface CreateNotificationCategoryDto {
@@ -343,6 +356,12 @@ export interface CreateUserDto {
      * @memberof CreateUserDto
      */
     'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateUserDto
+     */
+    'email': string;
 }
 /**
  * 
@@ -682,10 +701,10 @@ export interface PaginatedResponseOfNotificationTask {
     'data'?: Array<NotificationTask>;
     /**
      * 
-     * @type {PaginatedResponseOfTemplateAllOfMeta}
+     * @type {PaginatedResponseOfUserAllOfMeta}
      * @memberof PaginatedResponseOfNotificationTask
      */
-    'meta'?: PaginatedResponseOfTemplateAllOfMeta;
+    'meta'?: PaginatedResponseOfUserAllOfMeta;
 }
 /**
  * 
@@ -701,10 +720,10 @@ export interface PaginatedResponseOfOutputNotificationWithCompiledMessageAndNoti
     'data'?: Array<OutputNotificationWithCompiledMessageAndNotificationTaskDto>;
     /**
      * 
-     * @type {PaginatedResponseOfTemplateAllOfMeta}
+     * @type {PaginatedResponseOfUserAllOfMeta}
      * @memberof PaginatedResponseOfOutputNotificationWithCompiledMessageAndNotificationTaskDto
      */
-    'meta'?: PaginatedResponseOfTemplateAllOfMeta;
+    'meta'?: PaginatedResponseOfUserAllOfMeta;
 }
 /**
  * 
@@ -720,51 +739,70 @@ export interface PaginatedResponseOfTemplate {
     'data'?: Array<Template>;
     /**
      * 
-     * @type {PaginatedResponseOfTemplateAllOfMeta}
+     * @type {PaginatedResponseOfUserAllOfMeta}
      * @memberof PaginatedResponseOfTemplate
      */
-    'meta'?: PaginatedResponseOfTemplateAllOfMeta;
+    'meta'?: PaginatedResponseOfUserAllOfMeta;
 }
 /**
  * 
  * @export
- * @interface PaginatedResponseOfTemplateAllOfMeta
+ * @interface PaginatedResponseOfUser
  */
-export interface PaginatedResponseOfTemplateAllOfMeta {
+export interface PaginatedResponseOfUser {
+    /**
+     * 
+     * @type {Array<User>}
+     * @memberof PaginatedResponseOfUser
+     */
+    'data'?: Array<User>;
+    /**
+     * 
+     * @type {PaginatedResponseOfUserAllOfMeta}
+     * @memberof PaginatedResponseOfUser
+     */
+    'meta'?: PaginatedResponseOfUserAllOfMeta;
+}
+/**
+ * 
+ * @export
+ * @interface PaginatedResponseOfUserAllOfMeta
+ */
+export interface PaginatedResponseOfUserAllOfMeta {
     /**
      * 
      * @type {number}
-     * @memberof PaginatedResponseOfTemplateAllOfMeta
+     * @memberof PaginatedResponseOfUserAllOfMeta
      */
     'total'?: number;
     /**
      * 
      * @type {number}
-     * @memberof PaginatedResponseOfTemplateAllOfMeta
+     * @memberof PaginatedResponseOfUserAllOfMeta
      */
     'lastPage'?: number;
     /**
      * 
      * @type {number}
-     * @memberof PaginatedResponseOfTemplateAllOfMeta
+     * @memberof PaginatedResponseOfUserAllOfMeta
      */
     'currentPage'?: number;
     /**
      * 
      * @type {number}
-     * @memberof PaginatedResponseOfTemplateAllOfMeta
+     * @memberof PaginatedResponseOfUserAllOfMeta
      */
     'perPage'?: number;
     /**
      * 
      * @type {number}
-     * @memberof PaginatedResponseOfTemplateAllOfMeta
+     * @memberof PaginatedResponseOfUserAllOfMeta
      */
     'prev'?: number | null;
     /**
      * 
      * @type {number}
-     * @memberof PaginatedResponseOfTemplateAllOfMeta
+     * @memberof PaginatedResponseOfUserAllOfMeta
      */
     'next'?: number | null;
 }
@@ -936,13 +974,31 @@ export interface User {
      * @type {string}
      * @memberof User
      */
+    'email': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof User
+     */
     'createdAt': string;
     /**
      * 
      * @type {string}
      * @memberof User
      */
+    'createdByUserId': string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof User
+     */
     'updatedAt': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof User
+     */
+    'updatedByUserId': string | null;
 }
 /**
  * 
@@ -3347,6 +3403,10 @@ export const UserModuleApiAxiosParamCreator = function (configuration?: Configur
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication Access_Token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -3437,10 +3497,15 @@ export const UserModuleApiAxiosParamCreator = function (configuration?: Configur
         },
         /**
          * 
+         * @param {number} [page] 
+         * @param {number} [perPage] 
+         * @param {MUserControllerFindAllUsersSortFieldEnum} [sortField] 
+         * @param {MUserControllerFindAllUsersSortOrderEnum} [sortOrder] 
+         * @param {string} [search] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        mUserControllerFindAllUsers: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        mUserControllerFindAllUsers: async (page?: number, perPage?: number, sortField?: MUserControllerFindAllUsersSortFieldEnum, sortOrder?: MUserControllerFindAllUsersSortOrderEnum, search?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/m-user/users`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -3452,6 +3517,26 @@ export const UserModuleApiAxiosParamCreator = function (configuration?: Configur
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            if (page !== undefined) {
+                localVarQueryParameter['page'] = page;
+            }
+
+            if (perPage !== undefined) {
+                localVarQueryParameter['perPage'] = perPage;
+            }
+
+            if (sortField !== undefined) {
+                localVarQueryParameter['sortField'] = sortField;
+            }
+
+            if (sortOrder !== undefined) {
+                localVarQueryParameter['sortOrder'] = sortOrder;
+            }
+
+            if (search !== undefined) {
+                localVarQueryParameter['search'] = search;
+            }
 
 
     
@@ -3485,6 +3570,10 @@ export const UserModuleApiAxiosParamCreator = function (configuration?: Configur
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication Access_Token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
     
@@ -3627,6 +3716,45 @@ export const UserModuleApiAxiosParamCreator = function (configuration?: Configur
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(upsertAccountDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {CreateManyUsersDto} createManyUsersDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        mUserControllerUpsertManyUsers: async (createManyUsersDto: CreateManyUsersDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createManyUsersDto' is not null or undefined
+            assertParamExists('mUserControllerUpsertManyUsers', 'createManyUsersDto', createManyUsersDto)
+            const localVarPath = `/m-user/users`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Access_Token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createManyUsersDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -3794,11 +3922,16 @@ export const UserModuleApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {number} [page] 
+         * @param {number} [perPage] 
+         * @param {MUserControllerFindAllUsersSortFieldEnum} [sortField] 
+         * @param {MUserControllerFindAllUsersSortOrderEnum} [sortOrder] 
+         * @param {string} [search] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async mUserControllerFindAllUsers(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<User>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.mUserControllerFindAllUsers(options);
+        async mUserControllerFindAllUsers(page?: number, perPage?: number, sortField?: MUserControllerFindAllUsersSortFieldEnum, sortOrder?: MUserControllerFindAllUsersSortOrderEnum, search?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedResponseOfUser>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.mUserControllerFindAllUsers(page, perPage, sortField, sortOrder, search, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['UserModuleApi.mUserControllerFindAllUsers']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -3855,6 +3988,18 @@ export const UserModuleApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.mUserControllerUpsertAccount(userId, channelType, upsertAccountDto, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['UserModuleApi.mUserControllerUpsertAccount']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {CreateManyUsersDto} createManyUsersDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async mUserControllerUpsertManyUsers(createManyUsersDto: CreateManyUsersDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.mUserControllerUpsertManyUsers(createManyUsersDto, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserModuleApi.mUserControllerUpsertManyUsers']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -3937,11 +4082,16 @@ export const UserModuleApiFactory = function (configuration?: Configuration, bas
         },
         /**
          * 
+         * @param {number} [page] 
+         * @param {number} [perPage] 
+         * @param {MUserControllerFindAllUsersSortFieldEnum} [sortField] 
+         * @param {MUserControllerFindAllUsersSortOrderEnum} [sortOrder] 
+         * @param {string} [search] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        mUserControllerFindAllUsers(options?: RawAxiosRequestConfig): AxiosPromise<Array<User>> {
-            return localVarFp.mUserControllerFindAllUsers(options).then((request) => request(axios, basePath));
+        mUserControllerFindAllUsers(page?: number, perPage?: number, sortField?: MUserControllerFindAllUsersSortFieldEnum, sortOrder?: MUserControllerFindAllUsersSortOrderEnum, search?: string, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedResponseOfUser> {
+            return localVarFp.mUserControllerFindAllUsers(page, perPage, sortField, sortOrder, search, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -3984,6 +4134,15 @@ export const UserModuleApiFactory = function (configuration?: Configuration, bas
          */
         mUserControllerUpsertAccount(userId: string, channelType: MUserControllerUpsertAccountChannelTypeEnum, upsertAccountDto: UpsertAccountDto, options?: RawAxiosRequestConfig): AxiosPromise<Account> {
             return localVarFp.mUserControllerUpsertAccount(userId, channelType, upsertAccountDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {CreateManyUsersDto} createManyUsersDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        mUserControllerUpsertManyUsers(createManyUsersDto: CreateManyUsersDto, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.mUserControllerUpsertManyUsers(createManyUsersDto, options).then((request) => request(axios, basePath));
         },
         /**
          * User Preferences
@@ -4067,12 +4226,17 @@ export class UserModuleApi extends BaseAPI {
 
     /**
      * 
+     * @param {number} [page] 
+     * @param {number} [perPage] 
+     * @param {MUserControllerFindAllUsersSortFieldEnum} [sortField] 
+     * @param {MUserControllerFindAllUsersSortOrderEnum} [sortOrder] 
+     * @param {string} [search] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof UserModuleApi
      */
-    public mUserControllerFindAllUsers(options?: RawAxiosRequestConfig) {
-        return UserModuleApiFp(this.configuration).mUserControllerFindAllUsers(options).then((request) => request(this.axios, this.basePath));
+    public mUserControllerFindAllUsers(page?: number, perPage?: number, sortField?: MUserControllerFindAllUsersSortFieldEnum, sortOrder?: MUserControllerFindAllUsersSortOrderEnum, search?: string, options?: RawAxiosRequestConfig) {
+        return UserModuleApiFp(this.configuration).mUserControllerFindAllUsers(page, perPage, sortField, sortOrder, search, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -4126,6 +4290,17 @@ export class UserModuleApi extends BaseAPI {
     }
 
     /**
+     * 
+     * @param {CreateManyUsersDto} createManyUsersDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UserModuleApi
+     */
+    public mUserControllerUpsertManyUsers(createManyUsersDto: CreateManyUsersDto, options?: RawAxiosRequestConfig) {
+        return UserModuleApiFp(this.configuration).mUserControllerUpsertManyUsers(createManyUsersDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * User Preferences
      * @summary 
      * @param {string} userId 
@@ -4163,6 +4338,26 @@ export const MUserControllerCreateNewOtpChannelTypeEnum = {
     Slack: 'SLACK'
 } as const;
 export type MUserControllerCreateNewOtpChannelTypeEnum = typeof MUserControllerCreateNewOtpChannelTypeEnum[keyof typeof MUserControllerCreateNewOtpChannelTypeEnum];
+/**
+ * @export
+ */
+export const MUserControllerFindAllUsersSortFieldEnum = {
+    Id: 'id',
+    Email: 'email',
+    CreatedAt: 'createdAt',
+    CreatedByUserId: 'createdByUserId',
+    UpdatedAt: 'updatedAt',
+    UpdatedByUserId: 'updatedByUserId'
+} as const;
+export type MUserControllerFindAllUsersSortFieldEnum = typeof MUserControllerFindAllUsersSortFieldEnum[keyof typeof MUserControllerFindAllUsersSortFieldEnum];
+/**
+ * @export
+ */
+export const MUserControllerFindAllUsersSortOrderEnum = {
+    Asc: 'asc',
+    Desc: 'desc'
+} as const;
+export type MUserControllerFindAllUsersSortOrderEnum = typeof MUserControllerFindAllUsersSortOrderEnum[keyof typeof MUserControllerFindAllUsersSortOrderEnum];
 /**
  * @export
  */

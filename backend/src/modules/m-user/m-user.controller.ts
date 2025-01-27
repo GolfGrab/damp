@@ -1,4 +1,7 @@
 import { Auth, GetUser } from '@/auth/auth.decorator';
+import { ApiPaginatedResponse } from '@/utils/paginator/pagination.decorator';
+import { PaginatedResult } from '@/utils/paginator/pagination.type';
+import { PaginationQueryDto } from '@/utils/paginator/paginationQuery.dto';
 import {
   Body,
   Controller,
@@ -6,8 +9,10 @@ import {
   ForbiddenException,
   Get,
   Param,
+  Patch,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 import * as prisma from '@prisma/client';
@@ -17,7 +22,10 @@ import { Account } from './accounts/entities/account.entity';
 import { UpsertUserPreferenceDto } from './user-preferences/dto/upsert-user-preference.dto';
 import { UserPreference } from './user-preferences/entities/user-preference.entity';
 import { UserPreferencesService } from './user-preferences/user-preferences.service';
+import { CreateManyUsersDto } from './users/dto/create-many-users.dto';
 import { CreateUserDto } from './users/dto/create-user.dto';
+import { UsersOrderDto } from './users/dto/users-order.dto';
+import { UsersSearchDto } from './users/dto/users-search.dto';
 import { VerifyUserDto } from './users/dto/verify-user.dto';
 import { User } from './users/entities/user.entity';
 import { UsersService } from './users/users.service';
@@ -35,19 +43,39 @@ export class MUserController {
    * Users
    **/
 
+  @Auth()
   @Post('users')
   createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.usersService.create(createUserDto);
   }
 
+  @Auth()
+  @Patch('users')
+  upsertManyUsers(
+    @Body() createManyUsersDto: CreateManyUsersDto,
+    @GetUser() user: User,
+  ) {
+    return this.usersService.upsertMany(createManyUsersDto, user);
+  }
+
+  @Auth()
   @Get('users/:userId')
   findOneUser(@Param('userId') userId: string): Promise<User> {
     return this.usersService.findOne(userId);
   }
 
   @Get('users')
-  findAllUsers(): Promise<User[]> {
-    return this.usersService.findAll();
+  @ApiPaginatedResponse(User)
+  findAllUsers(
+    @Query() paginationQueryDto: PaginationQueryDto,
+    @Query() usersOrderDto: UsersOrderDto,
+    @Query() usersSearchDto: UsersSearchDto,
+  ): Promise<PaginatedResult<User>> {
+    return this.usersService.findAll(
+      paginationQueryDto,
+      usersOrderDto,
+      usersSearchDto,
+    );
   }
 
   /**
