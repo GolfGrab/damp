@@ -78,11 +78,6 @@ export class NotificationsService {
           })
         ).userPreferences;
 
-    if (userPreferences.length === 0) {
-      this.logger.log('No user preferences to send notification');
-      return null;
-    }
-
     this.logger.log('userPreferences ' + inspect(userPreferences));
 
     this.logger.log('get channels');
