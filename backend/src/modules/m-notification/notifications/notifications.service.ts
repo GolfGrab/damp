@@ -48,107 +48,69 @@ export class NotificationsService {
     this.logger.log('Creating notification: ' + inspect(createNotificationDto));
     this.logger.log('applicationId ' + applicationId);
 
-    this.logger.log('get userPreferences');
-
     const isOTPNotification = Object.values($Enums.ChannelType)
       .map((channelType) => `System_${channelType}_OTP`)
       .includes(createNotificationDto.notificationCategoryId);
 
-    this.logger.log('Is it OTP? ' + isOTPNotification);
-    const userPreferences = isOTPNotification
-      ? createNotificationDto.recipientIds.map((userId) => ({
-          userId,
-        }))
-      : (
-          await this.prisma.notificationCategory.findUniqueOrThrow({
-            where: {
-              id: createNotificationDto.notificationCategoryId,
-              deletedAt: null,
+    const accounts = await this.prisma.account.findMany({
+      where: {
+        verifiedAt: isOTPNotification
+          ? null
+          : {
+              not: null,
             },
-            include: {
+        userId: {
+          in: createNotificationDto.recipientIds,
+        },
+        user: isOTPNotification
+          ? {}
+          : {
               userPreferences: {
-                where: {
+                some: {
+                  notificationCategoryId:
+                    createNotificationDto.notificationCategoryId,
                   isPreferred: true,
-                  userId: {
-                    in: createNotificationDto.recipientIds,
-                  },
                 },
               },
             },
-          })
-        ).userPreferences;
+      },
+    });
 
-    this.logger.log('userPreferences ' + inspect(userPreferences));
+    this.logger.log('preferred accounts ' + inspect(accounts));
 
-    this.logger.log('get channels');
-    const channels = await this.prisma.channel.findMany({
-      include: {
-        accounts: {
-          where: {
-            OR: [
-              // allow sending notification to unverified accounts for OTP
-              Object.values($Enums.ChannelType)
-                .map((channelType) => `System_${channelType}_OTP`)
-                .includes(createNotificationDto.notificationCategoryId)
-                ? {
-                    verifiedAt: null,
-                  }
-                : {
-                    verifiedAt: {
-                      not: null,
-                    },
-                  },
-            ],
-            userId: {
-              in: userPreferences.map(
-                (userPreference) => userPreference.userId,
-              ),
+    this.logger.log('get organizationDefaultEmailAccounts');
+
+    const organizationDefaultEmailAccounts = isOTPNotification
+      ? []
+      : (
+          await this.prisma.user.findMany({
+            where: {
+              id: {
+                in: createNotificationDto.recipientIds,
+              },
             },
-          },
-        },
-      },
-    });
+          })
+        ).map((user) => ({
+          userId: user.id,
+          channelType: $Enums.ChannelType.EMAIL,
+          channelToken: user.email,
+        }));
 
-    const organizationDefaultEmailAccounts = await this.prisma.user.findMany({
-      where: {
-        id: {
-          in: userPreferences.map((userPreference) => userPreference.userId),
-        },
-      },
-    });
-
-    // merge organization default email accounts with user accounts
-    const mergedChannels = channels.map((channel) => {
-      if (
-        channel.channelType === $Enums.ChannelType.EMAIL &&
-        !isOTPNotification
-      ) {
-        return {
-          ...channel,
-          accounts: [
-            ...channel.accounts,
-            ...organizationDefaultEmailAccounts.map(
-              (organizationDefaultEmailAccount) => ({
-                userId: organizationDefaultEmailAccount.id,
-                channelType: channel.channelType,
-                priority: createNotificationDto.priority,
-              }),
-            ),
-          ].filter(
-            (account, index, self) =>
-              index ===
-              self.findIndex(
-                (t) =>
-                  t.userId === account.userId &&
-                  t.channelType === account.channelType,
-              ),
-          ),
-        };
-      }
-      return channel;
-    });
+    const mergedAccounts = [
+      ...accounts,
+      ...organizationDefaultEmailAccounts,
+    ].filter(
+      (account, index, self) =>
+        index ===
+        self.findIndex(
+          (t) =>
+            t.userId === account.userId &&
+            t.channelType === account.channelType,
+        ),
+    );
 
     this.logger.log('get compiledTemplates');
+
     const compiledTemplates = (
       await this.prisma.template.findUniqueOrThrow({
         where: {
@@ -161,6 +123,7 @@ export class NotificationsService {
     ).compiledTemplates;
 
     this.logger.log('create compiledMessages');
+
     const compiledMessages = await Promise.all(
       compiledTemplates.map(async (compiledTemplate) => {
         return {
@@ -175,8 +138,9 @@ export class NotificationsService {
       }),
     );
 
-    this.logger.log('create notification tasks');
-    const notifications = await this.prisma.notification.create({
+    this.logger.log('create notification');
+
+    const notification = await this.prisma.notification.create({
       data: {
         applicationId,
         notificationCategoryId: createNotificationDto.notificationCategoryId,
@@ -184,53 +148,49 @@ export class NotificationsService {
         templateId: createNotificationDto.templateId,
         templateData: JSON.stringify(createNotificationDto.templateData),
         compiledMessages: {
-          create: compiledMessages.map((compiledMessage) => {
-            return {
-              compiledMessage: compiledMessage.compiledMessage,
-              compiledTemplate: {
-                connect: {
-                  templateId_messageType: {
-                    templateId: compiledMessage.templateId,
-                    messageType: compiledMessage.messageType,
-                  },
-                },
-              },
-              notificationTasks: {
-                createMany: {
-                  data: mergedChannels
-                    .filter(
-                      (channel) =>
-                        channel.messageType === compiledMessage.messageType,
-                    )
-                    .flatMap((channel) => {
-                      return channel.accounts.map((account) => ({
-                        userId: account.userId,
-                        channelType: account.channelType,
-                        priority: createNotificationDto.priority,
-                        retryLimit: Number(
-                          this.config[`${account.channelType}_RETRY_LIMIT`],
-                        ),
-                        retryCount: 0,
-                      }));
-                    }),
-                },
-              },
-            };
-          }),
+          createMany: {
+            data: compiledMessages,
+          },
         },
-      },
-      include: {
-        notificationTasks: true,
       },
     });
 
-    this.logger.log('notifications ' + inspect(notifications));
+    this.logger.log('get all channel');
+
+    const allChannel = await this.prisma.channel.findMany();
+
+    this.logger.log('create notification task');
+
+    const notificationTasks =
+      await this.prisma.notificationTask.createManyAndReturn({
+        data: mergedAccounts
+          .map((account) => ({
+            notificationId: notification.id,
+            userId: account.userId,
+            channelType: account.channelType,
+            priority: createNotificationDto.priority,
+            retryLimit: Number(
+              this.config[`${account.channelType}_RETRY_LIMIT`],
+            ),
+            retryCount: 0,
+            templateId: createNotificationDto.templateId,
+            messageType:
+              allChannel.find(
+                (channel) => channel.channelType === account.channelType,
+              )?.messageType ?? null,
+          }))
+          .filter(
+            (notificationTask) => notificationTask.messageType !== null,
+          ) as Prisma.NotificationTaskCreateManyInput[],
+      });
+
+    this.logger.log('notifications ' + inspect(notification));
 
     this.logger.log(
-      'Emitting notification task events count: ' +
-        notifications.notificationTasks.length,
+      'Emitting notification task events count: ' + notificationTasks.length,
     );
-    for (const notificationTask of notifications.notificationTasks) {
+
+    for (const notificationTask of notificationTasks) {
       const record = new RmqRecordBuilder(JSON.stringify(notificationTask))
         .setOptions({
           priority: priorityMap[notificationTask.priority],
@@ -246,7 +206,7 @@ export class NotificationsService {
 
     this.logger.log('Notification tasks emitted');
 
-    return notifications;
+    return notificationTasks;
   }
 
   findOne(id: number) {

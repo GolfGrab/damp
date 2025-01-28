@@ -136,7 +136,7 @@ export class MNotificationController {
     @Param('applicationId') applicationId: string,
     @Body() createNotificationDto: CreateNotificationDto,
     @GetApplication() application: Application,
-  ): Promise<Notification | null> {
+  ): Promise<NotificationTask[] | null> {
     if (application.id !== applicationId) {
       throw new UnauthorizedException('Invalid application access');
     }
