@@ -1,7 +1,8 @@
+import { Role, Roles } from '@/auth/auth-roles.decorator';
 import { Auth, GetUser } from '@/auth/auth.decorator';
+import { UserWithRoles } from '@/auth/UserWithRoles';
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { User } from '@prisma/client';
 import { ApplicationsService } from './applications/applications.service';
 import { CreateApplicationDto } from './applications/dto/create-application.dto';
 import { UpdateApplicationDto } from './applications/dto/update-application.dto';
@@ -25,34 +26,30 @@ export class MApplicationController {
    **/
 
   @Auth()
+  @Roles(Role.Admin, Role.Developer)
   @Post('applications')
   createApplication(
     @Body() createApplicationDto: CreateApplicationDto,
-    @GetUser() user: User,
+    @GetUser() user: UserWithRoles,
   ): Promise<ApplicationWithApiKey> {
     return this.applicationsService.create(createApplicationDto, user);
   }
 
   @Auth()
+  @Roles(Role.Admin, Role.Developer)
   @Get('applications')
-  findAllApplications(): Promise<Application[]> {
-    return this.applicationsService.findAll();
+  findAllApplications(@GetUser() user: UserWithRoles): Promise<Application[]> {
+    return this.applicationsService.findAll(user);
   }
 
   @Auth()
-  @Get('users/:createdByUserId/applications')
-  findAllApplicationsByUserId(
-    @Param('createdByUserId') createdByUserId: string,
-  ): Promise<Application[]> {
-    return this.applicationsService.findAllByCreatedByUserId(createdByUserId);
-  }
-
-  @Auth()
+  @Roles(Role.Admin, Role.Developer)
   @Get('applications/:applicationId')
   findOneApplication(
     @Param('applicationId') applicationId: string,
+    @GetUser() user: UserWithRoles,
   ): Promise<ApplicationWithApiKey> {
-    return this.applicationsService.findOne(applicationId);
+    return this.applicationsService.findOne(applicationId, user);
   }
 
   @Auth()
@@ -60,7 +57,7 @@ export class MApplicationController {
   updateApplication(
     @Param('applicationId') applicationId: string,
     @Body() updateApplicationDto: UpdateApplicationDto,
-    @GetUser() user: User,
+    @GetUser() user: UserWithRoles,
   ): Promise<ApplicationWithApiKey> {
     return this.applicationsService.update(
       applicationId,
@@ -73,7 +70,7 @@ export class MApplicationController {
   @Patch('applications/:applicationId/rotate-api-key')
   rotateApiKey(
     @Param('applicationId') applicationId: string,
-    @GetUser() user: User,
+    @GetUser() user: UserWithRoles,
   ): Promise<ApplicationWithApiKey> {
     return this.applicationsService.rotateApiKey(applicationId, user);
   }
@@ -83,11 +80,12 @@ export class MApplicationController {
    **/
 
   @Auth()
+  @Roles(Role.Admin, Role.Developer)
   @Post('applications/:applicationId/notification-categories')
   createNotificationCategory(
     @Param('applicationId') applicationId: string,
     @Body() createNotificationCategoryDto: CreateNotificationCategoryDto,
-    @GetUser() user: User,
+    @GetUser() user: UserWithRoles,
   ): Promise<NotificationCategory> {
     return this.notificationCategoriesService.create(
       applicationId,
@@ -97,34 +95,24 @@ export class MApplicationController {
   }
 
   @Auth()
-  @Get('notification-categories')
-  findAllNotificationCategories(): Promise<NotificationCategory[]> {
-    return this.notificationCategoriesService.findAll();
-  }
-
-  @Auth()
   @Get('applications/:applicationId/notification-categories')
   findAllNotificationCategoriesByApplicationId(
     @Param('applicationId') applicationId: string,
+    @GetUser() user: UserWithRoles,
   ): Promise<NotificationCategory[]> {
     return this.notificationCategoriesService.findAllByApplicationId(
       applicationId,
+      user,
     );
   }
 
-  @Get('notification-categories/:notificationCategoryId')
-  findOneNotificationCategory(
-    @Param('notificationCategoryId') notificationCategoryId: string,
-  ): Promise<NotificationCategory> {
-    return this.notificationCategoriesService.findOne(notificationCategoryId);
-  }
-
   @Auth()
+  @Roles(Role.Admin, Role.Developer)
   @Patch('notification-categories/:notificationCategoryId')
   updateNotificationCategory(
     @Param('notificationCategoryId') notificationCategoryId: string,
     @Body() updateNotificationCategoryDto: UpdateNotificationCategoryDto,
-    @GetUser() user: User,
+    @GetUser() user: UserWithRoles,
   ): Promise<NotificationCategory> {
     return this.notificationCategoriesService.update(
       notificationCategoryId,

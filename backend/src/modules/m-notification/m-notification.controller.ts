@@ -1,3 +1,5 @@
+import { UserWithRoles } from '@/auth/UserWithRoles';
+import { Role, Roles } from '@/auth/auth-roles.decorator';
 import { Auth, GetApplication, GetUser, KeyAuth } from '@/auth/auth.decorator';
 import {
   Body,
@@ -11,7 +13,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Application, MessageType, User } from '@prisma/client';
+import { Application, MessageType } from '@prisma/client';
 import { ApiPaginatedResponse } from '../../utils/paginator/pagination.decorator';
 import { PaginatedResult } from '../../utils/paginator/pagination.type';
 import { PaginationQueryDto } from '../../utils/paginator/paginationQuery.dto';
@@ -39,16 +41,18 @@ export class MNotificationController {
    * Templates
    **/
 
-  @Post('templates')
   @Auth()
+  @Roles(Role.Admin, Role.Developer)
+  @Post('templates')
   createTemplate(
     @Body() createTemplateDto: CreateTemplateDto,
-    @GetUser() user: User,
+    @GetUser() user: UserWithRoles,
   ): Promise<Template> {
     return this.templatesService.create(createTemplateDto, user);
   }
 
   @Auth()
+  @Roles(Role.Admin, Role.Developer)
   @ApiQuery({
     name: 'templateName',
     required: false,
@@ -68,36 +72,42 @@ export class MNotificationController {
     );
   }
 
+  @Auth()
+  @Roles(Role.Admin, Role.Developer)
   @Get('templates/:templateId')
   findOneTemplate(@Param('templateId') templateId: string): Promise<Template> {
     return this.templatesService.findOne(templateId);
   }
 
-  @Patch('templates/:templateId')
   @Auth()
+  @Roles(Role.Admin, Role.Developer)
+  @Patch('templates/:templateId')
   updateTemplate(
     @Param('templateId') templateId: string,
     @Body() updateTemplateDto: UpdateTemplateDto,
-    @GetUser() user: User,
+    @GetUser() user: UserWithRoles,
   ): Promise<Template> {
     return this.templatesService.update(templateId, updateTemplateDto, user);
   }
 
+  @Auth()
+  @Roles(Role.Admin, Role.Developer)
   @Delete('templates/:templateId')
   @Auth()
   deleteTemplate(
     @Param('templateId') templateId: string,
-    @GetUser() user: User,
+    @GetUser() user: UserWithRoles,
   ): Promise<Template> {
     return this.templatesService.delete(templateId, user);
   }
 
+  @Auth()
+  @Roles(Role.Admin, Role.Developer)
   @ApiParam({
     name: 'messageType',
     required: true,
     enum: MessageType,
   })
-  @Auth()
   @Post('templates/:templateId/messageType/:messageType/preview')
   previewTemplate(
     @Param('templateId') templateId: string,
@@ -136,41 +146,6 @@ export class MNotificationController {
     );
   }
 
-  @Get('notifications')
-  findAllNotifications(): Promise<Notification[]> {
-    return this.notificationsService.findAll();
-  }
-
-  @Get('applications/:applicationId/notifications')
-  findAllNotificationsByApplicationId(
-    @Param('applicationId') applicationId: string,
-  ): Promise<Notification[]> {
-    return this.notificationsService.findAllByApplicationId(applicationId);
-  }
-
-  @Get('templates/:templateId/notifications')
-  findAllNotificationsByTemplateId(
-    @Param('templateId') templateId: string,
-  ): Promise<Notification[]> {
-    return this.notificationsService.findAllByTemplateId(templateId);
-  }
-
-  @Get('notification-categories/:notificationCategoryId/notifications')
-  findAllNotificationsByNotificationCategoryId(
-    @Param('notificationCategoryId') notificationCategoryId: string,
-  ): Promise<Notification[]> {
-    return this.notificationsService.findAllByNotificationCategoryId(
-      notificationCategoryId,
-    );
-  }
-
-  @Get('notifications/:notificationId')
-  findOneNotification(
-    @Param('notificationId') notificationId: number,
-  ): Promise<Notification> {
-    return this.notificationsService.findOne(notificationId);
-  }
-
   @Auth()
   @ApiPaginatedResponse(
     OutputNotificationWithCompiledMessageAndNotificationTaskDto,
@@ -179,7 +154,7 @@ export class MNotificationController {
   getPaginatedNotificationsByUserId(
     @Query() paginateQuery: PaginationQueryDto,
     @Param('userId') userId: string,
-    @GetUser() user: User,
+    @GetUser() user: UserWithRoles,
   ): Promise<
     PaginatedResult<OutputNotificationWithCompiledMessageAndNotificationTaskDto>
   > {
@@ -199,25 +174,32 @@ export class MNotificationController {
   })
   @Get('users/:userId/notifications/:notificationId')
   getNotificationsForUserById(
-    @GetUser() user: User,
+    @GetUser() user: UserWithRoles,
     @Param('userId') userId: string,
     @Param('notificationId') notificationId: number,
   ): Promise<OutputNotificationWithCompiledMessageAndNotificationTaskDto> {
+    if (user.id !== userId) {
+      throw new UnauthorizedException('Invalid user access');
+    }
+
     return this.notificationsService.findOneByUser(user.id, notificationId);
   }
 
   @Auth()
+  @Roles(Role.Admin, Role.Developer)
   @ApiPaginatedResponse(NotificationTask)
   @Get('applications/:applicationId/notification-tasks')
   findAllNotificationTasksByApplicationIdPaginated(
     @Param('applicationId') applicationId: string,
     @Query() paginateQuery: PaginationQueryDto,
     @Query() notificationTasksOrderDto: NotificationTasksOrderDto,
+    @GetUser() user: UserWithRoles,
   ): Promise<PaginatedResult<NotificationTask>> {
     return this.notificationsService.findAllNotificationTasksByApplicationIdPaginated(
       applicationId,
       paginateQuery,
       notificationTasksOrderDto,
+      user,
     );
   }
 }

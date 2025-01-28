@@ -26,6 +26,7 @@ import { AuthService } from './auth.service';
         const client = new issuer.Client({
           client_id: config.OAUTH_CLIENT_ID,
           client_secret: config.OAUTH_CLIENT_SECRET,
+          
         });
         return new AuthService(client, prisma, config);
       },

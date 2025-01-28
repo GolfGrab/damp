@@ -8,6 +8,8 @@ import {
 import { FastifyRequest } from 'fastify';
 import { PrismaService } from 'nestjs-prisma';
 import { Client } from 'openid-client';
+import { Role } from './auth-roles.decorator';
+import { inspect } from 'util';
 
 @Injectable()
 export class AuthService {
@@ -46,7 +48,7 @@ export class AuthService {
     return application;
   }
 
-  async verifyTokenRemoteAndGetUser(token: string) {
+  async verifyTokenRemoteAndGetUser(token: string, roles: Role[] | undefined) {
     const result = await this.client.introspect(token);
     if (!result.active) {
       throw new UnauthorizedException();
@@ -55,24 +57,42 @@ export class AuthService {
       throw new UnauthorizedException("Client ID doesn't match");
     }
 
-    const user = await this.client.userinfo(token).then((userinfo) => {
-      if (!userinfo.email) {
-        throw new InternalServerErrorException("Userinfo doesn't have email");
+    const userInfo = await this.client.userinfo(token);
+
+    this.logger.log(`User info: ${inspect(userInfo)}`);
+    this.logger.log(`Required roles: ${inspect(roles)}`);
+
+    if (roles && roles.length > 0) {
+      if (!userInfo.groups) {
+        throw new UnauthorizedException("User doesn't have groups");
       }
-      return this.prisma.user.upsert({
-        where: {
-          id: userinfo.email,
-        },
-        create: {
-          id: userinfo.email,
-          email: userinfo.email,
-          createdByUserId: this.config.SYSTEM_USER_ID,
-          updatedByUserId: this.config.SYSTEM_USER_ID,
-        },
-        update: {},
-      });
+      const userRoles = userInfo.groups as string[];
+      const hasRole = roles.some((role) => userRoles.includes(role));
+      if (!hasRole) {
+        throw new UnauthorizedException("User doesn't have required role");
+      }
+    }
+
+    if (!userInfo.email) {
+      throw new InternalServerErrorException("userInfo doesn't have email");
+    }
+
+    const user = await this.prisma.user.upsert({
+      where: {
+        id: userInfo.email,
+      },
+      create: {
+        id: userInfo.email,
+        email: userInfo.email,
+        createdByUserId: this.config.SYSTEM_USER_ID,
+        updatedByUserId: this.config.SYSTEM_USER_ID,
+      },
+      update: {},
     });
 
-    return user;
+    return {
+      ...user,
+      roles: userInfo.groups as string[],
+    };
   }
 }

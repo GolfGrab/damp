@@ -1,3 +1,5 @@
+import { Role } from '@/auth/auth-roles.decorator';
+import { UserWithRoles } from '@/auth/UserWithRoles';
 import { Config } from '@/utils/config/config-dto';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ClientProxy, RmqRecordBuilder } from '@nestjs/microservices';
@@ -252,61 +254,6 @@ export class NotificationsService {
     return notifications;
   }
 
-  findAll() {
-    return this.prisma.notification.findMany({
-      where: {
-        application: {
-          id: {
-            not: this.config.SYSTEM_APPLICATION_ID,
-          },
-        },
-      },
-    });
-  }
-
-  findAllByApplicationId(applicationId: string) {
-    return this.prisma.notification.findMany({
-      where: {
-        AND: [
-          { applicationId: applicationId },
-          {
-            application: {
-              id: {
-                not: this.config.SYSTEM_APPLICATION_ID,
-              },
-            },
-          },
-        ],
-      },
-    });
-  }
-
-  findAllByTemplateId(templateId: string) {
-    return this.prisma.notification.findMany({
-      where: {
-        templateId,
-        application: {
-          id: {
-            not: this.config.SYSTEM_APPLICATION_ID,
-          },
-        },
-      },
-    });
-  }
-
-  findAllByNotificationCategoryId(notificationCategoryId: string) {
-    return this.prisma.notification.findMany({
-      where: {
-        notificationCategoryId,
-        application: {
-          id: {
-            not: this.config.SYSTEM_APPLICATION_ID,
-          },
-        },
-      },
-    });
-  }
-
   findOne(id: number) {
     return this.prisma.notification.findUniqueOrThrow({
       where: {
@@ -405,6 +352,7 @@ export class NotificationsService {
     applicationId: string,
     paginateQuery: PaginationQueryDto,
     notificationTasksOrderDto: NotificationTasksOrderDto,
+    user: UserWithRoles,
   ) {
     return paginate<NotificationTask, Prisma.NotificationTaskFindManyArgs>({
       prismaQueryModel: this.prisma.notificationTask,
@@ -420,6 +368,9 @@ export class NotificationsService {
                   id: {
                     not: this.config.SYSTEM_APPLICATION_ID,
                   },
+                  createdByUserId: user.roles.includes(Role.Admin)
+                    ? undefined
+                    : user.id,
                 },
               },
             ],

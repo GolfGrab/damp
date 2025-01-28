@@ -7,7 +7,7 @@ import {
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { ApiKeyGuard } from './api-key.guard';
 import { AuthGuard } from './auth.guard';
-import { RequestWithApplication, RequestWithUser } from './auth.type';
+import { RequestWithApplication, RequestWithUserWithRole } from './auth.type';
 
 export function Auth() {
   return applyDecorators(ApiBearerAuth('Access_Token'), UseGuards(AuthGuard));
@@ -19,7 +19,7 @@ export function KeyAuth() {
 
 export const GetUser = createParamDecorator(
   (data: string, ctx: ExecutionContext) => {
-    const request = ctx.switchToHttp().getRequest<RequestWithUser>();
+    const request = ctx.switchToHttp().getRequest<RequestWithUserWithRole>();
     return request.user;
   },
 );

@@ -1,8 +1,9 @@
-import { Application, User } from '@prisma/client';
+import { Application } from '@prisma/client';
 import { FastifyRequest } from 'fastify';
+import { UserWithRoles } from './UserWithRoles';
 
-export interface RequestWithUser extends FastifyRequest {
-  user: User;
+export interface RequestWithUserWithRole extends FastifyRequest {
+  user: UserWithRoles;
 }
 
 export interface RequestWithApplication extends FastifyRequest {

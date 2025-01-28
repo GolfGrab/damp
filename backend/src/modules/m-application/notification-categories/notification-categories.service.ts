@@ -1,6 +1,7 @@
+import { UserWithRoles } from '@/auth/UserWithRoles';
+import { Role } from '@/auth/auth-roles.decorator';
 import { Config } from '@/utils/config/config-dto';
-import { Injectable } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { kebabCase } from 'lodash';
 import { PrismaService } from 'nestjs-prisma';
 import { CreateNotificationCategoryDto } from './dto/create-notification-category.dto';
@@ -13,11 +14,24 @@ export class NotificationCategoriesService {
     private readonly config: Config,
   ) {}
 
-  create(
+  async create(
     applicationId: string,
     createNotificationCategoryDto: CreateNotificationCategoryDto,
-    user: User,
+    user: UserWithRoles,
   ) {
+    const ownedApplications = await this.prisma.application.findFirst({
+      where: {
+        id: applicationId,
+        createdByUserId: user.roles.includes(Role.Admin) ? undefined : user.id,
+      },
+    });
+
+    if (!ownedApplications) {
+      throw new ForbiddenException(
+        "Application doesn't exist or you are not allowed to create notification categories for this application",
+      );
+    }
+
     const id =
       kebabCase(createNotificationCategoryDto.name) +
       '-' +
@@ -33,18 +47,7 @@ export class NotificationCategoriesService {
     });
   }
 
-  findAll() {
-    return this.prisma.notificationCategory.findMany({
-      where: {
-        deletedAt: null,
-        applicationId: {
-          not: this.config.SYSTEM_APPLICATION_ID,
-        },
-      },
-    });
-  }
-
-  findAllByApplicationId(applicationId: string) {
+  findAllByApplicationId(applicationId: string, user: UserWithRoles) {
     return this.prisma.notificationCategory.findMany({
       where: {
         applicationId,
@@ -52,22 +55,11 @@ export class NotificationCategoriesService {
           id: {
             not: this.config.SYSTEM_APPLICATION_ID,
           },
+          createdByUserId: user.roles.includes(Role.Admin)
+            ? undefined
+            : user.id,
         },
         deletedAt: null,
-      },
-    });
-  }
-
-  findOne(id: string) {
-    return this.prisma.notificationCategory.findUniqueOrThrow({
-      where: {
-        id,
-        deletedAt: null,
-        application: {
-          id: {
-            not: this.config.SYSTEM_APPLICATION_ID,
-          },
-        },
       },
     });
   }
@@ -75,7 +67,7 @@ export class NotificationCategoriesService {
   update(
     id: string,
     updateNotificationCategoryDto: UpdateNotificationCategoryDto,
-    user: User,
+    user: UserWithRoles,
   ) {
     return this.prisma.notificationCategory.update({
       where: {
@@ -84,6 +76,9 @@ export class NotificationCategoriesService {
           id: {
             not: this.config.SYSTEM_APPLICATION_ID,
           },
+          createdByUserId: user.roles.includes(Role.Admin)
+            ? undefined
+            : user.id,
         },
       },
       data: {
@@ -93,7 +88,7 @@ export class NotificationCategoriesService {
     });
   }
 
-  delete(id: string, user: User) {
+  delete(id: string, user: UserWithRoles) {
     return this.prisma.notificationCategory.update({
       where: {
         id,
@@ -101,6 +96,9 @@ export class NotificationCategoriesService {
           id: {
             not: this.config.SYSTEM_APPLICATION_ID,
           },
+          createdByUserId: user.roles.includes(Role.Admin)
+            ? undefined
+            : user.id,
         },
       },
       data: {

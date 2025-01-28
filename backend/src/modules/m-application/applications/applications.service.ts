@@ -1,6 +1,8 @@
+import { Role } from '@/auth/auth-roles.decorator';
+import { UserWithRoles } from '@/auth/UserWithRoles';
 import { Config } from '@/utils/config/config-dto';
 import { Injectable } from '@nestjs/common';
-import { Prisma, User } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { kebabCase } from 'lodash';
 import { PrismaService } from 'nestjs-prisma';
 import { CreateApplicationDto } from './dto/create-application.dto';
@@ -24,7 +26,7 @@ export class ApplicationsService {
 
   create(
     createApplicationDto: CreateApplicationDto,
-    user: User,
+    user: UserWithRoles,
   ): Promise<ApplicationWithApiKey> {
     const id =
       kebabCase(createApplicationDto.name) + '-' + new Date().getTime();
@@ -41,34 +43,34 @@ export class ApplicationsService {
     });
   }
 
-  findAll(): Promise<Application[]> {
+  findAll(user: UserWithRoles): Promise<Application[]> {
     return this.prisma.application.findMany({
       where: {
         id: {
           not: this.config.SYSTEM_APPLICATION_ID,
         },
+        createdByUserId: user.roles.includes(Role.Admin) ? undefined : user.id,
       },
     });
   }
 
-  findAllByCreatedByUserId(createdByUserId: string): Promise<Application[]> {
-    return this.prisma.application.findMany({
-      where: {
-        id: {
-          not: this.config.SYSTEM_APPLICATION_ID,
-        },
-        createdByUserId,
-      },
-    });
-  }
-
-  findOne(applicationId: string): Promise<ApplicationWithApiKey> {
+  findOne(
+    applicationId: string,
+    user: UserWithRoles,
+  ): Promise<ApplicationWithApiKey> {
     return this.prisma.application.findUniqueOrThrow({
       where: {
         id: applicationId,
-        createdByUserId: {
-          not: this.config.SYSTEM_USER_ID,
-        },
+        AND: [
+          {
+            createdByUserId: {
+              not: this.config.SYSTEM_USER_ID,
+            },
+          },
+          ...(user.roles.includes(Role.Admin)
+            ? []
+            : [{ createdByUserId: user.id }]),
+        ],
       },
       select: this.selectAllFieldsIncludingApiKey,
     });
@@ -77,14 +79,21 @@ export class ApplicationsService {
   update(
     applicationId: string,
     updateApplicationDto: UpdateApplicationDto,
-    user: User,
+    user: UserWithRoles,
   ): Promise<ApplicationWithApiKey> {
     return this.prisma.application.update({
       where: {
         id: applicationId,
-        createdByUserId: {
-          not: this.config.SYSTEM_USER_ID,
-        },
+        AND: [
+          {
+            createdByUserId: {
+              not: this.config.SYSTEM_USER_ID,
+            },
+          },
+          ...(user.roles.includes(Role.Admin)
+            ? []
+            : [{ createdByUserId: user.id }]),
+        ],
       },
       data: {
         ...updateApplicationDto,
@@ -96,14 +105,21 @@ export class ApplicationsService {
 
   rotateApiKey(
     applicationId: string,
-    user: User,
+    user: UserWithRoles,
   ): Promise<ApplicationWithApiKey> {
     return this.prisma.application.update({
       where: {
         id: applicationId,
-        createdByUserId: {
-          not: this.config.SYSTEM_USER_ID,
-        },
+        AND: [
+          {
+            createdByUserId: {
+              not: this.config.SYSTEM_USER_ID,
+            },
+          },
+          ...(user.roles.includes(Role.Admin)
+            ? []
+            : [{ createdByUserId: user.id }]),
+        ],
       },
       data: {
         apiKey: crypto.randomUUID(),
