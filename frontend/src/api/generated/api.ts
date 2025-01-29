@@ -500,6 +500,12 @@ export interface NotificationCategory {
 export interface NotificationTask {
     /**
      * 
+     * @type {number}
+     * @memberof NotificationTask
+     */
+    'id': number;
+    /**
+     * 
      * @type {string}
      * @memberof NotificationTask
      */
@@ -1191,76 +1197,6 @@ export const ApplicationModuleApiAxiosParamCreator = function (configuration?: C
         },
         /**
          * 
-         * @param {string} createdByUserId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        mApplicationControllerFindAllApplicationsByUserId: async (createdByUserId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'createdByUserId' is not null or undefined
-            assertParamExists('mApplicationControllerFindAllApplicationsByUserId', 'createdByUserId', createdByUserId)
-            const localVarPath = `/m-application/users/{createdByUserId}/applications`
-                .replace(`{${"createdByUserId"}}`, encodeURIComponent(String(createdByUserId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication Access_Token required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        mApplicationControllerFindAllNotificationCategories: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/m-application/notification-categories`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication Access_Token required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
          * @param {string} applicationId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1321,39 +1257,6 @@ export const ApplicationModuleApiAxiosParamCreator = function (configuration?: C
             // authentication Access_Token required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @param {string} notificationCategoryId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        mApplicationControllerFindOneNotificationCategory: async (notificationCategoryId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'notificationCategoryId' is not null or undefined
-            assertParamExists('mApplicationControllerFindOneNotificationCategory', 'notificationCategoryId', notificationCategoryId)
-            const localVarPath = `/m-application/notification-categories/{notificationCategoryId}`
-                .replace(`{${"notificationCategoryId"}}`, encodeURIComponent(String(notificationCategoryId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
 
 
     
@@ -1539,29 +1442,6 @@ export const ApplicationModuleApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {string} createdByUserId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async mApplicationControllerFindAllApplicationsByUserId(createdByUserId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Application>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.mApplicationControllerFindAllApplicationsByUserId(createdByUserId, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['ApplicationModuleApi.mApplicationControllerFindAllApplicationsByUserId']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async mApplicationControllerFindAllNotificationCategories(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<NotificationCategory>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.mApplicationControllerFindAllNotificationCategories(options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['ApplicationModuleApi.mApplicationControllerFindAllNotificationCategories']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
          * @param {string} applicationId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1582,18 +1462,6 @@ export const ApplicationModuleApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.mApplicationControllerFindOneApplication(applicationId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['ApplicationModuleApi.mApplicationControllerFindOneApplication']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @param {string} notificationCategoryId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async mApplicationControllerFindOneNotificationCategory(notificationCategoryId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<NotificationCategory>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.mApplicationControllerFindOneNotificationCategory(notificationCategoryId, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['ApplicationModuleApi.mApplicationControllerFindOneNotificationCategory']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -1675,23 +1543,6 @@ export const ApplicationModuleApiFactory = function (configuration?: Configurati
         },
         /**
          * 
-         * @param {string} createdByUserId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        mApplicationControllerFindAllApplicationsByUserId(createdByUserId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<Application>> {
-            return localVarFp.mApplicationControllerFindAllApplicationsByUserId(createdByUserId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        mApplicationControllerFindAllNotificationCategories(options?: RawAxiosRequestConfig): AxiosPromise<Array<NotificationCategory>> {
-            return localVarFp.mApplicationControllerFindAllNotificationCategories(options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
          * @param {string} applicationId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1707,15 +1558,6 @@ export const ApplicationModuleApiFactory = function (configuration?: Configurati
          */
         mApplicationControllerFindOneApplication(applicationId: string, options?: RawAxiosRequestConfig): AxiosPromise<ApplicationWithApiKey> {
             return localVarFp.mApplicationControllerFindOneApplication(applicationId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @param {string} notificationCategoryId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        mApplicationControllerFindOneNotificationCategory(notificationCategoryId: string, options?: RawAxiosRequestConfig): AxiosPromise<NotificationCategory> {
-            return localVarFp.mApplicationControllerFindOneNotificationCategory(notificationCategoryId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1793,27 +1635,6 @@ export class ApplicationModuleApi extends BaseAPI {
 
     /**
      * 
-     * @param {string} createdByUserId 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ApplicationModuleApi
-     */
-    public mApplicationControllerFindAllApplicationsByUserId(createdByUserId: string, options?: RawAxiosRequestConfig) {
-        return ApplicationModuleApiFp(this.configuration).mApplicationControllerFindAllApplicationsByUserId(createdByUserId, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ApplicationModuleApi
-     */
-    public mApplicationControllerFindAllNotificationCategories(options?: RawAxiosRequestConfig) {
-        return ApplicationModuleApiFp(this.configuration).mApplicationControllerFindAllNotificationCategories(options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
      * @param {string} applicationId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -1832,17 +1653,6 @@ export class ApplicationModuleApi extends BaseAPI {
      */
     public mApplicationControllerFindOneApplication(applicationId: string, options?: RawAxiosRequestConfig) {
         return ApplicationModuleApiFp(this.configuration).mApplicationControllerFindOneApplication(applicationId, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {string} notificationCategoryId 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ApplicationModuleApi
-     */
-    public mApplicationControllerFindOneNotificationCategory(notificationCategoryId: string, options?: RawAxiosRequestConfig) {
-        return ApplicationModuleApiFp(this.configuration).mApplicationControllerFindOneNotificationCategory(notificationCategoryId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -2325,134 +2135,6 @@ export const NotificationModuleApiAxiosParamCreator = function (configuration?: 
         },
         /**
          * 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        mNotificationControllerFindAllNotifications: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/m-notification/notifications`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @param {string} applicationId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        mNotificationControllerFindAllNotificationsByApplicationId: async (applicationId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'applicationId' is not null or undefined
-            assertParamExists('mNotificationControllerFindAllNotificationsByApplicationId', 'applicationId', applicationId)
-            const localVarPath = `/m-notification/applications/{applicationId}/notifications`
-                .replace(`{${"applicationId"}}`, encodeURIComponent(String(applicationId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @param {string} notificationCategoryId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        mNotificationControllerFindAllNotificationsByNotificationCategoryId: async (notificationCategoryId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'notificationCategoryId' is not null or undefined
-            assertParamExists('mNotificationControllerFindAllNotificationsByNotificationCategoryId', 'notificationCategoryId', notificationCategoryId)
-            const localVarPath = `/m-notification/notification-categories/{notificationCategoryId}/notifications`
-                .replace(`{${"notificationCategoryId"}}`, encodeURIComponent(String(notificationCategoryId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @param {string} templateId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        mNotificationControllerFindAllNotificationsByTemplateId: async (templateId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'templateId' is not null or undefined
-            assertParamExists('mNotificationControllerFindAllNotificationsByTemplateId', 'templateId', templateId)
-            const localVarPath = `/m-notification/templates/{templateId}/notifications`
-                .replace(`{${"templateId"}}`, encodeURIComponent(String(templateId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
          * @param {number} [page] 
          * @param {number} [perPage] 
          * @param {string} [templateName] 
@@ -2501,39 +2183,6 @@ export const NotificationModuleApiAxiosParamCreator = function (configuration?: 
         },
         /**
          * 
-         * @param {number} notificationId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        mNotificationControllerFindOneNotification: async (notificationId: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'notificationId' is not null or undefined
-            assertParamExists('mNotificationControllerFindOneNotification', 'notificationId', notificationId)
-            const localVarPath = `/m-notification/notifications/{notificationId}`
-                .replace(`{${"notificationId"}}`, encodeURIComponent(String(notificationId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
          * @param {string} templateId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -2553,6 +2202,10 @@ export const NotificationModuleApiAxiosParamCreator = function (configuration?: 
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication Access_Token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
     
@@ -2810,53 +2463,6 @@ export const NotificationModuleApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async mNotificationControllerFindAllNotifications(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Notification>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.mNotificationControllerFindAllNotifications(options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['NotificationModuleApi.mNotificationControllerFindAllNotifications']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @param {string} applicationId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async mNotificationControllerFindAllNotificationsByApplicationId(applicationId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Notification>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.mNotificationControllerFindAllNotificationsByApplicationId(applicationId, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['NotificationModuleApi.mNotificationControllerFindAllNotificationsByApplicationId']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @param {string} notificationCategoryId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async mNotificationControllerFindAllNotificationsByNotificationCategoryId(notificationCategoryId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Notification>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.mNotificationControllerFindAllNotificationsByNotificationCategoryId(notificationCategoryId, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['NotificationModuleApi.mNotificationControllerFindAllNotificationsByNotificationCategoryId']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @param {string} templateId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async mNotificationControllerFindAllNotificationsByTemplateId(templateId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Notification>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.mNotificationControllerFindAllNotificationsByTemplateId(templateId, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['NotificationModuleApi.mNotificationControllerFindAllNotificationsByTemplateId']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
          * @param {number} [page] 
          * @param {number} [perPage] 
          * @param {string} [templateName] 
@@ -2867,18 +2473,6 @@ export const NotificationModuleApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.mNotificationControllerFindAllTemplatesPaginated(page, perPage, templateName, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['NotificationModuleApi.mNotificationControllerFindAllTemplatesPaginated']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @param {number} notificationId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async mNotificationControllerFindOneNotification(notificationId: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Notification>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.mNotificationControllerFindOneNotification(notificationId, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['NotificationModuleApi.mNotificationControllerFindOneNotification']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -3002,41 +2596,6 @@ export const NotificationModuleApiFactory = function (configuration?: Configurat
         },
         /**
          * 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        mNotificationControllerFindAllNotifications(options?: RawAxiosRequestConfig): AxiosPromise<Array<Notification>> {
-            return localVarFp.mNotificationControllerFindAllNotifications(options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @param {string} applicationId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        mNotificationControllerFindAllNotificationsByApplicationId(applicationId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<Notification>> {
-            return localVarFp.mNotificationControllerFindAllNotificationsByApplicationId(applicationId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @param {string} notificationCategoryId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        mNotificationControllerFindAllNotificationsByNotificationCategoryId(notificationCategoryId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<Notification>> {
-            return localVarFp.mNotificationControllerFindAllNotificationsByNotificationCategoryId(notificationCategoryId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @param {string} templateId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        mNotificationControllerFindAllNotificationsByTemplateId(templateId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<Notification>> {
-            return localVarFp.mNotificationControllerFindAllNotificationsByTemplateId(templateId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
          * @param {number} [page] 
          * @param {number} [perPage] 
          * @param {string} [templateName] 
@@ -3045,15 +2604,6 @@ export const NotificationModuleApiFactory = function (configuration?: Configurat
          */
         mNotificationControllerFindAllTemplatesPaginated(page?: number, perPage?: number, templateName?: string, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedResponseOfTemplate> {
             return localVarFp.mNotificationControllerFindAllTemplatesPaginated(page, perPage, templateName, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @param {number} notificationId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        mNotificationControllerFindOneNotification(notificationId: number, options?: RawAxiosRequestConfig): AxiosPromise<Notification> {
-            return localVarFp.mNotificationControllerFindOneNotification(notificationId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -3169,49 +2719,6 @@ export class NotificationModuleApi extends BaseAPI {
 
     /**
      * 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof NotificationModuleApi
-     */
-    public mNotificationControllerFindAllNotifications(options?: RawAxiosRequestConfig) {
-        return NotificationModuleApiFp(this.configuration).mNotificationControllerFindAllNotifications(options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {string} applicationId 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof NotificationModuleApi
-     */
-    public mNotificationControllerFindAllNotificationsByApplicationId(applicationId: string, options?: RawAxiosRequestConfig) {
-        return NotificationModuleApiFp(this.configuration).mNotificationControllerFindAllNotificationsByApplicationId(applicationId, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {string} notificationCategoryId 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof NotificationModuleApi
-     */
-    public mNotificationControllerFindAllNotificationsByNotificationCategoryId(notificationCategoryId: string, options?: RawAxiosRequestConfig) {
-        return NotificationModuleApiFp(this.configuration).mNotificationControllerFindAllNotificationsByNotificationCategoryId(notificationCategoryId, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {string} templateId 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof NotificationModuleApi
-     */
-    public mNotificationControllerFindAllNotificationsByTemplateId(templateId: string, options?: RawAxiosRequestConfig) {
-        return NotificationModuleApiFp(this.configuration).mNotificationControllerFindAllNotificationsByTemplateId(templateId, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
      * @param {number} [page] 
      * @param {number} [perPage] 
      * @param {string} [templateName] 
@@ -3221,17 +2728,6 @@ export class NotificationModuleApi extends BaseAPI {
      */
     public mNotificationControllerFindAllTemplatesPaginated(page?: number, perPage?: number, templateName?: string, options?: RawAxiosRequestConfig) {
         return NotificationModuleApiFp(this.configuration).mNotificationControllerFindAllTemplatesPaginated(page, perPage, templateName, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {number} notificationId 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof NotificationModuleApi
-     */
-    public mNotificationControllerFindOneNotification(notificationId: number, options?: RawAxiosRequestConfig) {
-        return NotificationModuleApiFp(this.configuration).mNotificationControllerFindOneNotification(notificationId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -3300,6 +2796,7 @@ export class NotificationModuleApi extends BaseAPI {
  * @export
  */
 export const MNotificationControllerFindAllNotificationTasksByApplicationIdPaginatedSortFieldEnum = {
+    Id: 'id',
     ChannelType: 'channelType',
     UserId: 'userId',
     NotificationId: 'notificationId',
@@ -3375,46 +2872,6 @@ export const UserModuleApiAxiosParamCreator = function (configuration?: Configur
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * Users
-         * @summary 
-         * @param {CreateUserDto} createUserDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        mUserControllerCreateUser: async (createUserDto: CreateUserDto, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'createUserDto' is not null or undefined
-            assertParamExists('mUserControllerCreateUser', 'createUserDto', createUserDto)
-            const localVarPath = `/m-user/users`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication Access_Token required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(createUserDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -3518,6 +2975,10 @@ export const UserModuleApiAxiosParamCreator = function (configuration?: Configur
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            // authentication Access_Token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
             if (page !== undefined) {
                 localVarQueryParameter['page'] = page;
             }
@@ -3537,43 +2998,6 @@ export const UserModuleApiAxiosParamCreator = function (configuration?: Configur
             if (search !== undefined) {
                 localVarQueryParameter['search'] = search;
             }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @param {string} userId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        mUserControllerFindOneUser: async (userId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'userId' is not null or undefined
-            assertParamExists('mUserControllerFindOneUser', 'userId', userId)
-            const localVarPath = `/m-user/users/{userId}`
-                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication Access_Token required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
     
@@ -3723,7 +3147,8 @@ export const UserModuleApiAxiosParamCreator = function (configuration?: Configur
             };
         },
         /**
-         * 
+         * Users
+         * @summary 
          * @param {CreateManyUsersDto} createManyUsersDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -3884,19 +3309,6 @@ export const UserModuleApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * Users
-         * @summary 
-         * @param {CreateUserDto} createUserDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async mUserControllerCreateUser(createUserDto: CreateUserDto, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<User>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.mUserControllerCreateUser(createUserDto, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['UserModuleApi.mUserControllerCreateUser']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
          * 
          * @param {string} userId 
          * @param {*} [options] Override http request option.
@@ -3934,18 +3346,6 @@ export const UserModuleApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.mUserControllerFindAllUsers(page, perPage, sortField, sortOrder, search, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['UserModuleApi.mUserControllerFindAllUsers']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @param {string} userId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async mUserControllerFindOneUser(userId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<User>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.mUserControllerFindOneUser(userId, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['UserModuleApi.mUserControllerFindOneUser']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -3991,7 +3391,8 @@ export const UserModuleApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * 
+         * Users
+         * @summary 
          * @param {CreateManyUsersDto} createManyUsersDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -4053,16 +3454,6 @@ export const UserModuleApiFactory = function (configuration?: Configuration, bas
             return localVarFp.mUserControllerCreateNewOtp(userId, channelType, options).then((request) => request(axios, basePath));
         },
         /**
-         * Users
-         * @summary 
-         * @param {CreateUserDto} createUserDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        mUserControllerCreateUser(createUserDto: CreateUserDto, options?: RawAxiosRequestConfig): AxiosPromise<User> {
-            return localVarFp.mUserControllerCreateUser(createUserDto, options).then((request) => request(axios, basePath));
-        },
-        /**
          * 
          * @param {string} userId 
          * @param {*} [options] Override http request option.
@@ -4092,15 +3483,6 @@ export const UserModuleApiFactory = function (configuration?: Configuration, bas
          */
         mUserControllerFindAllUsers(page?: number, perPage?: number, sortField?: MUserControllerFindAllUsersSortFieldEnum, sortOrder?: MUserControllerFindAllUsersSortOrderEnum, search?: string, options?: RawAxiosRequestConfig): AxiosPromise<PaginatedResponseOfUser> {
             return localVarFp.mUserControllerFindAllUsers(page, perPage, sortField, sortOrder, search, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @param {string} userId 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        mUserControllerFindOneUser(userId: string, options?: RawAxiosRequestConfig): AxiosPromise<User> {
-            return localVarFp.mUserControllerFindOneUser(userId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -4136,7 +3518,8 @@ export const UserModuleApiFactory = function (configuration?: Configuration, bas
             return localVarFp.mUserControllerUpsertAccount(userId, channelType, upsertAccountDto, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
+         * Users
+         * @summary 
          * @param {CreateManyUsersDto} createManyUsersDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -4191,18 +3574,6 @@ export class UserModuleApi extends BaseAPI {
     }
 
     /**
-     * Users
-     * @summary 
-     * @param {CreateUserDto} createUserDto 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof UserModuleApi
-     */
-    public mUserControllerCreateUser(createUserDto: CreateUserDto, options?: RawAxiosRequestConfig) {
-        return UserModuleApiFp(this.configuration).mUserControllerCreateUser(createUserDto, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
      * 
      * @param {string} userId 
      * @param {*} [options] Override http request option.
@@ -4237,17 +3608,6 @@ export class UserModuleApi extends BaseAPI {
      */
     public mUserControllerFindAllUsers(page?: number, perPage?: number, sortField?: MUserControllerFindAllUsersSortFieldEnum, sortOrder?: MUserControllerFindAllUsersSortOrderEnum, search?: string, options?: RawAxiosRequestConfig) {
         return UserModuleApiFp(this.configuration).mUserControllerFindAllUsers(page, perPage, sortField, sortOrder, search, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {string} userId 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof UserModuleApi
-     */
-    public mUserControllerFindOneUser(userId: string, options?: RawAxiosRequestConfig) {
-        return UserModuleApiFp(this.configuration).mUserControllerFindOneUser(userId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -4290,7 +3650,8 @@ export class UserModuleApi extends BaseAPI {
     }
 
     /**
-     * 
+     * Users
+     * @summary 
      * @param {CreateManyUsersDto} createManyUsersDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}

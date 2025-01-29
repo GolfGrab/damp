@@ -105,7 +105,8 @@ export class NotificationsService {
         self.findIndex(
           (t) =>
             t.userId === account.userId &&
-            t.channelType === account.channelType,
+            t.channelType === account.channelType &&
+            t.channelToken === account.channelToken,
         ),
     );
 
@@ -168,6 +169,7 @@ export class NotificationsService {
             notificationId: notification.id,
             userId: account.userId,
             channelType: account.channelType,
+            channelToken: account.channelToken,
             priority: createNotificationDto.priority,
             retryLimit: Number(
               this.config[`${account.channelType}_RETRY_LIMIT`],

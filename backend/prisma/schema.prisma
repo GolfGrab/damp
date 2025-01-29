@@ -161,6 +161,8 @@ model CompiledMessage {
 }
 
 model NotificationTask {
+  id              Int         @id @default(autoincrement())
+  channelToken    String
   channelType     ChannelType
   userId          String
   notificationId  Int
@@ -180,8 +182,6 @@ model NotificationTask {
   notification    Notification    @relation(fields: [notificationId], references: [id])
   template        Template        @relation(fields: [templateId], references: [id])
   compiledMessage CompiledMessage @relation(fields: [notificationId, templateId, messageType], references: [notificationId, templateId, messageType])
-
-  @@id([channelType, userId, notificationId, templateId, messageType])
 }
 
 model Template {

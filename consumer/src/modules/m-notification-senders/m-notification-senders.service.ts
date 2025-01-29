@@ -128,7 +128,7 @@ export class MNotificationSendersService {
     sendNotification: (messageData: MessageData) => Promise<void>,
   ) {
     try {
-      const recipientAddress = await this.getRecipientAddress(notificationTask);
+      const recipientAddress = notificationTask.channelToken;
       const { compiledMessage, title } =
         await this.getMessageDetails(notificationTask);
       await sendNotification({ recipientAddress, compiledMessage, title });
@@ -136,20 +136,6 @@ export class MNotificationSendersService {
     } catch (error) {
       await this.handleTaskError(notificationTask, error);
     }
-  }
-
-  private async getRecipientAddress(
-    notificationTask: NotificationTaskMessageDto,
-  ): Promise<string> {
-    const account = await this.prisma.account.findUniqueOrThrow({
-      where: {
-        userId_channelType: {
-          userId: notificationTask.userId,
-          channelType: notificationTask.channelType,
-        },
-      },
-    });
-    return account.channelToken;
   }
 
   private async getMessageDetails(
@@ -188,13 +174,7 @@ export class MNotificationSendersService {
   ): Promise<void> {
     await this.prisma.notificationTask.update({
       where: {
-        channelType_userId_notificationId_templateId_messageType: {
-          channelType: notificationTask.channelType,
-          userId: notificationTask.userId,
-          notificationId: notificationTask.notificationId,
-          templateId: notificationTask.templateId,
-          messageType: notificationTask.messageType,
-        },
+        id: notificationTask.id,
       },
       data: {
         sentStatus: status,
@@ -228,13 +208,7 @@ export class MNotificationSendersService {
   ): Promise<void> {
     const updatedTask = await this.prisma.notificationTask.update({
       where: {
-        channelType_userId_notificationId_templateId_messageType: {
-          channelType: notificationTask.channelType,
-          userId: notificationTask.userId,
-          notificationId: notificationTask.notificationId,
-          templateId: notificationTask.templateId,
-          messageType: notificationTask.messageType,
-        },
+        id: notificationTask.id,
       },
       data: {
         retryCount: notificationTask.retryCount + 1,

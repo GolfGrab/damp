@@ -99,6 +99,8 @@ Table CompiledMessage {
 }
 
 Table NotificationTask {
+  id Int [pk, increment]
+  channelToken String [not null]
   channelType ChannelType [not null]
   userId String [not null]
   notificationId Int [not null]
@@ -112,10 +114,6 @@ Table NotificationTask {
   retryLimit Int [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
-
-  indexes {
-    (channelType, userId, notificationId, templateId, messageType) [pk]
-  }
 }
 
 Table Template {

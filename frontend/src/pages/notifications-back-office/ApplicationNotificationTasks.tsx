@@ -96,6 +96,7 @@ const ServerSideGridWithReactQuery = () => {
       }}
       rows={notificationTasks?.data}
       columns={[
+        { field: "id", headerName: "Task ID", width: 100 },
         {
           field: "channelType",
           headerName: "Channel Type",

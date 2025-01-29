@@ -8,8 +8,14 @@ import {
 } from 'class-validator';
 
 export class NotificationTaskMessageDto implements NotificationTask {
+  @IsNumber()
+  id: number;
+
   @IsEnum($Enums.ChannelType)
   channelType: $Enums.ChannelType;
+
+  @IsString()
+  channelToken: string;
 
   @IsString()
   userId: string;

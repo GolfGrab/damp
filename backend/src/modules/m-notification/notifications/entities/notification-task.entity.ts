@@ -3,6 +3,11 @@ import * as prisma from '@prisma/client';
 
 export class NotificationTask implements prisma.NotificationTask {
   @ApiProperty({
+    type: Number,
+  })
+  id: number;
+
+  @ApiProperty({
     type: String,
   })
   templateId: string;
@@ -30,6 +35,11 @@ export class NotificationTask implements prisma.NotificationTask {
     enum: prisma.ChannelType,
   })
   channelType: prisma.ChannelType;
+
+  @ApiProperty({
+    type: String,
+  })
+  channelToken: string;
 
   @ApiProperty({
     type: String,
