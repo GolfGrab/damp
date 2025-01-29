@@ -211,19 +211,6 @@ export class NotificationsService {
     return notificationTasks;
   }
 
-  findOne(id: number) {
-    return this.prisma.notification.findUniqueOrThrow({
-      where: {
-        id,
-        application: {
-          id: {
-            not: this.config.SYSTEM_APPLICATION_ID,
-          },
-        },
-      },
-    });
-  }
-
   getPaginatedNotificationsByUser(
     userId: string,
     paginateQuery: PaginationQueryDto,

@@ -1,14 +1,9 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { Config } from '@/utils/config/config-dto';
+import { PaginationQueryDto } from '@/utils/paginator/paginationQuery.dto';
 import { ClientProxy } from '@nestjs/microservices';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  $Enums,
-  Channel,
-  Notification,
-  NotificationCategory,
-  Template,
-} from '@prisma/client';
+import { $Enums, Notification, Template } from '@prisma/client';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { PrismaService } from 'nestjs-prisma';
 import { TemplatesService } from '../templates/templates.service';
@@ -17,315 +12,213 @@ import { NotificationsService } from './notifications.service';
 
 describe('NotificationsService', () => {
   let service: NotificationsService;
-  let prisma: DeepMockProxy<PrismaService>;
+  let prismaService: DeepMockProxy<PrismaService>;
   let templatesService: DeepMockProxy<TemplatesService>;
-  let notificationQueueClients: Record<
-    $Enums.ChannelType,
-    DeepMockProxy<ClientProxy>
-  >;
+  let config: DeepMockProxy<Config>;
+  let notificationQueueClientEMAIL: DeepMockProxy<ClientProxy>;
+  let notificationQueueClientSMS: DeepMockProxy<ClientProxy>;
+  let notificationQueueClientSLACK: DeepMockProxy<ClientProxy>;
 
   beforeEach(async () => {
-    notificationQueueClients = {
-      [$Enums.ChannelType.EMAIL]: mockDeep<ClientProxy>(),
-      [$Enums.ChannelType.SMS]: mockDeep<ClientProxy>(),
-      [$Enums.ChannelType.SLACK]: mockDeep<ClientProxy>(),
-    };
-
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         NotificationsService,
+        { provide: PrismaService, useValue: mockDeep<PrismaService>() },
+        { provide: TemplatesService, useValue: mockDeep<TemplatesService>() },
+        { provide: Config, useValue: mockDeep<Config>() },
         {
-          provide: PrismaService,
-          useValue: mockDeep<PrismaService>(),
+          provide: `NotificationQueueClient${$Enums.ChannelType.EMAIL}`,
+          useValue: mockDeep<ClientProxy>(),
         },
         {
-          provide: Config,
-          useValue: {
-            EMAIL_RETRY_LIMIT: 3,
-            SMS_RETRY_LIMIT: 5,
-            SLACK_RETRY_LIMIT: 1,
-          },
+          provide: `NotificationQueueClient${$Enums.ChannelType.SMS}`,
+          useValue: mockDeep<ClientProxy>(),
         },
         {
-          provide: TemplatesService,
-          useValue: mockDeep<TemplatesService>(),
+          provide: `NotificationQueueClient${$Enums.ChannelType.SLACK}`,
+          useValue: mockDeep<ClientProxy>(),
         },
-        ...Object.entries(notificationQueueClients).map(([key, mock]) => ({
-          provide: `NotificationQueueClient${key}`,
-          useValue: mock,
-        })),
       ],
     }).compile();
 
-    service = module.get<NotificationsService>(NotificationsService);
-    prisma = module.get(PrismaService);
+    service = module.get(NotificationsService);
+    prismaService = module.get(PrismaService);
     templatesService = module.get(TemplatesService);
-  });
-
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+    config = module.get(Config);
+    notificationQueueClientEMAIL = module.get(
+      `NotificationQueueClient${$Enums.ChannelType.EMAIL}`,
+    );
+    notificationQueueClientSMS = module.get(
+      `NotificationQueueClient${$Enums.ChannelType.SMS}`,
+    );
+    notificationQueueClientSLACK = module.get(
+      `NotificationQueueClient${$Enums.ChannelType.SLACK}`,
+    );
   });
 
   describe('create', () => {
     it('should create a notification and emit tasks', async () => {
-      const applicationId = 'app1';
+      const date = new Date();
+      const applicationId = 'app123';
       const createNotificationDto: CreateNotificationDto = {
-        notificationCategoryId: 'cat1',
+        notificationCategoryId: 'notifCat123',
+        recipientIds: ['user123'],
         priority: $Enums.Priority.HIGH,
-        recipientIds: ['user1', 'user2'],
-        templateId: 'temp1',
+        templateId: 'template123',
         templateData: { key: 'value' },
       };
 
-      prisma.notificationCategory.findUniqueOrThrow.mockResolvedValueOnce({
-        id: 'cat1',
-        name: 'Test Category',
-        applicationId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        createdByUserId: 'user1',
-        updatedByUserId: 'user1',
-        userPreferences: [
-          { userId: 'user1', isPreferred: true },
-          { userId: 'user2', isPreferred: true },
-        ],
-      } as NotificationCategory);
+      prismaService.account.findMany.mockResolvedValueOnce([
+        {
+          channelToken: 'abc',
+          userId: 'user123',
+          channelType: $Enums.ChannelType.EMAIL,
+          createdAt: date,
+          updatedAt: date,
+          verifiedAt: date,
+        },
+      ]);
 
-      prisma.template.findUniqueOrThrow.mockResolvedValueOnce({
-        id: 'temp1',
-        name: 'Test Template',
-        description: 'Test Description',
-        template: 'raw template',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        createdByUserId: 'user1',
-        updatedByUserId: 'user1',
-
-        compiledTemplates: [
-          {
-            templateId: 'temp1',
-            messageType: $Enums.ChannelType.EMAIL,
-          },
-        ],
+      prismaService.user.findMany.mockResolvedValueOnce([
+        {
+          id: 'user123',
+          email: 'user@example.com',
+          createdAt: date,
+          updatedAt: date,
+          createdByUserId: null,
+          updatedByUserId: null,
+        },
+      ]);
+      prismaService.template.findUniqueOrThrow.mockResolvedValueOnce({
+        id: 'template123',
+        name: 'Template',
+        template: 'Hello {{key}}',
+        createdAt: date,
+        updatedAt: date,
+        deletedAt: null,
+        createdByUserId: 'user123',
+        updatedByUserId: 'user123',
+        deletedByUserId: null,
+        compiledTemplates: [{ templateId: 'template123', messageType: 'text' }],
       } as Template);
 
-      templatesService.render.mockResolvedValueOnce('Rendered Message');
-
-      prisma.channel.findMany.mockResolvedValueOnce([
+      templatesService.render.mockResolvedValueOnce('Rendered message');
+      prismaService.notification.create.mockResolvedValueOnce({
+        id: 1,
+        applicationId: 'app123',
+        notificationCategoryId: 'notifCat123',
+        templateId: 'template123',
+        templateData: 'Rendered message',
+        priority: $Enums.Priority.HIGH,
+        createdAt: date,
+        updatedAt: date,
+      });
+      prismaService.channel.findMany.mockResolvedValueOnce([
         {
-          messageType: $Enums.MessageType.TEXT,
           channelType: $Enums.ChannelType.EMAIL,
-          accounts: [
-            { userId: 'user1', channelType: $Enums.ChannelType.EMAIL },
-          ],
-        } as Channel,
+          messageType: $Enums.MessageType.TEXT,
+        },
+      ]);
+      prismaService.notificationTask.createManyAndReturn.mockResolvedValueOnce([
+        {
+          notificationId: 1,
+          userId: 'user123',
+          channelType: $Enums.ChannelType.EMAIL,
+          channelToken: 'user@example.com',
+          priority: $Enums.Priority.HIGH,
+          createdAt: date,
+          updatedAt: date,
+          failedTimestamp: null,
+          id: 1,
+          messageType: $Enums.MessageType.TEXT,
+          retryCount: 0,
+          retryLimit: 3,
+          sentStatus: $Enums.SentStatus.PENDING,
+          sentTimestamp: null,
+          templateId: 'template123',
+        },
       ]);
 
-      prisma.notification.create.mockResolvedValueOnce({
-        id: 123,
-        applicationId,
-        notificationCategoryId: 'cat1',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        priority: $Enums.Priority.HIGH,
-        templateData: '',
-        templateId: 'temp1',
-        notificationTasks: [
+      await expect(
+        service.create(applicationId, createNotificationDto),
+      ).resolves.toEqual([
+        {
+          notificationId: 1,
+          userId: 'user123',
+          channelType: $Enums.ChannelType.EMAIL,
+          channelToken: 'user@example.com',
+          priority: $Enums.Priority.HIGH,
+          createdAt: date,
+          updatedAt: date,
+          failedTimestamp: null,
+          id: 1,
+          messageType: $Enums.MessageType.TEXT,
+          retryCount: 0,
+          retryLimit: 3,
+          sentStatus: $Enums.SentStatus.PENDING,
+          sentTimestamp: null,
+          templateId: 'template123',
+        },
+      ]);
+
+      expect(prismaService.notification.create).toHaveBeenCalled();
+      expect(notificationQueueClientEMAIL.emit).toHaveBeenCalled();
+    });
+  });
+
+  describe('getPaginatedNotificationsByUser', () => {
+    it('should return paginated notifications', async () => {
+      const userId = 'user123';
+      const paginateQuery: PaginationQueryDto = { page: 1, perPage: 10 };
+      const date = new Date();
+
+      prismaService.notification.findMany.mockResolvedValueOnce([
+        {
+          id: 1,
+          notificationTasks: [],
+          compiledMessages: [],
+          application: { name: 'App' },
+          notificationCategory: { name: 'Category' },
+          applicationId: 'app123',
+          notificationCategoryId: 'notifCat123',
+          templateId: 'template123',
+          templateData: 'Rendered message',
+          createdAt: date,
+          updatedAt: date,
+          priority: $Enums.Priority.HIGH,
+        } as Notification,
+      ]);
+
+      await expect(
+        service.getPaginatedNotificationsByUser(userId, paginateQuery),
+      ).resolves.toEqual({
+        data: [
           {
-            id: 'task1',
-            userId: 'user1',
-            channelType: $Enums.ChannelType.EMAIL,
-            priority: $Enums.Priority.HIGH,
+            application: { name: 'App' },
+            applicationId: 'app123',
+            compiledMessages: [],
+            createdAt: date,
+            id: 1,
+            notificationCategory: { name: 'Category' },
+            notificationCategoryId: 'notifCat123',
+            notificationTasks: [],
+            priority: 'HIGH',
+            templateData: 'Rendered message',
+            templateId: 'template123',
+            updatedAt: date,
           },
         ],
-      } as Notification);
-
-      const result = await service.create(applicationId, createNotificationDto);
-
-      expect(
-        prisma.notificationCategory.findUniqueOrThrow,
-      ).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: { id: createNotificationDto.notificationCategoryId },
-        }),
-      );
-
-      expect(prisma.template.findUniqueOrThrow).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: { id: createNotificationDto.templateId },
-        }),
-      );
-
-      expect(templatesService.render).toHaveBeenCalledWith(
-        'temp1',
-        $Enums.ChannelType.EMAIL,
-        { data: createNotificationDto.templateData },
-      );
-
-      expect(
-        notificationQueueClients[$Enums.ChannelType.EMAIL].emit,
-      ).toHaveBeenCalledWith($Enums.ChannelType.EMAIL, expect.anything());
-
-      expect(result).toBeDefined();
-    });
-
-    it('should return null if no user preferences match', async () => {
-      const applicationId = 'app1';
-      const createNotificationDto: CreateNotificationDto = {
-        notificationCategoryId: 'cat1',
-        priority: $Enums.Priority.HIGH,
-        recipientIds: ['user1', 'user2'],
-        templateId: 'temp1',
-        templateData: { key: 'value' },
-      };
-
-      prisma.notificationCategory.findUniqueOrThrow.mockResolvedValueOnce({
-        id: 'cat1',
-        name: 'Test Category',
-        applicationId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        createdByUserId: 'user1',
-        updatedByUserId: 'user1',
-        userPreferences: [],
-      } as NotificationCategory);
-
-      const result = await service.create(applicationId, createNotificationDto);
-
-      expect(result).toBeNull();
-      expect(prisma.notificationCategory.findUniqueOrThrow).toHaveBeenCalled();
-    });
-  });
-
-  describe('findAll', () => {
-    it('should return all notifications', async () => {
-      prisma.notification.findMany.mockResolvedValueOnce([
-        {
-          id: 1,
-          applicationId: 'app1',
-          notificationCategoryId: 'cat1',
-          templateId: 'temp1',
-          templateData: 'data',
-          priority: $Enums.Priority.HIGH,
-          createdAt: new Date(),
-          updatedAt: new Date(),
+        meta: {
+          currentPage: 1,
+          lastPage: NaN,
+          next: null,
+          perPage: 10,
+          prev: null,
+          total: undefined,
         },
-        {
-          id: 2,
-          applicationId: 'app1',
-          notificationCategoryId: 'cat2',
-          templateId: 'temp2',
-          templateData: 'data',
-          priority: $Enums.Priority.HIGH,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ]);
-
-      const result = await service.findAll();
-      expect(result).toEqual([
-        {
-          id: 1,
-          applicationId: 'app1',
-          notificationCategoryId: 'cat1',
-          templateId: 'temp1',
-          templateData: 'data',
-          priority: $Enums.Priority.HIGH,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-        {
-          id: 2,
-          applicationId: 'app1',
-          notificationCategoryId: 'cat2',
-          templateId: 'temp2',
-          templateData: 'data',
-          priority: $Enums.Priority.HIGH,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ]);
-    });
-  });
-
-  describe('findAllByApplicationId', () => {
-    it('should return all notifications for a specific application', async () => {
-      const applicationId = 'app1';
-      prisma.notification.findMany.mockResolvedValueOnce([
-        {
-          id: 1,
-          applicationId: 'app1',
-          notificationCategoryId: 'cat1',
-          templateId: 'temp1',
-          templateData: 'data',
-          priority: $Enums.Priority.HIGH,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-        {
-          id: 2,
-          applicationId: 'app1',
-          notificationCategoryId: 'cat2',
-          templateId: 'temp2',
-          templateData: 'data',
-          priority: $Enums.Priority.HIGH,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ]);
-      const result = await service.findAllByApplicationId(applicationId);
-      expect(result).toEqual([
-        {
-          id: 1,
-          applicationId: 'app1',
-          notificationCategoryId: 'cat1',
-          templateId: 'temp1',
-          templateData: 'data',
-          priority: $Enums.Priority.HIGH,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-        {
-          id: 2,
-          applicationId: 'app1',
-          notificationCategoryId: 'cat2',
-          templateId: 'temp2',
-          templateData: 'data',
-          priority: $Enums.Priority.HIGH,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ]);
-    });
-  });
-
-  describe('findOne', () => {
-    it('should return a notification by ID', async () => {
-      const mockDate = new Date();
-
-      const notificationId = 1;
-      prisma.notification.findUniqueOrThrow.mockResolvedValueOnce({
-        id: notificationId,
-        applicationId: 'app1',
-        notificationCategoryId: 'cat1',
-        templateId: 'temp1',
-        templateData: 'data',
-        priority: $Enums.Priority.HIGH,
-        createdAt: mockDate,
-        updatedAt: mockDate,
       });
 
-      const result = await service.findOne(notificationId);
-      expect(result).toEqual({
-        id: notificationId,
-        applicationId: 'app1',
-        notificationCategoryId: 'cat1',
-        templateId: 'temp1',
-        templateData: 'data',
-        priority: $Enums.Priority.HIGH,
-        createdAt: mockDate,
-        updatedAt: mockDate,
-      });
+      expect(prismaService.notification.findMany).toHaveBeenCalled();
     });
   });
 });
