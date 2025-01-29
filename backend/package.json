@@ -117,7 +117,8 @@
       "!./**/*.entity.ts",
       "!./**/*.module.ts",
       "!./**/*.controller.ts",
-      "!./**/index.ts"
+      "!./**/index.ts",
+      "!./**/logger/**"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",

@@ -156,7 +156,7 @@ describe('AccountsService', () => {
         id: 1,
         otpCode: '123456',
         verifiedAt: null,
-        expiredAt: new Date(),
+        expiredAt: new Date(new Date().getTime() + 10000),
         userId,
         channelType,
         createdAt: new Date(),
