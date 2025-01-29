@@ -87,25 +87,4 @@ export class NotificationCategoriesService {
       },
     });
   }
-
-  delete(id: string, user: UserWithRoles) {
-    return this.prisma.notificationCategory.update({
-      where: {
-        id,
-        application: {
-          id: {
-            not: this.config.SYSTEM_APPLICATION_ID,
-          },
-          createdByUserId: user.roles.includes(Role.Admin)
-            ? undefined
-            : user.id,
-        },
-      },
-      data: {
-        updatedByUserId: user.id,
-        deletedByUserId: user.id,
-        deletedAt: new Date(),
-      },
-    });
-  }
 }

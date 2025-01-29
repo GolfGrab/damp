@@ -7,7 +7,6 @@ import {
 } from '@nestjs/common';
 import * as prisma from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
-import { UserPreferencesService } from '../user-preferences/user-preferences.service';
 import { VerifyUserDto } from '../users/dto/verify-user.dto';
 import { UpsertAccountDto } from './dto/upsert-account.dto';
 
@@ -16,7 +15,6 @@ export class AccountsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notificationService: NotificationsService,
-    private readonly userPreferencesService: UserPreferencesService,
     private readonly config: Config,
   ) {}
 

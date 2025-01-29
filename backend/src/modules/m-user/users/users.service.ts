@@ -5,7 +5,6 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'nestjs-prisma';
 import { CreateManyUsersDto } from './dto/create-many-users.dto';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UsersOrderDto } from './dto/users-order.dto';
 import { UsersSearchDto } from './dto/users-search.dto';
 import { User } from './entities/user.entity';
@@ -16,12 +15,6 @@ export class UsersService {
     private readonly prisma: PrismaService,
     private readonly config: Config,
   ) {}
-
-  create(createUserDto: CreateUserDto) {
-    return this.prisma.user.create({
-      data: createUserDto,
-    });
-  }
 
   async upsertMany(createManyUsersDto: CreateManyUsersDto, user: User) {
     const BATCH_SIZE = 10;
@@ -97,23 +90,6 @@ export class UsersService {
               }
             : {}),
         },
-      },
-    });
-  }
-
-  findOne(userId: string) {
-    return this.prisma.user.findFirstOrThrow({
-      where: {
-        AND: [
-          {
-            id: userId,
-          },
-          {
-            id: {
-              not: this.config.SYSTEM_USER_ID,
-            },
-          },
-        ],
       },
     });
   }
