@@ -148,6 +148,11 @@ describe('AccountsService', () => {
   });
 
   describe('verify', () => {
+    it('should generate a 6-digit OTP', () => {
+      const otp = service.generateOtp();
+      expect(otp).toMatch(/^\d{6}$/);
+    });
+
     it('should verify an OTP and update the account', async () => {
       const userId = 'user123';
       const channelType = prisma.$Enums.ChannelType.EMAIL;
