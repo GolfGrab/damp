@@ -4,6 +4,7 @@ import {
   Avatar,
   Button,
   Chip,
+  Divider,
   Skeleton,
   Stack,
   styled,
@@ -39,14 +40,7 @@ const Layout = ({ children }: React.PropsWithChildren) => {
       title="Notification Details"
       parentPath="/notifications"
     >
-      <Stack
-        gap={3}
-        alignContent="center"
-        justifyContent="center"
-        alignItems="center"
-      >
-        {children}
-      </Stack>
+      <Stack gap={3}>{children}</Stack>
     </NotificationCenterGenericLayout>
   );
 };
@@ -117,33 +111,41 @@ const NotificationDetails = () => {
   }
   return (
     <Layout>
-      <Avatar
-        alt={notificationDetails.applicationName + " icon"}
-        src={notificationDetails.image}
-        sx={{ width: 64, height: 64 }}
-      />
-      <Stack width="100%" alignItems="center" gap={1}>
-        <Typography variant="h6">{notificationDetails.title}</Typography>
-        <Typography
-          component="span"
-          variant="body2"
-          sx={{ color: "text.primary" }}
-          display="inline"
-          noWrap
-          width="100%"
-          textAlign="center"
-        >
-          {notificationDetails.applicationName +
-            " — " +
-            (notificationDetails.createdAt
-              ? dayjs(notificationDetails.createdAt).fromNow()
-              : "")}
-        </Typography>
-        <Typography variant="caption" color="primary">
-          # {notificationDetails.notificationCategoryName}
-        </Typography>
+      <Stack direction="row" gap={2}>
+        <Avatar
+          alt={notificationDetails.applicationName + " icon"}
+          src={notificationDetails.image}
+          sx={{ width: 64, height: 64 }}
+        />
+        <Stack width="100%" gap={1}>
+          <Typography variant="h6">{notificationDetails.title}</Typography>
+          <Typography
+            component="span"
+            variant="body2"
+            sx={{ color: "text.primary" }}
+            display="inline"
+            noWrap
+            width="100%"
+          >
+            {notificationDetails.applicationName +
+              " — " +
+              (notificationDetails.createdAt
+                ? dayjs(notificationDetails.createdAt).fromNow()
+                : "")}
+          </Typography>
+          <Typography variant="caption" color="primary">
+            # {notificationDetails.notificationCategoryName}
+          </Typography>
+        </Stack>
       </Stack>
+      <NotificationMessageContainer
+        dangerouslySetInnerHTML={{
+          __html: notificationDetails.message,
+        }}
+      />
+      <Divider />
       <Stack direction="row" gap={1}>
+        <Typography variant="body1">Sent to:</Typography>
         {notificationDetails.channelTypes?.map((channelType) => (
           <Chip
             key={channelType}
@@ -161,18 +163,12 @@ const NotificationDetails = () => {
           />
         ))}
       </Stack>
-      <NotificationMessageContainer
-        dangerouslySetInnerHTML={{
-          __html: notificationDetails.message,
-        }}
-      />
     </Layout>
   );
 };
 
 const NotificationMessageContainer = styled("div")({
   width: "100%",
-  textAlign: "center",
   "& *": {
     overflowWrap: "break-word",
     whiteSpace: "normal",
