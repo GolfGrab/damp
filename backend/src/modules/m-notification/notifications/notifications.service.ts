@@ -262,6 +262,9 @@ export class NotificationsService {
             },
           },
         },
+        orderBy: {
+          createdAt: 'desc',
+        },
       },
       paginateOptions: paginateQuery,
     });

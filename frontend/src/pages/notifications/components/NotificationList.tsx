@@ -11,7 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { groupBy, sortBy } from "lodash";
+import { groupBy, orderBy } from "lodash";
 import { Fragment, useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import { useAuth } from "react-oidc-context";
@@ -62,12 +62,10 @@ const groupSortAndTransformNotifications = (
     (notification) => new Date(notification.createdAt).toDateString()
   );
   // Sort the notifications by date and time
-  const sortedGroupedNotifications = sortBy(
+  const sortedGroupedNotifications = orderBy(
     Object.entries(groupedNotifications),
     ([date]) => new Date(date).getTime(),
-    function ([, notifications]) {
-      return notifications;
-    }
+    ["desc"]
   );
   return sortedGroupedNotifications;
 };
