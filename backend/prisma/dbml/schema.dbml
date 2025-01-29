@@ -44,7 +44,6 @@ Table Application {
   name String [not null]
   description String [not null]
   apiKey String [unique, not null]
-  isEnabled Boolean [not null, default: true]
   createdAt DateTime [default: `now()`, not null]
   createdByUserId String [not null]
   updatedAt DateTime [not null]

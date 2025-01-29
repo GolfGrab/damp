@@ -84,7 +84,6 @@ model Application {
   name            String
   description     String
   apiKey          String   @unique
-  isEnabled       Boolean  @default(true)
   createdAt       DateTime @default(now())
   createdByUserId String
   updatedAt       DateTime @updatedAt

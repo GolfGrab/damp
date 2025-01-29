@@ -23,11 +23,6 @@ export class ApplicationWithApiKey implements prisma.Application {
   apiKey: string;
 
   @ApiProperty({
-    type: Boolean,
-  })
-  isEnabled: boolean;
-
-  @ApiProperty({
     type: String,
     format: 'date-time',
   })
