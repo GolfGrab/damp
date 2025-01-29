@@ -11,6 +11,7 @@ import {
   IconButton,
   Skeleton,
   Stack,
+  TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -68,7 +69,11 @@ const useGetTemplatePreview = (
 const TemplateEdit = () => {
   const { templateId } = useParams();
   const navigate = useNavigate();
-  const [currentTab, setCurrentTab] = useState("edit");
+  const [currentTab, setCurrentTab] = useState("template-data");
+  const [TemplateData, setTemplateData] = useState(
+    JSON.stringify({ data: {} }, null, 2)
+  );
+  const [isTemplateDataError, setIsTemplateDataError] = useState(false);
   const client = useClient();
   const notifications = useNotifications();
   const { editor, isSaved, saveContent } = useRichTextEditor({
@@ -119,6 +124,19 @@ const TemplateEdit = () => {
     ],
   };
   const uriEncodedSlackPreview = encodeURI(JSON.stringify(baseSlackPreview));
+  const getTemplateData = () => {
+    try {
+      return {
+        error: false,
+        data: JSON.parse(TemplateData),
+      };
+    } catch {
+      return {
+        error: true,
+        data: { data: {} },
+      };
+    }
+  };
 
   useEffect(() => {
     if (template) {
@@ -146,146 +164,174 @@ const TemplateEdit = () => {
   }
 
   return (
-    <div>
-      <Box sx={{ width: "100%", typography: "body1" }}>
-        <Stack direction="row" spacing={2}>
-          <Typography variant="h4">Template: {template?.data.id}</Typography>
-          <Tooltip title="Copy To Clipboard" arrow>
-            <IconButton
-              size="small"
-              onClick={() => {
-                navigator.clipboard.writeText(template?.data.id || "");
-                notifications.show("Template ID copied to clipboard", {
-                  severity: "success",
-                  autoHideDuration: 2000,
-                });
-              }}
-            >
-              <ContentCopy />
-            </IconButton>
-          </Tooltip>
-        </Stack>
-        <TabContext value={currentTab}>
-          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <TabList
-              onChange={(_, v) => {
-                saveContent(editor.getJSON());
-                setCurrentTab(v);
-              }}
-            >
-              <Tab label="Edit" value="edit" />
-              <Tab
-                label="Preview email"
-                value="p-email"
-                onClick={() => {
-                  getPreviewHtml({
-                    getPreviewTemplateDto: {
-                      data: {},
-                    },
-                  });
-                }}
-              />
-              <Tab
-                label="Preview SMS"
-                value="p-sms"
-                onClick={() => {
-                  getPreviewSms({
-                    getPreviewTemplateDto: {
-                      data: {},
-                    },
-                  });
-                }}
-              />
-              <Tab
-                label="Preview slack"
-                value="p-slack"
-                onClick={() => {
-                  getPreviewSlack({
-                    getPreviewTemplateDto: {
-                      data: {},
-                    },
-                  });
-                }}
-              />
-            </TabList>
-          </Box>
-          <TabPanel value="edit">
-            <RichTextEditor editor={editor} isSaved={isSaved} />
-          </TabPanel>
-          <TabPanel value="p-email">
-            {isPreviewHtmlPending && (
-              <>
-                <Skeleton animation="wave" />
-                <Skeleton animation="wave" />
-                <Skeleton animation="wave" />
-              </>
-            )}
-            {isPreviewHtmlError && (
-              <Stack spacing={4} width="100%">
-                <Alert severity="error">Error loading HTML preview</Alert>
-                <Stack spacing={2}>
-                  <Button variant="outlined" onClick={() => navigate(0)}>
-                    Refresh This Page
-                  </Button>
-                </Stack>
-              </Stack>
-            )}
-            <TemplatePreviewHtml content={previewHtmlData?.data ?? ""} />
-          </TabPanel>
-          <TabPanel
-            value="p-sms"
-            sx={{
-              // Wrap \n in content
-              whiteSpace: "pre-wrap",
+    <Stack sx={{ width: "100%", typography: "body1" }} gap={2}>
+      <Stack direction="row" spacing={2}>
+        <Typography variant="h4">Template: {template?.data.id}</Typography>
+        <Tooltip title="Copy To Clipboard" arrow>
+          <IconButton
+            size="small"
+            onClick={() => {
+              navigator.clipboard.writeText(template?.data.id || "");
+              notifications.show("Template ID copied to clipboard", {
+                severity: "success",
+                autoHideDuration: 2000,
+              });
             }}
           >
-            {isPreviewSmsPending && (
-              <>
-                <Skeleton animation="wave" />
-                <Skeleton animation="wave" />
-                <Skeleton animation="wave" />
-              </>
-            )}
-
-            {isPreviewSmsError && (
-              <Stack spacing={4} width="100%">
-                <Alert severity="error">Error loading SMS preview</Alert>
-                <Stack spacing={2}>
-                  <Button variant="outlined" onClick={() => navigate(0)}>
-                    Refresh This Page
-                  </Button>
-                </Stack>
+            <ContentCopy />
+          </IconButton>
+        </Tooltip>
+      </Stack>
+      <RichTextEditor editor={editor} isSaved={isSaved} />
+      <TabContext value={currentTab}>
+        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+          <TabList
+            onChange={(_, v) => {
+              saveContent(editor.getJSON());
+              setCurrentTab(v);
+            }}
+          >
+            <Tab label="Template Data" value="template-data" />
+            <Tab
+              disabled={isTemplateDataError}
+              label="Preview email"
+              value="p-email"
+              onClick={() => {
+                const { data } = getTemplateData();
+                getPreviewHtml({
+                  getPreviewTemplateDto: data,
+                });
+              }}
+            />
+            <Tab
+              disabled={isTemplateDataError}
+              label="Preview SMS"
+              value="p-sms"
+              onClick={() => {
+                const { data } = getTemplateData();
+                getPreviewSms({
+                  getPreviewTemplateDto: data,
+                });
+              }}
+            />
+            <Tab
+              disabled={isTemplateDataError}
+              label="Preview slack"
+              value="p-slack"
+              onClick={() => {
+                const { data } = getTemplateData();
+                getPreviewSlack({
+                  getPreviewTemplateDto: data,
+                });
+              }}
+            />
+          </TabList>
+        </Box>
+        <TabPanel value="template-data">
+          <TextField
+            fullWidth
+            label="Preview Template Data"
+            placeholder="Placeholder"
+            multiline
+            value={TemplateData}
+            onChange={(e) => {
+              setTemplateData(e.target.value);
+              try {
+                JSON.parse(e.target.value);
+                setIsTemplateDataError(false);
+              } catch {
+                setIsTemplateDataError(true);
+              }
+            }}
+            error={isTemplateDataError}
+            helperText={isTemplateDataError ? "Invalid JSON" : ""}
+          />
+          <Button
+            onClick={() => {
+              const { error, data } = getTemplateData();
+              if (error) {
+                setIsTemplateDataError(true);
+                return;
+              }
+              setTemplateData(JSON.stringify(data, null, 2));
+            }}
+          >
+            format
+          </Button>
+        </TabPanel>
+        <TabPanel value="p-email">
+          {isPreviewHtmlPending && (
+            <>
+              <Skeleton animation="wave" />
+              <Skeleton animation="wave" />
+              <Skeleton animation="wave" />
+            </>
+          )}
+          {isPreviewHtmlError && (
+            <Stack spacing={4} width="100%">
+              <Alert severity="error">Error loading HTML preview</Alert>
+              <Stack spacing={2}>
+                <Button variant="outlined" onClick={() => navigate(0)}>
+                  Refresh This Page
+                </Button>
               </Stack>
-            )}
+            </Stack>
+          )}
+          <TemplatePreviewHtml content={previewHtmlData?.data ?? ""} />
+        </TabPanel>
+        <TabPanel
+          value="p-sms"
+          sx={{
+            // Wrap \n in content
+            whiteSpace: "pre-wrap",
+          }}
+        >
+          {isPreviewSmsPending && (
+            <>
+              <Skeleton animation="wave" />
+              <Skeleton animation="wave" />
+              <Skeleton animation="wave" />
+            </>
+          )}
 
-            {previewSmsData?.data}
-          </TabPanel>
-          <TabPanel value="p-slack">
-            {isPreviewSlackError ? (
-              <Stack spacing={4} width="100%">
-                <Alert severity="error">Error loading Slack preview</Alert>
-                <Stack spacing={2}>
-                  <Button variant="outlined" onClick={() => navigate(0)}>
-                    Refresh This Page
-                  </Button>
-                </Stack>
+          {isPreviewSmsError && (
+            <Stack spacing={4} width="100%">
+              <Alert severity="error">Error loading SMS preview</Alert>
+              <Stack spacing={2}>
+                <Button variant="outlined" onClick={() => navigate(0)}>
+                  Refresh This Page
+                </Button>
               </Stack>
-            ) : (
-              <LoadingButton
-                href={`https://app.slack.com/block-kit-builder#${uriEncodedSlackPreview}`}
-                target="_blank"
-                loading={isPreviewSlackPending}
-                disabled={isPreviewSlackPending}
-                endIcon={<OpenInNew />}
-                variant="contained"
-              >
-                Preview in Slack Block Kit Builder
-              </LoadingButton>
-            )}
-          </TabPanel>
-        </TabContext>
-      </Box>
-    </div>
+            </Stack>
+          )}
+
+          {previewSmsData?.data}
+        </TabPanel>
+        <TabPanel value="p-slack">
+          {isPreviewSlackError ? (
+            <Stack spacing={4} width="100%">
+              <Alert severity="error">Error loading Slack preview</Alert>
+              <Stack spacing={2}>
+                <Button variant="outlined" onClick={() => navigate(0)}>
+                  Refresh This Page
+                </Button>
+              </Stack>
+            </Stack>
+          ) : (
+            <LoadingButton
+              href={`https://app.slack.com/block-kit-builder#${uriEncodedSlackPreview}`}
+              target="_blank"
+              loading={isPreviewSlackPending}
+              disabled={isPreviewSlackPending}
+              endIcon={<OpenInNew />}
+              variant="contained"
+            >
+              Preview in Slack Block Kit Builder
+            </LoadingButton>
+          )}
+        </TabPanel>
+      </TabContext>
+    </Stack>
   );
 };
 
