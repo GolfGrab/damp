@@ -10,7 +10,7 @@ import { PrismaService } from 'nestjs-prisma';
 import { ApplicationsService } from './applications.service';
 import { CreateApplicationDto } from './dto/create-application.dto';
 import { UpdateApplicationDto } from './dto/update-application.dto';
-import { ApplicationWithApiKey } from './entities/application-with-api-key';
+import { ApplicationWithApiKey } from './entities/application-with-api-key.entity';
 
 describe('ApplicationsService', () => {
   let service: ApplicationsService;
@@ -167,7 +167,9 @@ describe('ApplicationsService', () => {
         }),
       ).resolves.toEqual(mockApplication);
 
-      expect(prismaService.application.findUniqueOrThrow).toHaveBeenCalledTimes(1);
+      expect(prismaService.application.findUniqueOrThrow).toHaveBeenCalledTimes(
+        1,
+      );
     });
   });
 
@@ -203,7 +205,7 @@ describe('ApplicationsService', () => {
           email: '',
         }),
       ).resolves.toEqual(mockUpdatedApplication);
-      expect(prismaService.application.update).toHaveBeenCalled()
+      expect(prismaService.application.update).toHaveBeenCalled();
     });
   });
 

@@ -6,7 +6,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { ApplicationsService } from './applications/applications.service';
 import { CreateApplicationDto } from './applications/dto/create-application.dto';
 import { UpdateApplicationDto } from './applications/dto/update-application.dto';
-import { ApplicationWithApiKey } from './applications/entities/application-with-api-key';
+import { ApplicationWithApiKey } from './applications/entities/application-with-api-key.entity';
 import { Application } from './applications/entities/application.entity';
 import { CreateNotificationCategoryDto } from './notification-categories/dto/create-notification-category.dto';
 import { UpdateNotificationCategoryDto } from './notification-categories/dto/update-notification-category.dto';

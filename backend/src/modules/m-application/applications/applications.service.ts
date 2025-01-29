@@ -7,7 +7,7 @@ import { kebabCase } from 'lodash';
 import { PrismaService } from 'nestjs-prisma';
 import { CreateApplicationDto } from './dto/create-application.dto';
 import { UpdateApplicationDto } from './dto/update-application.dto';
-import { ApplicationWithApiKey } from './entities/application-with-api-key';
+import { ApplicationWithApiKey } from './entities/application-with-api-key.entity';
 import { Application } from './entities/application.entity';
 
 @Injectable()
