@@ -8,7 +8,7 @@ export const getOidcConfig = (
 ): AuthProviderProps => ({
   authority: "https://api.asgardeo.io/t/damp/oauth2/token",
   client_id: "TRnCWdQg0YXiEzWECZ3S_hkkfpwa",
-  redirect_uri: window.location.origin + "/auth/callback",
+  redirect_uri: window.location.origin,
   scope: "openid email groups profile",
   onSigninCallback: (user): void => {
     navigator((user?.state as { returnTo: Location })?.returnTo ?? "/");
