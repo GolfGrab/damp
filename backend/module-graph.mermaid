@@ -28,14 +28,13 @@ flowchart TD
   NotificationsModule-->AuthModule
   NotificationsModule-->JwtModule
   NotificationsModule-->ConfigHostModule
-  AccountsModule-->UserPreferencesModule
-  UserPreferencesModule-->AuthModule
-  UserPreferencesModule-->JwtModule
-  UserPreferencesModule-->ConfigHostModule
   AccountsModule-->AuthModule
   AccountsModule-->JwtModule
   AccountsModule-->ConfigHostModule
   MUserModule-->UserPreferencesModule
+  UserPreferencesModule-->AuthModule
+  UserPreferencesModule-->JwtModule
+  UserPreferencesModule-->ConfigHostModule
   MUserModule-->AuthModule
   MUserModule-->JwtModule
   MUserModule-->ConfigHostModule

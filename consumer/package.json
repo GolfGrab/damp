@@ -29,8 +29,8 @@
     "start:sms:prod": "cross-env CHANNEL_TYPE=SMS node dist/main",
     "start:slack:dev": "cross-env CHANNEL_TYPE=SLACK nest start --watch",
     "start:slack:prod": "cross-env CHANNEL_TYPE=SLACK node dist/main",
-    "start:all:dev": "concurrently -n email,sms,web-push,slack -c yellow,green,blue,magenta \"npm run start:email:dev\" \"npm run start:sms:dev\" \"npm run start:web-push:dev\" \"npm run start:slack:dev\"",
-    "start:all:prod": "concurrently -n email,sms,web-push,slack -c yellow,green,blue,magenta \"npm run start:email:prod\" \"npm run start:sms:prod\" \"npm run start:web-push:prod\" \"npm run start:slack:prod\""
+    "start:all:dev": "concurrently -n email,sms,slack -c yellow,green,blue,magenta \"npm run start:email:dev\" \"npm run start:sms:dev\" \"npm run start:web-push:dev\" \"npm run start:slack:dev\"",
+    "start:all:prod": "concurrently -n email,sms,slack -c yellow,green,blue,magenta \"npm run start:email:prod\" \"npm run start:sms:prod\" \"npm run start:web-push:prod\" \"npm run start:slack:prod\""
   },
   "dependencies": {
     "@fastify/static": "^6.12.0",
