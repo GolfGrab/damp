@@ -38,3 +38,5 @@ lerna-debug.log*
 .env
 .env.yaml
 node_modules
+
+**/package-lock.json
