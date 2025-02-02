@@ -36,7 +36,6 @@ export class MApplicationController {
   }
 
   @Auth()
-  @Roles(Role.Admin, Role.Developer)
   @Get('applications')
   findAllApplications(@GetUser() user: UserWithRoles): Promise<Application[]> {
     return this.applicationsService.findAll(user);
@@ -53,6 +52,7 @@ export class MApplicationController {
   }
 
   @Auth()
+  @Roles(Role.Admin, Role.Developer)
   @Patch('applications/:applicationId')
   updateApplication(
     @Param('applicationId') applicationId: string,
@@ -67,6 +67,7 @@ export class MApplicationController {
   }
 
   @Auth()
+  @Roles(Role.Admin, Role.Developer)
   @Patch('applications/:applicationId/rotate-api-key')
   rotateApiKey(
     @Param('applicationId') applicationId: string,
@@ -98,11 +99,9 @@ export class MApplicationController {
   @Get('applications/:applicationId/notification-categories')
   findAllNotificationCategoriesByApplicationId(
     @Param('applicationId') applicationId: string,
-    @GetUser() user: UserWithRoles,
   ): Promise<NotificationCategory[]> {
     return this.notificationCategoriesService.findAllByApplicationId(
       applicationId,
-      user,
     );
   }
 

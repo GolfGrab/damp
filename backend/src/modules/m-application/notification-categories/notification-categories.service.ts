@@ -47,18 +47,10 @@ export class NotificationCategoriesService {
     });
   }
 
-  findAllByApplicationId(applicationId: string, user: UserWithRoles) {
+  findAllByApplicationId(applicationId: string) {
     return this.prisma.notificationCategory.findMany({
       where: {
         applicationId,
-        application: {
-          id: {
-            not: this.config.SYSTEM_APPLICATION_ID,
-          },
-          createdByUserId: user.roles.includes(Role.Admin)
-            ? undefined
-            : user.id,
-        },
         deletedAt: null,
       },
     });

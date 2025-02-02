@@ -109,7 +109,7 @@ describe('NotificationCategoriesService', () => {
       prismaService.notificationCategory.findMany.mockResolvedValueOnce(
         mockCategories,
       );
-      const result = await service.findAllByApplicationId(applicationId, user);
+      const result = await service.findAllByApplicationId(applicationId);
       expect(result).toEqual(mockCategories);
     });
   });
