@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { Role } from '@/auth/auth-roles.decorator';
 import { UserWithRoles } from '@/auth/UserWithRoles';
 import { Config } from '@/utils/config/config-dto';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -96,16 +95,6 @@ describe('ApplicationsService', () => {
   });
   describe('findAll', () => {
     it('should return all applications', async () => {
-      const user: UserWithRoles = {
-        id: 'user123',
-        roles: [Role.Admin],
-        email: '',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        createdByUserId: null,
-        updatedByUserId: null,
-      };
-
       const mockApplications: Application[] = [
         {
           id: 'app1',
@@ -133,7 +122,41 @@ describe('ApplicationsService', () => {
         mockApplications,
       );
 
-      await expect(service.findAll(user)).resolves.toEqual(mockApplications);
+      await expect(service.findAll()).resolves.toEqual(mockApplications);
+      expect(prismaService.application.findMany).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('findMy', () => {
+    it('should return all applications created by the user', async () => {
+      const user: UserWithRoles = {
+        id: 'user1',
+        roles: [],
+        email: '',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        createdByUserId: null,
+        updatedByUserId: null,
+      };
+
+      const mockApplications: Application[] = [
+        {
+          id: 'app1',
+          name: 'App1',
+          description: 'Description1',
+          createdAt: new Date(),
+          createdByUserId: 'user1',
+          updatedAt: new Date(),
+          updatedByUserId: 'user1',
+          apiKey: 'key1',
+        },
+      ];
+
+      prismaService.application.findMany.mockResolvedValueOnce(
+        mockApplications,
+      );
+
+      await expect(service.findMy(user)).resolves.toEqual(mockApplications);
       expect(prismaService.application.findMany).toHaveBeenCalledTimes(1);
     });
   });

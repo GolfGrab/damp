@@ -10,7 +10,7 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DialogComponent, useNotifications } from "@toolpad/core";
 import { useState } from "react";
-import { apiClient } from "../../api";
+import { apiClient } from "../../../api";
 
 const CreateApplicationDialog: DialogComponent<undefined, undefined> = ({
   open,
@@ -49,7 +49,7 @@ const CreateApplicationDialog: DialogComponent<undefined, undefined> = ({
         queryClient.invalidateQueries({
           queryKey: [
             apiClient.ApplicationModuleApi
-              .mApplicationControllerFindAllApplications,
+              .mApplicationControllerFindAllApplications.name,
           ],
         });
         onClose(undefined);

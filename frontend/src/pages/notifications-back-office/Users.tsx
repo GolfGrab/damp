@@ -15,7 +15,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiClient } from "../../api";
 import { User } from "../../api/generated";
-import ImportUsersDialog from "./ImportUsersDialog";
+import ImportUsersDialog from "./components/ImportUsersDialog";
 
 const CustomToolbar = () => (
   <GridToolbarContainer>

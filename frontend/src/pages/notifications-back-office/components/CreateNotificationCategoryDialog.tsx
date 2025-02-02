@@ -10,7 +10,7 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DialogComponent, useNotifications } from "@toolpad/core";
 import { useState } from "react";
-import { apiClient } from "../../api";
+import { apiClient } from "../../../api";
 
 const CreateNotificationCategoryDialog: DialogComponent<
   {

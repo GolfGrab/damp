@@ -37,8 +37,14 @@ export class MApplicationController {
 
   @Auth()
   @Get('applications')
-  findAllApplications(@GetUser() user: UserWithRoles): Promise<Application[]> {
-    return this.applicationsService.findAll(user);
+  findAllApplications(): Promise<Application[]> {
+    return this.applicationsService.findAll();
+  }
+
+  @Auth()
+  @Get('applications/my')
+  findMyApplications(@GetUser() user: UserWithRoles): Promise<Application[]> {
+    return this.applicationsService.findMy(user);
   }
 
   @Auth()

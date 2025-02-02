@@ -101,12 +101,6 @@ export interface Application {
     'description': string;
     /**
      * 
-     * @type {boolean}
-     * @memberof Application
-     */
-    'isEnabled': boolean;
-    /**
-     * 
      * @type {string}
      * @memberof Application
      */
@@ -160,12 +154,6 @@ export interface ApplicationWithApiKey {
      * @memberof ApplicationWithApiKey
      */
     'apiKey': string;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof ApplicationWithApiKey
-     */
-    'isEnabled': boolean;
     /**
      * 
      * @type {string}
@@ -534,6 +522,12 @@ export interface NotificationTask {
      * @memberof NotificationTask
      */
     'channelType': NotificationTaskChannelTypeEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof NotificationTask
+     */
+    'channelToken': string;
     /**
      * 
      * @type {string}
@@ -1234,6 +1228,39 @@ export const ApplicationModuleApiAxiosParamCreator = function (configuration?: C
         },
         /**
          * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        mApplicationControllerFindMyApplications: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/m-application/applications/my`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication Access_Token required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @param {string} applicationId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1454,6 +1481,17 @@ export const ApplicationModuleApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async mApplicationControllerFindMyApplications(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Application>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.mApplicationControllerFindMyApplications(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ApplicationModuleApi.mApplicationControllerFindMyApplications']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @param {string} applicationId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1552,6 +1590,14 @@ export const ApplicationModuleApiFactory = function (configuration?: Configurati
         },
         /**
          * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        mApplicationControllerFindMyApplications(options?: RawAxiosRequestConfig): AxiosPromise<Array<Application>> {
+            return localVarFp.mApplicationControllerFindMyApplications(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @param {string} applicationId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1642,6 +1688,16 @@ export class ApplicationModuleApi extends BaseAPI {
      */
     public mApplicationControllerFindAllNotificationCategoriesByApplicationId(applicationId: string, options?: RawAxiosRequestConfig) {
         return ApplicationModuleApiFp(this.configuration).mApplicationControllerFindAllNotificationCategoriesByApplicationId(applicationId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ApplicationModuleApi
+     */
+    public mApplicationControllerFindMyApplications(options?: RawAxiosRequestConfig) {
+        return ApplicationModuleApiFp(this.configuration).mApplicationControllerFindMyApplications(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -2797,6 +2853,7 @@ export class NotificationModuleApi extends BaseAPI {
  */
 export const MNotificationControllerFindAllNotificationTasksByApplicationIdPaginatedSortFieldEnum = {
     Id: 'id',
+    ChannelToken: 'channelToken',
     ChannelType: 'channelType',
     UserId: 'userId',
     NotificationId: 'notificationId',

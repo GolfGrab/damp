@@ -1,8 +1,8 @@
 import { Alert, Box, Button, Skeleton, Stack, Tab, Tabs } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
-import { apiClient } from "../../api";
-import BackOfficeGenericLayout from "../../layout/BackOfficeGenericLayout";
+import { apiClient } from "../../../api";
+import BackOfficeGenericLayout from "../../../layout/BackOfficeGenericLayout";
 
 const ApplicationDetailsTabsLayout = () => {
   const navigate = useNavigate();

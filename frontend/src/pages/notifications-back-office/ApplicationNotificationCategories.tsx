@@ -8,8 +8,8 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiClient } from "../../api";
 import { NotificationCategory } from "../../api/generated";
-import CreateNotificationCategoryDialog from "./CreateNotificationCategoryDialog";
-import UpdateNotificationCategoryDialog from "./UpdateNotificationCategoryDialog";
+import CreateNotificationCategoryDialog from "./components/CreateNotificationCategoryDialog";
+import UpdateNotificationCategoryDialog from "./components/UpdateNotificationCategoryDialog";
 
 const ApplicationNotificationCategories = () => {
   const { applicationId } = useParams();

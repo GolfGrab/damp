@@ -22,7 +22,7 @@ export class NotificationCategoriesService {
     const ownedApplications = await this.prisma.application.findFirst({
       where: {
         id: applicationId,
-        createdByUserId: user.roles.includes(Role.Admin) ? undefined : user.id,
+        createdByUserId: user.roles?.includes(Role.Admin) ? undefined : user.id,
       },
     });
 
@@ -68,7 +68,7 @@ export class NotificationCategoriesService {
           id: {
             not: this.config.SYSTEM_APPLICATION_ID,
           },
-          createdByUserId: user.roles.includes(Role.Admin)
+          createdByUserId: user.roles?.includes(Role.Admin)
             ? undefined
             : user.id,
         },

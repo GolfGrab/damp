@@ -315,7 +315,7 @@ export class NotificationsService {
                   id: {
                     not: this.config.SYSTEM_APPLICATION_ID,
                   },
-                  createdByUserId: user.roles.includes(Role.Admin)
+                  createdByUserId: user.roles?.includes(Role.Admin)
                     ? undefined
                     : user.id,
                 },

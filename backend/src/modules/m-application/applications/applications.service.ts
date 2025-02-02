@@ -43,13 +43,23 @@ export class ApplicationsService {
     });
   }
 
-  findAll(user: UserWithRoles): Promise<Application[]> {
+  findAll(): Promise<Application[]> {
     return this.prisma.application.findMany({
       where: {
         id: {
           not: this.config.SYSTEM_APPLICATION_ID,
         },
-        createdByUserId: user.roles.includes(Role.Admin) ? undefined : user.id,
+      },
+    });
+  }
+
+  findMy(user: UserWithRoles): Promise<Application[]> {
+    return this.prisma.application.findMany({
+      where: {
+        id: {
+          not: this.config.SYSTEM_APPLICATION_ID,
+        },
+        createdByUserId: user.roles?.includes(Role.Admin) ? undefined : user.id,
       },
     });
   }
@@ -67,7 +77,7 @@ export class ApplicationsService {
               not: this.config.SYSTEM_USER_ID,
             },
           },
-          ...(user.roles.includes(Role.Admin)
+          ...(user.roles?.includes(Role.Admin)
             ? []
             : [{ createdByUserId: user.id }]),
         ],
@@ -90,7 +100,7 @@ export class ApplicationsService {
               not: this.config.SYSTEM_USER_ID,
             },
           },
-          ...(user.roles.includes(Role.Admin)
+          ...(user.roles?.includes(Role.Admin)
             ? []
             : [{ createdByUserId: user.id }]),
         ],
@@ -116,7 +126,7 @@ export class ApplicationsService {
               not: this.config.SYSTEM_USER_ID,
             },
           },
-          ...(user.roles.includes(Role.Admin)
+          ...(user.roles?.includes(Role.Admin)
             ? []
             : [{ createdByUserId: user.id }]),
         ],

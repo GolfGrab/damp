@@ -8,7 +8,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiClient } from "../../api";
 import { Application } from "../../api/generated";
-import CreateApplicationDialog from "./CreateApplicationDialog";
+import CreateApplicationDialog from "./components/CreateApplicationDialog";
 
 const Applications = () => {
   const dialogs = useDialogs();
@@ -21,10 +21,10 @@ const Applications = () => {
     refetch: refetchApplications,
   } = useQuery({
     queryKey: [
-      apiClient.ApplicationModuleApi.mApplicationControllerFindAllApplications,
+      apiClient.ApplicationModuleApi.mApplicationControllerFindMyApplications.name,
     ],
     queryFn: () => {
-      return apiClient.ApplicationModuleApi.mApplicationControllerFindAllApplications().then(
+      return apiClient.ApplicationModuleApi.mApplicationControllerFindMyApplications().then(
         (res) => res.data
       );
     },
