@@ -36,6 +36,7 @@ const NotificationApplicationUserPreferences = () => {
   } = useQuery({
     queryKey: [
       apiClient.UserModuleApi.mUserControllerFindAllUserAccountsByUserId.name,
+      auth.user?.profile.email,
     ],
     queryFn: async () => {
       if (!auth.user?.profile.email) {
@@ -55,6 +56,7 @@ const NotificationApplicationUserPreferences = () => {
     queryKey: [
       apiClient.UserModuleApi.mUserControllerFindAllUserPreferencesByUserId
         .name,
+      auth.user?.profile.email,
     ],
     queryFn: async () => {
       if (!auth.user?.profile.email) {
@@ -76,6 +78,7 @@ const NotificationApplicationUserPreferences = () => {
       apiClient.ApplicationModuleApi
         .mApplicationControllerFindAllNotificationCategoriesByApplicationId
         .name,
+      applicationId!,
     ],
     queryFn: async () => {
       return await apiClient.ApplicationModuleApi.mApplicationControllerFindAllNotificationCategoriesByApplicationId(

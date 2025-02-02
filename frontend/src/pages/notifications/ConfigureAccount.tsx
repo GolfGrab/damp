@@ -29,6 +29,7 @@ const ConfigureAccount = () => {
   } = useQuery({
     queryKey: [
       apiClient.UserModuleApi.mUserControllerFindAllUserAccountsByUserId.name,
+      auth.user?.profile.email,
     ],
     queryFn: async () => {
       if (!auth.user?.profile.email) {
