@@ -124,7 +124,12 @@ const VerifyAccount = () => {
           Please enter the code below to verify your account.
         </Typography>
       </Stack>
-      <MuiOtpInput value={otpCode} onChange={(v) => setOtpCode(v)} length={6} />
+      <MuiOtpInput
+        value={otpCode}
+        onChange={(v) => setOtpCode(v)}
+        length={6}
+        inputMode="numeric"
+      />
 
       <Button
         variant="contained"
