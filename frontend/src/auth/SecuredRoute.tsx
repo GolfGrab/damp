@@ -28,11 +28,14 @@ const SecuredRoute = () => {
 
   // retry after error
   useEffect(() => {
-    const allowedRetryErrors = ["Invalid refresh token state"];
+    const allowedRetryErrors = [
+      "Invalid refresh token state",
+      "No matching state found",
+    ];
     if (
       auth.error &&
       !hasTriedAfterError &&
-      allowedRetryErrors.includes(auth.error.message)
+      allowedRetryErrors.some((error) => auth.error?.message.startsWith(error))
     ) {
       auth.signinRedirect({
         state: {
