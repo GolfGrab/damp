@@ -49,7 +49,7 @@ const CreateApplicationDialog: DialogComponent<undefined, undefined> = ({
         queryClient.invalidateQueries({
           queryKey: [
             apiClient.ApplicationModuleApi
-              .mApplicationControllerFindAllApplications.name,
+              .mApplicationControllerFindMyApplications.name,
           ],
         });
         onClose(undefined);
